@@ -3,181 +3,518 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EduLink Bénin — Back-office</title>
+<title>EduLink — Back-office</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 * { margin: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
 body { background: #f3f4f6; display: flex; }
-nav { width: 220px; background: #1e3a5f; min-height: 100vh; padding: 1rem; flex-shrink: 0; }
-nav h1 { color: #fff; font-size: 16px; font-weight: 700; margin-bottom: 1.5rem; line-height: 1.3; }
-nav a { display: block; color: rgba(255,255,255,.7); padding: 8px 12px; border-radius: 6px; text-decoration: none; font-size: 13px; margin-bottom: 4px; cursor: pointer; }
+
+/* ── Navigation ── */
+nav { width: 230px; background: #1e3a5f; min-height: 100vh; padding: 1rem; flex-shrink: 0; display: flex; flex-direction: column; }
+nav .logo { color: #fff; font-size: 15px; font-weight: 700; margin-bottom: .5rem; line-height: 1.3; }
+nav .ecole-selector-wrap { margin-bottom: 1.2rem; }
+nav .ecole-selector-wrap select {
+  width: 100%; padding: 6px 10px; border-radius: 8px; border: 1px solid rgba(255,255,255,.25);
+  background: rgba(255,255,255,.1); color: #fff; font-size: 12px; font-family: 'Poppins', sans-serif;
+  cursor: pointer; outline: none;
+}
+nav .ecole-selector-wrap select option { background: #1e3a5f; color: #fff; }
+nav .nav-section { font-size: 9px; font-weight: 600; color: rgba(255,255,255,.4); text-transform: uppercase;
+  letter-spacing: .08em; padding: 6px 12px 2px; margin-top: 4px; }
+nav a { display: flex; align-items: center; gap: 8px; color: rgba(255,255,255,.7); padding: 8px 12px;
+  border-radius: 6px; text-decoration: none; font-size: 12.5px; margin-bottom: 2px; cursor: pointer; transition: all .15s; }
 nav a:hover, nav a.on { background: rgba(255,255,255,.15); color: #fff; }
-main { flex: 1; padding: 1.5rem; overflow: auto; }
+nav a .ico { font-size: 14px; width: 18px; text-align: center; }
+nav .nav-bottom { margin-top: auto; padding-top: 1rem; border-top: 1px solid rgba(255,255,255,.1); }
+nav .nav-bottom a { font-size: 11px; color: rgba(255,255,255,.5); }
+
+main { flex: 1; padding: 1.5rem; overflow: auto; min-height: 100vh; }
 .page { display: none; }
-.page.active { display: block; }
+.page.active { display: block; animation: fadeIn .2s ease; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:translateY(0); } }
+
+/* ── Top bar ── */
 .top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 10px; }
-.top h2 { font-size: 22px; font-weight: 600; }
+.top h2 { font-size: 20px; font-weight: 700; color: #111827; }
+.top-actions { display: flex; gap: 8px; }
+
+/* ── Cards ── */
 .cards { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 1.5rem; }
-.card { background: #fff; border-radius: 16px; padding: 1rem; border: 0.5px solid #e5e7eb; }
-.card .n { font-size: 26px; font-weight: 700; margin: 8px 0 4px; }
-.card .l { font-size: 12px; color: #6b7280; }
-.card .i { font-size: 20px; }
-table { width: 100%; background: #fff; border-radius: 12px; border-collapse: collapse; border: 0.5px solid #e5e7eb; overflow: hidden; }
-th { background: #f9fafb; padding: 10px 14px; text-align: left; font-size: 11px; font-weight: 600; color: #6b7280; border-bottom: 0.5px solid #e5e7eb; }
-td { padding: 10px 14px; font-size: 13px; border-bottom: 0.5px solid #e5e7eb; }
+.card { background: #fff; border-radius: 14px; padding: 1.1rem; border: 1px solid #e5e7eb; transition: box-shadow .15s; }
+.card:hover { box-shadow: 0 4px 12px rgba(0,0,0,.07); }
+.card .n { font-size: 26px; font-weight: 700; margin: 6px 0 2px; }
+.card .l { font-size: 11px; color: #6b7280; font-weight: 500; }
+.card .i { font-size: 18px; }
+
+/* ── Tables ── */
+table { width: 100%; background: #fff; border-radius: 12px; border-collapse: collapse; border: 1px solid #e5e7eb; overflow: hidden; }
+th { background: #f9fafb; padding: 10px 14px; text-align: left; font-size: 10.5px; font-weight: 600; color: #6b7280; border-bottom: 1px solid #e5e7eb; text-transform: uppercase; letter-spacing: .04em; }
+td { padding: 10px 14px; font-size: 13px; border-bottom: 1px solid #f3f4f6; color: #374151; }
 tr:last-child td { border-bottom: none; }
-.badge { font-size: 11px; padding: 2px 8px; border-radius: 20px; font-weight: 600; }
-.red { background: #fee2e2; color: #dc2626; }
-.green { background: #dcfce7; color: #059669; }
-.amber { background: #fef9c3; color: #d97706; }
-.blue { background: #dbeafe; color: #1d4ed8; }
-button { background: #c97c1a; color: #fff; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; font-family: 'Poppins', sans-serif; }
-button:hover { background: #a86615; }
-.btn-sm { padding: 4px 10px; font-size: 11px; }
+tr:hover td { background: #fafafa; }
+
+/* ── Badges ── */
+.badge { font-size: 10.5px; padding: 2px 8px; border-radius: 20px; font-weight: 600; white-space: nowrap; }
+.red    { background: #fee2e2; color: #dc2626; }
+.green  { background: #dcfce7; color: #059669; }
+.amber  { background: #fef9c3; color: #d97706; }
+.blue   { background: #dbeafe; color: #1d4ed8; }
+.purple { background: #ede9fe; color: #7c3aed; }
+.gray   { background: #f3f4f6; color: #6b7280; }
+
+/* ── Buttons ── */
+button { background: #c97c1a; color: #fff; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; font-family: 'Poppins', sans-serif; transition: all .15s; }
+button:hover { background: #a86615; transform: translateY(-1px); }
+.btn-sm { padding: 4px 10px; font-size: 11px; border-radius: 6px; }
 .btn-blue { background: #1e3a5f; }
 .btn-blue:hover { background: #152c4a; }
-.loading { text-align: center; padding: 2rem; color: #6b7280; font-size: 13px; }
-.empty-state { text-align: center; padding: 3rem; color: #6b7280; }
-.empty-state .icon { font-size: 48px; margin-bottom: 1rem; }
-.empty-state h3 { font-size: 16px; font-weight: 600; margin-bottom: .5rem; color: #374151; }
+.btn-red { background: #dc2626; }
+.btn-red:hover { background: #b91c1c; }
+.btn-green { background: #059669; }
+.btn-green:hover { background: #047857; }
+.btn-secondary { background: #f3f4f6; color: #374151; }
+.btn-secondary:hover { background: #e5e7eb; transform: none; }
+.btn-outline { background: transparent; border: 1px solid #e5e7eb; color: #374151; }
+.btn-outline:hover { background: #f9fafb; transform: none; }
+
+/* ── Search ── */
 .search-bar { display: flex; gap: 8px; margin-bottom: 1rem; }
-.search-bar input { flex: 1; padding: 8px 12px; border: 0.5px solid #e5e7eb; border-radius: 8px; font-size: 13px; font-family: 'Poppins', sans-serif; outline: none; }
+.search-bar input { flex: 1; padding: 8px 12px; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 13px; font-family: 'Poppins', sans-serif; outline: none; }
 .search-bar input:focus { border-color: #1e3a5f; }
-.modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; }
+
+/* ── Filters ── */
+.filters { display: flex; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap; align-items: center; }
+.filters select, .filters input { padding: 6px 10px; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 12px; font-family: 'Poppins', sans-serif; outline: none; background: #fff; }
+.filters select:focus, .filters input:focus { border-color: #1e3a5f; }
+.filter-label { font-size: 12px; color: #6b7280; font-weight: 500; }
+
+/* ── Modals ── */
+.modal-overlay { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,.5); z-index: 100; align-items: center; justify-content: center; }
 .modal-overlay.open { display: flex; }
-.modal { background: #fff; border-radius: 16px; padding: 1.5rem; width: 500px; max-width: 90%; max-height: 90vh; overflow-y: auto; }
-.modal h3 { font-size: 16px; font-weight: 600; margin-bottom: 1.5rem; }
+.modal { background: #fff; border-radius: 16px; padding: 1.5rem; width: 520px; max-width: 94%; max-height: 92vh; overflow-y: auto; }
+.modal h3 { font-size: 16px; font-weight: 700; margin-bottom: 1.5rem; color: #111827; }
 .form-group { margin-bottom: 1rem; }
-.form-group label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 4px; color: #374151; }
-.form-group input, .form-group select, .form-group textarea { width: 100%; padding: 8px 12px; border: 0.5px solid #e5e7eb; border-radius: 8px; font-size: 13px; font-family: 'Poppins', sans-serif; outline: none; }
-.form-group input:focus, .form-group select:focus { border-color: #1e3a5f; }
+.form-group label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 4px; color: #374151; text-transform: uppercase; letter-spacing: .03em; }
+.form-group input, .form-group select, .form-group textarea { width: 100%; padding: 8px 12px; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 13px; font-family: 'Poppins', sans-serif; outline: none; transition: border-color .15s; }
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: #1e3a5f; box-shadow: 0 0 0 3px rgba(30,58,95,.08); }
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-.modal-footer { display: flex; gap: 8px; justify-content: flex-end; margin-top: 1.5rem; }
-.btn-secondary { background: #f3f4f6; color: #374151; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; font-family: 'Poppins', sans-serif; }
-.toast { position: fixed; bottom: 1.5rem; right: 1.5rem; background: #1e3a5f; color: #fff; padding: 12px 20px; border-radius: 10px; font-size: 13px; z-index: 999; display: none; animation: fadein .3s; }
+.form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; }
+.modal-footer { display: flex; gap: 8px; justify-content: flex-end; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #f3f4f6; }
+
+/* ── Toast ── */
+.toast { position: fixed; bottom: 1.5rem; right: 1.5rem; background: #1e3a5f; color: #fff; padding: 12px 20px; border-radius: 10px; font-size: 13px; z-index: 999; display: none; animation: slidein .3s; box-shadow: 0 8px 24px rgba(0,0,0,.2); }
 .toast.show { display: block; }
 .toast.success { background: #059669; }
-.toast.error { background: #dc2626; }
-@keyframes fadein { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform: translateY(0); } }
-.stat-num { font-size: 28px; font-weight: 700; }
+.toast.error   { background: #dc2626; }
+.toast.info    { background: #1d4ed8; }
+@keyframes slidein { from { opacity:0; transform: translateY(12px); } to { opacity:1; transform:translateY(0); } }
+
+/* ── States ── */
+.loading   { text-align: center; padding: 2rem; color: #6b7280; font-size: 13px; }
+.empty-state { text-align: center; padding: 3rem; color: #9ca3af; }
+.empty-state .icon { font-size: 44px; margin-bottom: .75rem; }
+.empty-state h3 { font-size: 15px; font-weight: 600; margin-bottom: .4rem; color: #374151; }
+.empty-state p { font-size: 13px; }
+
+/* ── Tabs ── */
+.tabs { display: flex; gap: 4px; margin-bottom: 1.2rem; background: #f3f4f6; border-radius: 10px; padding: 4px; width: fit-content; }
+.tab { padding: 6px 16px; border-radius: 7px; font-size: 12.5px; font-weight: 600; cursor: pointer; color: #6b7280; transition: all .15s; border: none; background: transparent; }
+.tab.active { background: #fff; color: #1e3a5f; box-shadow: 0 1px 4px rgba(0,0,0,.1); }
+
+/* ══════════════════════════════════
+   NOTES & BULLETINS
+══════════════════════════════════ */
+.note-badge { font-size: 13px; font-weight: 700; padding: 3px 10px; border-radius: 8px; }
+.bulletin-wrap { background: #fff; border-radius: 14px; border: 1px solid #e5e7eb; overflow: hidden; }
+.bulletin-header { background: #1e3a5f; color: #fff; padding: 1.2rem 1.5rem; }
+.bulletin-header h3 { font-size: 16px; font-weight: 700; margin-bottom: 2px; }
+.bulletin-header p { font-size: 12px; opacity: .7; }
+.bulletin-stats { display: grid; grid-template-columns: repeat(3,1fr); gap: 1rem; padding: 1rem 1.5rem; border-bottom: 1px solid #e5e7eb; }
+.bstat { text-align: center; }
+.bstat .val { font-size: 22px; font-weight: 700; color: #1e3a5f; }
+.bstat .lbl { font-size: 11px; color: #6b7280; font-weight: 500; }
+.bulletin-select { display: flex; gap: 10px; align-items: center; margin-bottom: 1rem; }
+
+/* ══════════════════════════════════
+   MESSAGERIE
+══════════════════════════════════ */
+.msg-layout { display: grid; grid-template-columns: 300px 1fr; gap: 1rem; height: calc(100vh - 180px); min-height: 400px; }
+.msg-list { background: #fff; border-radius: 12px; border: 1px solid #e5e7eb; overflow-y: auto; }
+.msg-list-header { padding: 12px 14px; border-bottom: 1px solid #e5e7eb; font-size: 12px; font-weight: 600; color: #374151; display: flex; justify-content: space-between; align-items: center; }
+.msg-item { padding: 12px 14px; border-bottom: 1px solid #f3f4f6; cursor: pointer; transition: background .1s; }
+.msg-item:hover { background: #f9fafb; }
+.msg-item.selected { background: #eff6ff; border-left: 3px solid #1e3a5f; }
+.msg-item.unread .msg-sender { font-weight: 700; }
+.msg-item.unread::after { content: ''; width: 6px; height: 6px; border-radius: 50%; background: #c97c1a; float: right; margin-top: 4px; }
+.msg-sender { font-size: 12.5px; font-weight: 600; color: #111827; margin-bottom: 2px; }
+.msg-subject { font-size: 12px; color: #374151; margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.msg-preview { font-size: 11px; color: #9ca3af; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.msg-date { font-size: 10px; color: #9ca3af; float: right; margin-top: -18px; }
+.msg-detail { background: #fff; border-radius: 12px; border: 1px solid #e5e7eb; display: flex; flex-direction: column; }
+.msg-detail-header { padding: 1.2rem 1.5rem; border-bottom: 1px solid #e5e7eb; }
+.msg-detail-header h3 { font-size: 15px; font-weight: 700; color: #111827; margin-bottom: 4px; }
+.msg-detail-meta { display: flex; gap: 12px; font-size: 12px; color: #6b7280; }
+.msg-detail-body { flex: 1; padding: 1.5rem; font-size: 13.5px; line-height: 1.7; color: #374151; white-space: pre-wrap; }
+.msg-detail-empty { flex: 1; display: flex; align-items: center; justify-content: center; color: #9ca3af; font-size: 13px; }
+.msg-reply { padding: 1rem 1.5rem; border-top: 1px solid #e5e7eb; display: flex; gap: 8px; }
+.msg-reply input { flex: 1; padding: 8px 12px; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 13px; font-family: 'Poppins', sans-serif; outline: none; }
+.msg-reply input:focus { border-color: #1e3a5f; }
+
+/* ══════════════════════════════════
+   EMPLOI DU TEMPS
+══════════════════════════════════ */
+.edt-controls { display: flex; gap: 10px; margin-bottom: 1rem; align-items: center; flex-wrap: wrap; }
+.edt-controls select { padding: 7px 12px; border: 1px solid #e5e7eb; border-radius: 8px; font-size: 12.5px; font-family: 'Poppins', sans-serif; outline: none; }
+.edt-wrap { overflow-x: auto; }
+.edt-grid { width: 100%; background: #fff; border-radius: 12px; border: 1px solid #e5e7eb; border-collapse: collapse; min-width: 700px; }
+.edt-grid th { background: #1e3a5f; color: #fff; padding: 10px 8px; font-size: 11.5px; font-weight: 600; text-align: center; border-right: 1px solid rgba(255,255,255,.1); }
+.edt-grid th:first-child { width: 70px; border-radius: 12px 0 0 0; }
+.edt-grid th:last-child { border-radius: 0 12px 0 0; border-right: none; }
+.edt-grid td { padding: 0; height: 52px; border-right: 1px solid #e5e7eb; border-bottom: 1px solid #e5e7eb; vertical-align: top; position: relative; }
+.edt-grid td:first-child { background: #f9fafb; text-align: center; font-size: 11px; font-weight: 600; color: #6b7280; vertical-align: middle; border-right: 1px solid #e5e7eb; }
+.edt-grid td:last-child { border-right: none; }
+.edt-grid tr:last-child td { border-bottom: none; }
+.edt-slot { height: 100%; padding: 5px 7px; font-size: 11px; line-height: 1.35; border-radius: 6px; margin: 2px; cursor: pointer; transition: opacity .15s; }
+.edt-slot:hover { opacity: .85; }
+.edt-slot .s-mat { font-weight: 700; font-size: 11.5px; }
+.edt-slot .s-prof { opacity: .8; }
+.edt-slot .s-salle { opacity: .65; font-size: 10px; }
+.edt-slot-blue   { background: #dbeafe; color: #1d4ed8; }
+.edt-slot-green  { background: #dcfce7; color: #059669; }
+.edt-slot-purple { background: #ede9fe; color: #7c3aed; }
+.edt-slot-amber  { background: #fef9c3; color: #d97706; }
+.edt-slot-red    { background: #fee2e2; color: #dc2626; }
+.edt-slot-teal   { background: #ccfbf1; color: #0d9488; }
+.edt-add-btn { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: #d1d5db; font-size: 18px; cursor: pointer; border: none; background: transparent; }
+.edt-add-btn:hover { color: #1e3a5f; background: #f3f4f6; }
+
+/* ══════════════════════════════════
+   SECTION HEADERS
+══════════════════════════════════ */
+.section-label { font-size: 12px; font-weight: 600; color: #374151; margin-bottom: .7rem; }
+.page-subtitle { font-size: 13px; color: #6b7280; margin-top: -1rem; margin-bottom: 1.2rem; }
+
+/* ── Dashboard ── */
+.dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.dash-block { background: #fff; border-radius: 14px; border: 1px solid #e5e7eb; padding: 1.2rem; }
+.dash-block .block-title { font-size: 12.5px; font-weight: 600; color: #374151; margin-bottom: 1rem; }
+.activity-item { display: flex; align-items: flex-start; gap: 10px; padding: 8px 0; border-bottom: 1px solid #f3f4f6; }
+.activity-item:last-child { border-bottom: none; }
+.activity-dot { width: 8px; height: 8px; border-radius: 50%; margin-top: 5px; flex-shrink: 0; }
+
+/* ── Ecole badge ── */
+.ecole-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.2); border-radius: 8px; padding: 6px 10px; margin-bottom: 1rem; }
+.ecole-badge .eb-nom { font-size: 12px; font-weight: 600; color: #fff; }
+.ecole-badge .eb-type { font-size: 10px; color: rgba(255,255,255,.6); }
 </style>
 </head>
 <body>
 
+<!-- ═══════════════════════════════════════════
+     NAVIGATION
+═══════════════════════════════════════════ -->
 <nav>
-  <h1>🏫 COLLEGE SAINT JOSEPH</h1>
-  <a onclick="showPage('dashboard')" id="nav-dashboard" class="on">⊞ Tableau de bord</a>
-  <a onclick="showPage('etudiants')" id="nav-etudiants">👥 Étudiants</a>
-  <a onclick="showPage('presences')" id="nav-presences">✅ Présences</a>
-  <a onclick="showPage('notes')" id="nav-notes">📊 Notes</a>
-  <a onclick="showPage('messages')" id="nav-messages">✉️ Messages</a>
-  <a onclick="showPage('paiements')" id="nav-paiements">💳 Paiements</a>
-  <a onclick="showPage('discipline')" id="nav-discipline">⚠️ Discipline</a>
-  <a onclick="showPage('emploi')" id="nav-emploi">📅 Emploi du temps</a>
-  <a onclick="showPage('documents')" id="nav-documents">📄 Documents</a>
-  <a onclick="showPage('rapports')" id="nav-rapports">📈 Rapports</a>
+  <div class="logo">🎓 EduLink</div>
+
+  <!-- Multi-établissements -->
+  <div class="ecole-badge" id="ecole-badge">
+    <span>🏫</span>
+    <div>
+      <div class="eb-nom" id="ecole-nom-nav">Chargement...</div>
+      <div class="eb-type" id="ecole-type-nav">—</div>
+    </div>
+  </div>
+  <div class="ecole-selector-wrap">
+    <select id="ecole-selector" onchange="changerEcole()">
+      <option>Chargement...</option>
+    </select>
+  </div>
+
+  <div class="nav-section">Vue d'ensemble</div>
+  <a onclick="showPage('dashboard')" id="nav-dashboard" class="on"><span class="ico">⊞</span> Tableau de bord</a>
+
+  <div class="nav-section">Académique</div>
+  <a onclick="showPage('etudiants')" id="nav-etudiants"><span class="ico">👥</span> Étudiants</a>
+  <a onclick="showPage('presences')" id="nav-presences"><span class="ico">✅</span> Présences</a>
+  <a onclick="showPage('notes')" id="nav-notes"><span class="ico">📊</span> Notes & Bulletins</a>
+  <a onclick="showPage('emploi')" id="nav-emploi"><span class="ico">📅</span> Emploi du temps</a>
+
+  <div class="nav-section">Communication</div>
+  <a onclick="showPage('messages')" id="nav-messages"><span class="ico">✉️</span> Messagerie <span id="badge-msg" style="margin-left:auto;background:#c97c1a;color:#fff;border-radius:10px;padding:1px 6px;font-size:10px;display:none"></span></a>
+  <a onclick="showPage('discipline')" id="nav-discipline"><span class="ico">⚠️</span> Discipline</a>
+
+  <div class="nav-section">Administration</div>
+  <a onclick="showPage('paiements')" id="nav-paiements"><span class="ico">💳</span> Paiements</a>
+  <a onclick="showPage('documents')" id="nav-documents"><span class="ico">📄</span> Documents</a>
+  <a onclick="showPage('rapports')" id="nav-rapports"><span class="ico">📈</span> Rapports</a>
+
+  <div class="nav-bottom">
+    <a href="#"><span class="ico">⚙️</span> Paramètres</a>
+  </div>
 </nav>
 
 <main>
 
-  <!-- PAGE : Tableau de bord -->
-  <div class="page active" id="page-dashboard">
-    <div class="top">
+<!-- ═══════════════════════════════════════
+     DASHBOARD
+═══════════════════════════════════════ -->
+<div class="page active" id="page-dashboard">
+  <div class="top">
+    <div>
       <h2>Tableau de bord</h2>
-      <button onclick="ouvrirModal('modal-annonce')">+ Envoyer annonce</button>
+      <p class="page-subtitle" id="dash-subtitle">Vue générale de l'établissement</p>
     </div>
-    <div class="cards">
-      <div class="card"><div class="i">🎓</div><div class="n" style="color:#1e3a5f" id="stat-etudiants">...</div><div class="l">Étudiants inscrits</div></div>
-      <div class="card"><div class="i">🚫</div><div class="n" style="color:#dc2626" id="stat-absences">...</div><div class="l">Absences aujourd'hui</div></div>
-      <div class="card"><div class="i">⚠️</div><div class="n" style="color:#f59e0b">0</div><div class="l">Incidents ouverts</div></div>
-      <div class="card"><div class="i">💳</div><div class="n" style="color:#c97c1a">0</div><div class="l">Paiements en attente</div></div>
+    <button onclick="ouvrirModal('modal-annonce')">+ Envoyer annonce</button>
+  </div>
+  <div class="cards" id="dash-cards">
+    <div class="card"><div class="i">🎓</div><div class="n" style="color:#1e3a5f" id="stat-etudiants">…</div><div class="l">Étudiants inscrits</div></div>
+    <div class="card"><div class="i">🚫</div><div class="n" style="color:#dc2626" id="stat-absences">…</div><div class="l">Absences aujourd'hui</div></div>
+    <div class="card"><div class="i">📊</div><div class="n" style="color:#059669" id="stat-notes">…</div><div class="l">Notes saisies</div></div>
+    <div class="card"><div class="i">✉️</div><div class="n" style="color:#c97c1a" id="stat-msgs">…</div><div class="l">Messages non lus</div></div>
+  </div>
+  <div class="dash-grid">
+    <div class="dash-block">
+      <div class="block-title">Absences récentes</div>
+      <table>
+        <tr><th>Étudiant</th><th>Matière</th><th>Date</th><th>Statut</th></tr>
+        <tbody id="tbody-absences-dashboard">
+          <tr><td colspan="4" class="loading">Chargement...</td></tr>
+        </tbody>
+      </table>
     </div>
-    <div style="font-size:13px;font-weight:600;margin-bottom:.75rem;color:#374151">Absences récentes</div>
+    <div class="dash-block">
+      <div class="block-title">Dernières notes saisies</div>
+      <table>
+        <tr><th>Étudiant</th><th>Matière</th><th>Note</th><th>Appréciation</th></tr>
+        <tbody id="tbody-notes-dashboard">
+          <tr><td colspan="4" class="loading">Chargement...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     ÉTUDIANTS
+═══════════════════════════════════════ -->
+<div class="page" id="page-etudiants">
+  <div class="top">
+    <h2>Étudiants</h2>
+    <button onclick="ouvrirModal('modal-etudiant')">+ Ajouter étudiant</button>
+  </div>
+  <div class="search-bar">
+    <input type="text" id="search-etudiants" placeholder="Rechercher par nom, prénom, matricule..." oninput="filtrerEtudiants()">
+  </div>
+  <table>
+    <tr><th>Matricule</th><th>Nom complet</th><th>Filière</th><th>Niveau</th><th>Statut</th><th>Actions</th></tr>
+    <tbody id="tbody-etudiants">
+      <tr><td colspan="6" class="loading">Chargement des étudiants...</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PRÉSENCES
+═══════════════════════════════════════ -->
+<div class="page" id="page-presences">
+  <div class="top">
+    <h2>Présences & Absences</h2>
+    <button onclick="ouvrirModal('modal-absence')">+ Enregistrer absence</button>
+  </div>
+  <div class="filters">
+    <span class="filter-label">Filtrer :</span>
+    <select id="filter-absence-statut" onchange="chargerAbsences()">
+      <option value="">Tous les statuts</option>
+      <option value="absent">Absent</option>
+      <option value="retard">Retard</option>
+      <option value="excuse">Excusé</option>
+    </select>
+    <input type="date" id="filter-absence-date" onchange="chargerAbsences()" style="padding:6px 10px;border:1px solid #e5e7eb;border-radius:8px;font-size:12px;font-family:'Poppins',sans-serif;outline:none;">
+  </div>
+  <table>
+    <tr><th>Étudiant</th><th>Matière</th><th>Date</th><th>Statut</th><th>Justification</th><th>Parent notifié</th></tr>
+    <tbody id="tbody-presences">
+      <tr><td colspan="6" class="loading">Chargement...</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- ═══════════════════════════════════════
+     NOTES & BULLETINS  ★ JOUR 2 ★
+═══════════════════════════════════════ -->
+<div class="page" id="page-notes">
+  <div class="top">
+    <h2>Notes & Bulletins</h2>
+    <div class="top-actions">
+      <button class="btn-outline" onclick="showTab('notes','tab-bulletins')">📄 Voir bulletins</button>
+      <button onclick="ouvrirModal('modal-note')">+ Saisir note</button>
+    </div>
+  </div>
+
+  <!-- Onglet : Saisie -->
+  <div class="tabs">
+    <button class="tab active" id="tab-saisie-btn" onclick="showTab('notes','tab-saisie')">📝 Saisie des notes</button>
+    <button class="tab" id="tab-bulletins-btn" onclick="showTab('notes','tab-bulletins')">📄 Bulletins</button>
+  </div>
+
+  <!-- Tab : Saisie des notes -->
+  <div id="tab-saisie">
+    <div class="filters">
+      <span class="filter-label">Filtrer :</span>
+      <select id="filter-notes-periode" onchange="chargerNotes()">
+        <option value="">Toutes les périodes</option>
+        <option value="S1">Semestre 1</option>
+        <option value="S2">Semestre 2</option>
+        <option value="T1">Trimestre 1</option>
+        <option value="T2">Trimestre 2</option>
+        <option value="T3">Trimestre 3</option>
+      </select>
+      <select id="filter-notes-matiere" onchange="chargerNotes()">
+        <option value="">Toutes les matières</option>
+      </select>
+    </div>
     <table>
-      <tr><th>Étudiant</th><th>Matière</th><th>Date</th><th>Statut</th><th>Parent notifié</th></tr>
-      <tbody id="tbody-absences-dashboard">
-        <tr><td colspan="5" class="loading">Chargement...</td></tr>
+      <tr><th>Étudiant</th><th>Matière</th><th>Note /20</th><th>Coefficient</th><th>Période</th><th>Appréciation</th><th>Actions</th></tr>
+      <tbody id="tbody-notes">
+        <tr><td colspan="7" class="loading">Chargement des notes...</td></tr>
       </tbody>
     </table>
   </div>
 
-  <!-- PAGE : Étudiants -->
-  <div class="page" id="page-etudiants">
-    <div class="top">
-      <h2>Étudiants</h2>
-      <button onclick="ouvrirModal('modal-etudiant')">+ Ajouter étudiant</button>
+  <!-- Tab : Bulletins -->
+  <div id="tab-bulletins" style="display:none">
+    <div class="bulletin-select">
+      <span class="filter-label">Étudiant :</span>
+      <select id="select-bulletin-etudiant" onchange="chargerBulletin()" style="padding:7px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:13px;font-family:'Poppins',sans-serif;outline:none;min-width:220px;">
+        <option value="">— Sélectionner un étudiant —</option>
+      </select>
+      <select id="select-bulletin-periode" onchange="chargerBulletin()" style="padding:7px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:13px;font-family:'Poppins',sans-serif;outline:none;">
+        <option value="S1">Semestre 1</option>
+        <option value="S2">Semestre 2</option>
+        <option value="T1">Trimestre 1</option>
+        <option value="T2">Trimestre 2</option>
+        <option value="T3">Trimestre 3</option>
+      </select>
+      <button class="btn-blue btn-sm" onclick="imprimerBulletin()">🖨️ Imprimer</button>
     </div>
-    <div class="search-bar">
-      <input type="text" id="search-etudiants" placeholder="Rechercher par nom, prénom, matricule..." oninput="filtrerEtudiants()">
+    <div id="bulletin-container">
+      <div class="empty-state"><div class="icon">📄</div><h3>Sélectionnez un étudiant</h3><p>Choisissez un étudiant pour afficher son bulletin.</p></div>
     </div>
-    <table>
-      <tr><th>Matricule</th><th>Nom complet</th><th>Filière</th><th>Niveau</th><th>Statut</th><th>Actions</th></tr>
-      <tbody id="tbody-etudiants">
-        <tr><td colspan="6" class="loading">Chargement des étudiants...</td></tr>
-      </tbody>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     EMPLOI DU TEMPS  ★ JOUR 2 ★
+═══════════════════════════════════════ -->
+<div class="page" id="page-emploi">
+  <div class="top">
+    <h2>Emploi du temps</h2>
+    <button onclick="ouvrirModal('modal-emploi')">+ Ajouter créneau</button>
+  </div>
+  <div class="edt-controls">
+    <span class="filter-label">Classe :</span>
+    <select id="edt-filter-classe" onchange="chargerEmploiDuTemps()">
+      <option value="">Toutes les classes</option>
+      <option value="L1 Informatique">L1 Informatique</option>
+      <option value="L2 Informatique">L2 Informatique</option>
+      <option value="L3 Informatique">L3 Informatique</option>
+      <option value="L1 Gestion">L1 Gestion</option>
+      <option value="L2 Gestion">L2 Gestion</option>
+      <option value="L3 Gestion">L3 Gestion</option>
+      <option value="M1">M1</option>
+      <option value="M2">M2</option>
+    </select>
+    <div style="margin-left:auto;display:flex;gap:6px;align-items:center">
+      <span style="font-size:11px;color:#6b7280">Légende :</span>
+      <span class="badge blue">Cours</span>
+      <span class="badge green">TD</span>
+      <span class="badge purple">TP</span>
+      <span class="badge amber">Exam</span>
+    </div>
+  </div>
+  <div class="edt-wrap">
+    <table class="edt-grid" id="edt-table">
+      <tr>
+        <th>Heure</th>
+        <th>Lundi</th><th>Mardi</th><th>Mercredi</th>
+        <th>Jeudi</th><th>Vendredi</th><th>Samedi</th>
+      </tr>
+      <!-- Généré par JS -->
     </table>
   </div>
+</div>
 
-  <!-- PAGE : Présences -->
-  <div class="page" id="page-presences">
-    <div class="top">
-      <h2>Présences & Absences</h2>
-      <button onclick="ouvrirModal('modal-absence')">+ Enregistrer absence</button>
+<!-- ═══════════════════════════════════════
+     MESSAGERIE  ★ JOUR 2 ★
+═══════════════════════════════════════ -->
+<div class="page" id="page-messages">
+  <div class="top">
+    <h2>Messagerie</h2>
+    <button onclick="ouvrirModal('modal-message')">+ Nouveau message</button>
+  </div>
+  <div class="msg-layout">
+    <!-- Liste messages -->
+    <div class="msg-list">
+      <div class="msg-list-header">
+        <span>Boîte de réception</span>
+        <span id="count-msgs" style="font-size:11px;color:#6b7280"></span>
+      </div>
+      <div id="msg-list-body">
+        <div class="loading">Chargement...</div>
+      </div>
     </div>
-    <table>
-      <tr><th>Étudiant</th><th>Matière</th><th>Date</th><th>Statut</th><th>Justification</th><th>Parent notifié</th></tr>
-      <tbody id="tbody-presences">
-        <tr><td colspan="6" class="loading">Chargement...</td></tr>
-      </tbody>
-    </table>
+    <!-- Détail message -->
+    <div class="msg-detail">
+      <div class="msg-detail-empty" id="msg-detail-empty">
+        ✉️ &nbsp; Sélectionnez un message pour le lire
+      </div>
+      <div id="msg-detail-content" style="display:none;flex-direction:column;height:100%;display:none;">
+        <div class="msg-detail-header">
+          <h3 id="msg-detail-objet">—</h3>
+          <div class="msg-detail-meta">
+            <span>De : <strong id="msg-detail-from">—</strong></span>
+            <span>Rôle : <span id="msg-detail-role">—</span></span>
+            <span id="msg-detail-date" style="margin-left:auto"></span>
+          </div>
+        </div>
+        <div class="msg-detail-body" id="msg-detail-body"></div>
+        <div class="msg-reply">
+          <input type="text" id="msg-reply-input" placeholder="Répondre à ce message...">
+          <button class="btn-sm btn-blue" onclick="envoyerReponse()">Envoyer</button>
+        </div>
+      </div>
+    </div>
   </div>
+</div>
 
-  <!-- PAGE : Notes -->
-  <div class="page" id="page-notes">
-    <div class="top"><h2>Notes & Bulletins</h2><button>+ Saisir notes</button></div>
-    <table>
-      <tr><th>Étudiant</th><th>Matière</th><th>Note /20</th><th>Coefficient</th><th>Période</th><th>Appréciation</th></tr>
-      <tr><td>Kossi Agbodjan</td><td>Algorithmique</td><td><strong>16/20</strong></td><td>3</td><td>S1</td><td><span class="badge green">Bien</span></td></tr>
-      <tr><td>Adjoavi Hountondji</td><td>Comptabilité</td><td><strong>14/20</strong></td><td>4</td><td>S1</td><td><span class="badge blue">Assez bien</span></td></tr>
-      <tr><td>Moussa Idrissou</td><td>Droit civil</td><td><strong>11/20</strong></td><td>3</td><td>S1</td><td><span class="badge amber">Passable</span></td></tr>
-      <tr><td>Blandine Ahounou</td><td>Anatomie</td><td><strong>18/20</strong></td><td>5</td><td>S1</td><td><span class="badge green">Très bien</span></td></tr>
-    </table>
-  </div>
-
-  <!-- PAGE : Messages -->
-  <div class="page" id="page-messages">
-    <div class="top"><h2>Messagerie</h2><button onclick="ouvrirModal('modal-message')">+ Nouveau message</button></div>
-    <div class="empty-state"><div class="icon">✉️</div><h3>Messagerie</h3><p>Les messages apparaîtront ici. Envoyez votre premier message !</p></div>
-  </div>
-
-  <!-- PAGE : Paiements -->
-  <div class="page" id="page-paiements">
-    <div class="top"><h2>Paiements</h2><button>+ Nouvelle facture</button></div>
-    <div class="empty-state"><div class="icon">💳</div><h3>Paiements</h3><p>Les factures et paiements seront affichés ici.</p></div>
-  </div>
-
-  <!-- PAGES simples -->
-  <div class="page" id="page-discipline">
-    <div class="top"><h2>Discipline</h2><button>+ Nouvel incident</button></div>
-    <div class="empty-state"><div class="icon">⚠️</div><h3>Discipline</h3><p>Aucun incident enregistré.</p></div>
-  </div>
-  <div class="page" id="page-emploi">
-    <div class="top"><h2>Emploi du temps</h2><button>+ Ajouter créneau</button></div>
-    <div class="empty-state"><div class="icon">📅</div><h3>Emploi du temps</h3><p>Les emplois du temps seront affichés ici.</p></div>
-  </div>
-  <div class="page" id="page-documents">
-    <div class="top"><h2>Documents</h2><button>+ Uploader</button></div>
-    <div class="empty-state"><div class="icon">📄</div><h3>Documents</h3><p>Les documents seront listés ici.</p></div>
-  </div>
-  <div class="page" id="page-rapports">
-    <div class="top"><h2>Rapports</h2><button>+ Générer</button></div>
-    <div class="empty-state"><div class="icon">📈</div><h3>Rapports</h3><p>Les rapports seront générés ici.</p></div>
-  </div>
+<!-- ═══════════════════════════════════════
+     AUTRES PAGES (squelettes)
+═══════════════════════════════════════ -->
+<div class="page" id="page-paiements">
+  <div class="top"><h2>Paiements</h2><button>+ Nouvelle facture</button></div>
+  <div class="empty-state"><div class="icon">💳</div><h3>Module Paiements</h3><p>Disponible au Jour 3 du chronogramme.</p></div>
+</div>
+<div class="page" id="page-discipline">
+  <div class="top"><h2>Discipline</h2><button>+ Nouvel incident</button></div>
+  <div class="empty-state"><div class="icon">⚠️</div><h3>Module Discipline</h3><p>Aucun incident enregistré.</p></div>
+</div>
+<div class="page" id="page-documents">
+  <div class="top"><h2>Documents</h2><button>+ Uploader</button></div>
+  <div class="empty-state"><div class="icon">📄</div><h3>Module Documents</h3><p>Disponible au Jour 3 du chronogramme.</p></div>
+</div>
+<div class="page" id="page-rapports">
+  <div class="top"><h2>Rapports</h2><button>+ Générer</button></div>
+  <div class="empty-state"><div class="icon">📈</div><h3>Module Rapports</h3><p>Disponible au Jour 3 du chronogramme.</p></div>
+</div>
 
 </main>
 
-<!-- MODAL : Envoyer annonce -->
+<!-- ═══════════════════════════════════════════
+     MODALS
+═══════════════════════════════════════════ -->
+
+<!-- Modal : Annonce -->
 <div class="modal-overlay" id="modal-annonce">
   <div class="modal">
     <h3>✉️ Envoyer une annonce</h3>
@@ -185,9 +522,7 @@ button:hover { background: #a86615; }
       <select><option>Tous les étudiants</option><option>L2 Informatique</option><option>L3 Gestion</option></select>
     </div>
     <div class="form-group"><label>Objet</label><input type="text" placeholder="Objet de l'annonce"></div>
-    <div class="form-group"><label>Message</label>
-      <textarea rows="4" placeholder="Écrivez votre message..."></textarea>
-    </div>
+    <div class="form-group"><label>Message</label><textarea rows="4" placeholder="Écrivez votre message..."></textarea></div>
     <div class="modal-footer">
       <button class="btn-secondary" onclick="fermerModal('modal-annonce')">Annuler</button>
       <button onclick="fermerModal('modal-annonce')">Envoyer</button>
@@ -195,7 +530,7 @@ button:hover { background: #a86615; }
   </div>
 </div>
 
-<!-- MODAL : Ajouter étudiant -->
+<!-- Modal : Étudiant -->
 <div class="modal-overlay" id="modal-etudiant">
   <div class="modal">
     <h3>👥 Ajouter un étudiant</h3>
@@ -213,11 +548,11 @@ button:hover { background: #a86615; }
         </select>
       </div>
       <div class="form-group"><label>Niveau *</label>
-        <select id="input-niveau">
-          <option>L1</option><option>L2</option><option>L3</option><option>M1</option><option>M2</option>
-        </select>
+        <select id="input-niveau"><option>L1</option><option>L2</option><option>L3</option><option>M1</option><option>M2</option></select>
       </div>
     </div>
+    <div class="form-group"><label>Email</label><input type="email" id="input-email" placeholder="email@etudiant.com"></div>
+    <div class="form-group"><label>Téléphone</label><input type="tel" id="input-telephone" placeholder="+229 XX XX XX XX"></div>
     <div class="modal-footer">
       <button class="btn-secondary" onclick="fermerModal('modal-etudiant')">Annuler</button>
       <button onclick="ajouterEtudiant()">Enregistrer</button>
@@ -225,22 +560,23 @@ button:hover { background: #a86615; }
   </div>
 </div>
 
-<!-- MODAL : Enregistrer absence -->
+<!-- Modal : Absence -->
 <div class="modal-overlay" id="modal-absence">
   <div class="modal">
     <h3>🚫 Enregistrer une absence</h3>
-    <div class="form-group"><label>Étudiant *</label>
-      <select id="input-absence-etudiant"></select>
-    </div>
+    <div class="form-group"><label>Étudiant *</label><select id="input-absence-etudiant"></select></div>
     <div class="form-group"><label>Matière *</label><input type="text" id="input-absence-matiere" placeholder="Ex: Algorithmique"></div>
-    <div class="form-group"><label>Date</label><input type="date" id="input-absence-date"></div>
-    <div class="form-group"><label>Statut</label>
-      <select id="input-absence-statut">
-        <option value="absent">Absent</option>
-        <option value="retard">Retard</option>
-        <option value="excuse">Excusé</option>
-      </select>
+    <div class="form-grid">
+      <div class="form-group"><label>Date</label><input type="date" id="input-absence-date"></div>
+      <div class="form-group"><label>Statut</label>
+        <select id="input-absence-statut">
+          <option value="absent">Absent</option>
+          <option value="retard">Retard</option>
+          <option value="excuse">Excusé</option>
+        </select>
+      </div>
     </div>
+    <div class="form-group"><label>Justification</label><textarea rows="2" id="input-absence-justification" placeholder="Motif (optionnel)..."></textarea></div>
     <div class="modal-footer">
       <button class="btn-secondary" onclick="fermerModal('modal-absence')">Annuler</button>
       <button onclick="enregistrerAbsence()">Enregistrer</button>
@@ -248,134 +584,342 @@ button:hover { background: #a86615; }
   </div>
 </div>
 
-<!-- MODAL : Message -->
-<div class="modal-overlay" id="modal-message">
+<!-- Modal : Note  ★ JOUR 2 ★ -->
+<div class="modal-overlay" id="modal-note">
   <div class="modal">
-    <h3>✉️ Nouveau message</h3>
-    <div class="form-group"><label>À</label><input type="text" placeholder="Destinataire"></div>
-    <div class="form-group"><label>Objet</label><input type="text" placeholder="Objet"></div>
-    <div class="form-group"><label>Message</label><textarea rows="4" placeholder="Votre message..."></textarea></div>
+    <h3>📊 Saisir une note</h3>
+    <div class="form-group"><label>Étudiant *</label><select id="input-note-etudiant"></select></div>
+    <div class="form-grid">
+      <div class="form-group"><label>Matière *</label><input type="text" id="input-note-matiere" placeholder="Ex: Algorithmique"></div>
+      <div class="form-group"><label>Période *</label>
+        <select id="input-note-periode">
+          <option value="S1">Semestre 1</option><option value="S2">Semestre 2</option>
+          <option value="T1">Trimestre 1</option><option value="T2">Trimestre 2</option><option value="T3">Trimestre 3</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Note /20 *</label><input type="number" id="input-note-valeur" min="0" max="20" step="0.25" placeholder="Ex: 14.5"></div>
+      <div class="form-group"><label>Coefficient</label><input type="number" id="input-note-coeff" min="1" max="10" value="2" placeholder="Ex: 3"></div>
+    </div>
+    <div class="form-group"><label>Commentaire</label><textarea rows="2" id="input-note-commentaire" placeholder="Appréciation du professeur (optionnel)..."></textarea></div>
     <div class="modal-footer">
-      <button class="btn-secondary" onclick="fermerModal('modal-message')">Annuler</button>
-      <button onclick="fermerModal('modal-message')">Envoyer</button>
+      <button class="btn-secondary" onclick="fermerModal('modal-note')">Annuler</button>
+      <button onclick="enregistrerNote()">Enregistrer</button>
     </div>
   </div>
 </div>
 
-<!-- Toast notification -->
+<!-- Modal : Emploi du temps  ★ JOUR 2 ★ -->
+<div class="modal-overlay" id="modal-emploi">
+  <div class="modal">
+    <h3>📅 Ajouter un créneau</h3>
+    <div class="form-grid">
+      <div class="form-group"><label>Jour *</label>
+        <select id="input-edt-jour">
+          <option value="Lundi">Lundi</option><option value="Mardi">Mardi</option>
+          <option value="Mercredi">Mercredi</option><option value="Jeudi">Jeudi</option>
+          <option value="Vendredi">Vendredi</option><option value="Samedi">Samedi</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Classe *</label>
+        <select id="input-edt-classe">
+          <option>L1 Informatique</option><option>L2 Informatique</option><option>L3 Informatique</option>
+          <option>L1 Gestion</option><option>L2 Gestion</option><option>L3 Gestion</option>
+          <option>M1</option><option>M2</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Heure début *</label>
+        <select id="input-edt-debut">
+          <option value="07:00">07:00</option><option value="08:00">08:00</option>
+          <option value="09:00">09:00</option><option value="10:00">10:00</option>
+          <option value="11:00">11:00</option><option value="12:00">12:00</option>
+          <option value="13:00">13:00</option><option value="14:00">14:00</option>
+          <option value="15:00">15:00</option><option value="16:00">16:00</option>
+          <option value="17:00">17:00</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Heure fin *</label>
+        <select id="input-edt-fin">
+          <option value="08:00">08:00</option><option value="09:00">09:00</option>
+          <option value="10:00">10:00</option><option value="11:00">11:00</option>
+          <option value="12:00">12:00</option><option value="13:00">13:00</option>
+          <option value="14:00">14:00</option><option value="15:00">15:00</option>
+          <option value="16:00">16:00</option><option value="17:00">17:00</option>
+          <option value="18:00">18:00</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><label>Matière *</label><input type="text" id="input-edt-matiere" placeholder="Ex: Algorithmique"></div>
+      <div class="form-group"><label>Professeur</label><input type="text" id="input-edt-prof" placeholder="Ex: Dr. Kossivi"></div>
+      <div class="form-group"><label>Salle</label><input type="text" id="input-edt-salle" placeholder="Ex: A101"></div>
+      <div class="form-group"><label>Type</label>
+        <select id="input-edt-type">
+          <option value="cours">Cours magistral</option>
+          <option value="td">Travaux dirigés</option>
+          <option value="tp">Travaux pratiques</option>
+          <option value="exam">Examen / Contrôle</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="fermerModal('modal-emploi')">Annuler</button>
+      <button onclick="ajouterCreneau()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal : Message  ★ JOUR 2 ★ -->
+<div class="modal-overlay" id="modal-message">
+  <div class="modal">
+    <h3>✉️ Nouveau message</h3>
+    <div class="form-group"><label>Destinataire *</label><input type="text" id="input-msg-destinataire" placeholder="Ex: M. Kossi AGBODJAN (Parent)"></div>
+    <div class="form-group"><label>Rôle destinataire</label>
+      <select id="input-msg-role">
+        <option value="parent">Parent d'élève</option>
+        <option value="etudiant">Étudiant</option>
+        <option value="professeur">Professeur</option>
+        <option value="administration">Administration</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Objet *</label><input type="text" id="input-msg-objet" placeholder="Objet du message"></div>
+    <div class="form-group"><label>Message *</label><textarea rows="5" id="input-msg-contenu" placeholder="Saisissez votre message..."></textarea></div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="fermerModal('modal-message')">Annuler</button>
+      <button onclick="envoyerMessage()">Envoyer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
 <div class="toast" id="toast"></div>
 
+<!-- ═══════════════════════════════════════════
+     JAVASCRIPT
+═══════════════════════════════════════════ -->
 <script>
-// ══════════════════════════════════════════════════════════
-// CONFIGURATION SUPABASE — REMPLACEZ CES 2 VALEURS
-// ══════════════════════════════════════════════════════════
+// ══ CONFIGURATION SUPABASE ══════════════════
 const SUPABASE_URL = 'https://wpexhfngdbagmgodgzzt.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_8e4xKWS3YpfwGFAQlZ7lgQ_9hDx8ljQ';
-// ══════════════════════════════════════════════════════════
-
 const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 
+// ══ ÉTAT GLOBAL ══════════════════════════════
+let currentEcoleId   = null;
+let tousLesEcoles    = [];
 let tousLesEtudiants = [];
+let toutesLesNotes   = [];
+let tousLesMessages  = [];
+let tousLesCreneaux  = [];
+let selectedMsgId    = null;
 
-// ── Navigation ──────────────────────────────────────────
-function showPage(pageName) {
-  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('nav a').forEach(a => a.classList.remove('on'));
-  document.getElementById('page-' + pageName).classList.add('active');
-  document.getElementById('nav-' + pageName).classList.add('on');
-  if (pageName === 'etudiants') chargerEtudiants();
-  if (pageName === 'presences') chargerAbsences();
-  if (pageName === 'dashboard') chargerDashboard();
+// ══ UTILITAIRES ══════════════════════════════
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  setTimeout(() => t.className = 'toast', 3500);
 }
 
-// ── Modals ──────────────────────────────────────────────
+function getAppreciation(note) {
+  if (note >= 16) return { label: 'Très bien', cls: 'green' };
+  if (note >= 14) return { label: 'Bien', cls: 'green' };
+  if (note >= 12) return { label: 'Assez bien', cls: 'blue' };
+  if (note >= 10) return { label: 'Passable', cls: 'amber' };
+  return { label: 'Insuffisant', cls: 'red' };
+}
+
+function fmtDate(d) {
+  if (!d) return '—';
+  return new Date(d).toLocaleDateString('fr-FR');
+}
+
+function fmtDateTime(d) {
+  if (!d) return '—';
+  const dt = new Date(d);
+  return dt.toLocaleDateString('fr-FR') + ' à ' + dt.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+}
+
+// ══ NAVIGATION ═══════════════════════════════
+function showPage(p) {
+  document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
+  document.querySelectorAll('nav a').forEach(x => x.classList.remove('on'));
+  document.getElementById('page-' + p).classList.add('active');
+  document.getElementById('nav-' + p).classList.add('on');
+  const loaders = {
+    dashboard: chargerDashboard,
+    etudiants: chargerEtudiants,
+    presences:  chargerAbsences,
+    notes:      () => { chargerNotes(); remplirSelectBulletin(); },
+    messages:   chargerMessages,
+    emploi:     chargerEmploiDuTemps,
+  };
+  if (loaders[p]) loaders[p]();
+}
+
+// Tabs (Notes)
+function showTab(page, tabId) {
+  const tabs = { notes: ['tab-saisie', 'tab-bulletins'] };
+  const btns = { notes: ['tab-saisie-btn', 'tab-bulletins-btn'] };
+  tabs[page].forEach(id => document.getElementById(id).style.display = 'none');
+  btns[page].forEach(id => document.getElementById(id).classList.remove('active'));
+  document.getElementById(tabId).style.display = 'block';
+  document.getElementById(tabId + '-btn').classList.add('active');
+  if (tabId === 'tab-bulletins') remplirSelectBulletin();
+}
+
+// ══ MODALS ════════════════════════════════════
 function ouvrirModal(id) {
   document.getElementById(id).classList.add('open');
-  if (id === 'modal-absence') remplirSelectEtudiants();
+  if (id === 'modal-absence') remplirSelectEtudiants('input-absence-etudiant');
+  if (id === 'modal-note')    remplirSelectEtudiants('input-note-etudiant');
 }
 function fermerModal(id) { document.getElementById(id).classList.remove('open'); }
 document.querySelectorAll('.modal-overlay').forEach(o => {
   o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); });
 });
 
-// ── Toast ────────────────────────────────────────────────
-function showToast(msg, type = '') {
-  const t = document.getElementById('toast');
-  t.textContent = msg;
-  t.className = 'toast show ' + type;
-  setTimeout(() => t.className = 'toast', 3000);
-}
+// ══ MULTI-ÉTABLISSEMENTS ══════════════════════
+async function chargerEcoles() {
+  const { data } = await db.from('ecoles').select('*').order('nom');
+  tousLesEcoles = data || [];
 
-// ── Dashboard ────────────────────────────────────────────
-async function chargerDashboard() {
-  const { count: nbEtudiants } = await db.from('etudiants').select('*', { count: 'exact', head: true });
-  document.getElementById('stat-etudiants').textContent = nbEtudiants || 0;
-
-  const today = new Date().toISOString().split('T')[0];
-  const { count: nbAbsences } = await db.from('absences').select('*', { count: 'exact', head: true }).eq('date_absence', today);
-  document.getElementById('stat-absences').textContent = nbAbsences || 0;
-
-  const { data: absences } = await db.from('absences')
-    .select('*, etudiants(nom, prenom)')
-    .order('created_at', { ascending: false })
-    .limit(5);
-
-  const tbody = document.getElementById('tbody-absences-dashboard');
-  if (!absences || absences.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="5" class="loading">Aucune absence enregistrée.</td></tr>';
-    return;
+  const sel = document.getElementById('ecole-selector');
+  if (tousLesEcoles.length > 0) {
+    sel.innerHTML = tousLesEcoles.map(e =>
+      `<option value="${e.id}">${e.nom}</option>`).join('');
+    currentEcoleId = tousLesEcoles[0].id;
+    mettreAJourBadgeEcole(tousLesEcoles[0]);
+    chargerDashboard();
+  } else {
+    // fallback : tenter de créer une école par défaut si aucune
+    sel.innerHTML = '<option value="">Aucun établissement</option>';
+    chargerDashboard();
   }
-  tbody.innerHTML = absences.map(a => `
-    <tr>
-      <td>${a.etudiants ? a.etudiants.nom + ' ' + a.etudiants.prenom : 'N/A'}</td>
-      <td>${a.matiere}</td>
-      <td>${new Date(a.date_absence).toLocaleDateString('fr-FR')}</td>
-      <td><span class="badge ${a.statut === 'absent' ? 'red' : a.statut === 'retard' ? 'amber' : 'blue'}">${a.statut}</span></td>
-      <td><span class="badge ${a.parent_notifie ? 'green' : 'amber'}">${a.parent_notifie ? '✓ Notifié' : 'En attente'}</span></td>
-    </tr>`).join('');
 }
 
-// ── Étudiants ────────────────────────────────────────────
+function changerEcole() {
+  const sel = document.getElementById('ecole-selector');
+  currentEcoleId = sel.value;
+  const ecole = tousLesEcoles.find(e => e.id === currentEcoleId);
+  mettreAJourBadgeEcole(ecole);
+  chargerDashboard();
+  tousLesEtudiants = [];
+  showToast('Établissement : ' + (ecole?.nom || ''), 'info');
+  // Recharger la page active
+  const active = document.querySelector('.page.active');
+  if (active) {
+    const pageName = active.id.replace('page-', '');
+    const reloaders = { etudiants: chargerEtudiants, presences: chargerAbsences, notes: chargerNotes, messages: chargerMessages, emploi: chargerEmploiDuTemps };
+    if (reloaders[pageName]) reloaders[pageName]();
+  }
+}
+
+function mettreAJourBadgeEcole(ecole) {
+  if (!ecole) return;
+  document.getElementById('ecole-nom-nav').textContent = ecole.nom || 'EduLink';
+  document.getElementById('ecole-type-nav').textContent = ecole.type || 'Établissement';
+  document.title = 'EduLink — ' + ecole.nom;
+}
+
+// ══ DASHBOARD ════════════════════════════════
+async function chargerDashboard() {
+  // Stats étudiants
+  const q1 = currentEcoleId
+    ? db.from('etudiants').select('*', { count:'exact', head:true }).eq('ecole_id', currentEcoleId)
+    : db.from('etudiants').select('*', { count:'exact', head:true });
+  const { count: nb } = await q1;
+  document.getElementById('stat-etudiants').textContent = nb || 0;
+
+  // Stats absences aujourd'hui
+  const today = new Date().toISOString().split('T')[0];
+  let qAbs = db.from('absences').select('*', { count:'exact', head:true }).eq('date_absence', today);
+  const { count: nbAbs } = await qAbs;
+  document.getElementById('stat-absences').textContent = nbAbs || 0;
+
+  // Stats notes
+  let qNotes = db.from('notes').select('*', { count:'exact', head:true });
+  if (currentEcoleId) qNotes = qNotes.eq('ecole_id', currentEcoleId);
+  const { count: nbNotes } = await qNotes;
+  document.getElementById('stat-notes').textContent = nbNotes || 0;
+
+  // Stats messages non lus
+  let qMsg = db.from('messages').select('*', { count:'exact', head:true }).eq('lu', false);
+  if (currentEcoleId) qMsg = qMsg.eq('ecole_id', currentEcoleId);
+  const { count: nbMsg } = await qMsg;
+  document.getElementById('stat-msgs').textContent = nbMsg || 0;
+  // Badge nav
+  const badgeMsg = document.getElementById('badge-msg');
+  if (nbMsg > 0) { badgeMsg.textContent = nbMsg; badgeMsg.style.display = 'inline'; }
+  else badgeMsg.style.display = 'none';
+
+  // Tableau absences récentes
+  const { data: absences } = await db.from('absences')
+    .select('*, etudiants(nom, prenom)').order('created_at', { ascending:false }).limit(5);
+  const tA = document.getElementById('tbody-absences-dashboard');
+  tA.innerHTML = (absences?.length)
+    ? absences.map(a => `<tr>
+        <td>${a.etudiants ? a.etudiants.nom+' '+a.etudiants.prenom : 'N/A'}</td>
+        <td>${a.matiere}</td>
+        <td>${fmtDate(a.date_absence)}</td>
+        <td><span class="badge ${a.statut==='absent'?'red':a.statut==='retard'?'amber':'blue'}">${a.statut}</span></td>
+      </tr>`).join('')
+    : '<tr><td colspan="4" class="loading">Aucune absence.</td></tr>';
+
+  // Tableau notes récentes
+  let qN = db.from('notes').select('*, etudiants(nom, prenom)').order('created_at', { ascending:false }).limit(5);
+  if (currentEcoleId) qN = qN.eq('ecole_id', currentEcoleId);
+  const { data: notesRecentes } = await qN;
+  const tN = document.getElementById('tbody-notes-dashboard');
+  tN.innerHTML = (notesRecentes?.length)
+    ? notesRecentes.map(n => {
+        const app = getAppreciation(n.note);
+        return `<tr>
+          <td>${n.etudiants ? n.etudiants.nom+' '+n.etudiants.prenom : 'N/A'}</td>
+          <td>${n.matiere}</td>
+          <td><strong>${n.note}/20</strong></td>
+          <td><span class="badge ${app.cls}">${app.label}</span></td>
+        </tr>`;
+      }).join('')
+    : '<tr><td colspan="4" class="loading">Aucune note.</td></tr>';
+
+  // Subtitle
+  const ecole = tousLesEcoles.find(e => e.id === currentEcoleId);
+  if (ecole) document.getElementById('dash-subtitle').textContent = 'Vue générale — ' + ecole.nom;
+}
+
+// ══ ÉTUDIANTS ════════════════════════════════
 async function chargerEtudiants() {
   const tbody = document.getElementById('tbody-etudiants');
   tbody.innerHTML = '<tr><td colspan="6" class="loading">Chargement...</td></tr>';
-
-  const { data, error } = await db.from('etudiants').select('*').order('nom');
+  let q = db.from('etudiants').select('*').order('nom');
+  if (currentEcoleId) q = q.eq('ecole_id', currentEcoleId);
+  const { data, error } = await q;
   if (error) { tbody.innerHTML = '<tr><td colspan="6" class="loading">Erreur de chargement.</td></tr>'; return; }
-
   tousLesEtudiants = data || [];
   afficherEtudiants(tousLesEtudiants);
 }
 
 function afficherEtudiants(liste) {
   const tbody = document.getElementById('tbody-etudiants');
-  if (!liste || liste.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="6" class="loading">Aucun étudiant trouvé.</td></tr>';
-    return;
-  }
+  if (!liste?.length) { tbody.innerHTML = '<tr><td colspan="6" class="loading">Aucun étudiant.</td></tr>'; return; }
   tbody.innerHTML = liste.map(e => `
     <tr>
-      <td>${e.matricule}</td>
-      <td>${e.nom} ${e.prenom}</td>
+      <td><code style="background:#f3f4f6;padding:2px 6px;border-radius:4px;font-size:11px">${e.matricule}</code></td>
+      <td><strong>${e.nom} ${e.prenom}</strong></td>
       <td>${e.filiere}</td>
-      <td>${e.niveau}</td>
-      <td><span class="badge ${e.statut === 'actif' ? 'green' : 'amber'}">${e.statut}</span></td>
+      <td><span class="badge gray">${e.niveau}</span></td>
+      <td><span class="badge ${e.statut==='actif'?'green':'amber'}">${e.statut}</span></td>
       <td><button class="btn-sm btn-blue" onclick="voirEtudiant('${e.id}')">Voir</button></td>
     </tr>`).join('');
 }
 
 function filtrerEtudiants() {
   const q = document.getElementById('search-etudiants').value.toLowerCase();
-  const filtrés = tousLesEtudiants.filter(e =>
-    e.nom.toLowerCase().includes(q) ||
-    e.prenom.toLowerCase().includes(q) ||
-    e.matricule.toLowerCase().includes(q)
-  );
-  afficherEtudiants(filtrés);
+  afficherEtudiants(tousLesEtudiants.filter(e =>
+    e.nom.toLowerCase().includes(q) || e.prenom.toLowerCase().includes(q) || e.matricule.toLowerCase().includes(q)));
 }
 
-function voirEtudiant(id) { showToast('Fiche étudiant — bientôt disponible', 'success'); }
+function voirEtudiant(id) { showToast('Fiche détaillée — bientôt disponible', 'info'); }
 
 async function ajouterEtudiant() {
   const nom      = document.getElementById('input-nom').value.trim();
@@ -384,85 +928,414 @@ async function ajouterEtudiant() {
   const sexe     = document.getElementById('input-sexe').value;
   const filiere  = document.getElementById('input-filiere').value;
   const niveau   = document.getElementById('input-niveau').value;
-
+  const email    = document.getElementById('input-email').value.trim();
+  const telephone= document.getElementById('input-telephone').value.trim();
   if (!nom || !prenom || !matricule) { showToast('Remplissez les champs obligatoires (*)', 'error'); return; }
-
-  const { data: ecole } = await db.from('ecoles').select('id').limit(1).single();
-
   const { error } = await db.from('etudiants').insert([{
-    ecole_id: ecole?.id, nom, prenom, matricule, sexe, filiere, niveau, statut: 'actif'
+    ecole_id: currentEcoleId, nom, prenom, matricule, sexe, filiere, niveau, email, telephone, statut:'actif'
   }]);
-
-  if (error) {
-    showToast('Erreur : ' + (error.message.includes('unique') ? 'Ce matricule existe déjà.' : error.message), 'error');
-    return;
-  }
-
+  if (error) { showToast('Erreur : ' + (error.message.includes('unique') ? 'Ce matricule existe déjà.' : error.message), 'error'); return; }
   fermerModal('modal-etudiant');
-  document.getElementById('input-nom').value = '';
-  document.getElementById('input-prenom').value = '';
-  document.getElementById('input-matricule').value = '';
+  ['input-nom','input-prenom','input-matricule','input-email','input-telephone'].forEach(id => document.getElementById(id).value='');
   showToast('Étudiant ajouté avec succès !', 'success');
-  chargerEtudiants();
-  chargerDashboard();
+  chargerEtudiants(); chargerDashboard();
 }
 
-// ── Absences ─────────────────────────────────────────────
+// ══ ABSENCES ══════════════════════════════════
 async function chargerAbsences() {
   const tbody = document.getElementById('tbody-presences');
   tbody.innerHTML = '<tr><td colspan="6" class="loading">Chargement...</td></tr>';
-
-  const { data, error } = await db.from('absences')
-    .select('*, etudiants(nom, prenom)')
-    .order('created_at', { ascending: false });
-
-  if (!data || data.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="6" class="loading">Aucune absence enregistrée.</td></tr>';
-    return;
-  }
+  let q = db.from('absences').select('*, etudiants(nom, prenom)').order('created_at', { ascending:false });
+  const filtStatut = document.getElementById('filter-absence-statut')?.value;
+  const filtDate   = document.getElementById('filter-absence-date')?.value;
+  if (filtStatut) q = q.eq('statut', filtStatut);
+  if (filtDate)   q = q.eq('date_absence', filtDate);
+  const { data } = await q;
+  if (!data?.length) { tbody.innerHTML = '<tr><td colspan="6" class="loading">Aucune absence.</td></tr>'; return; }
   tbody.innerHTML = data.map(a => `
     <tr>
-      <td>${a.etudiants ? a.etudiants.nom + ' ' + a.etudiants.prenom : 'N/A'}</td>
+      <td>${a.etudiants ? a.etudiants.nom+' '+a.etudiants.prenom : 'N/A'}</td>
       <td>${a.matiere}</td>
-      <td>${new Date(a.date_absence).toLocaleDateString('fr-FR')}</td>
-      <td><span class="badge ${a.statut === 'absent' ? 'red' : a.statut === 'retard' ? 'amber' : 'blue'}">${a.statut}</span></td>
+      <td>${fmtDate(a.date_absence)}</td>
+      <td><span class="badge ${a.statut==='absent'?'red':a.statut==='retard'?'amber':'blue'}">${a.statut}</span></td>
       <td>${a.justification || '—'}</td>
-      <td><span class="badge ${a.parent_notifie ? 'green' : 'amber'}">${a.parent_notifie ? '✓ Notifié' : 'En attente'}</span></td>
+      <td><span class="badge ${a.parent_notifie?'green':'amber'}">${a.parent_notifie?'✓ Notifié':'En attente'}</span></td>
     </tr>`).join('');
 }
 
-async function remplirSelectEtudiants() {
-  const sel = document.getElementById('input-absence-etudiant');
+async function remplirSelectEtudiants(selectId) {
+  const sel = document.getElementById(selectId);
   if (tousLesEtudiants.length === 0) {
-    const { data } = await db.from('etudiants').select('id, nom, prenom').order('nom');
+    let q = db.from('etudiants').select('id, nom, prenom').order('nom');
+    if (currentEcoleId) q = q.eq('ecole_id', currentEcoleId);
+    const { data } = await q;
     tousLesEtudiants = data || [];
   }
-  sel.innerHTML = tousLesEtudiants.map(e =>
-    `<option value="${e.id}">${e.nom} ${e.prenom}</option>`).join('');
-  document.getElementById('input-absence-date').value = new Date().toISOString().split('T')[0];
+  sel.innerHTML = tousLesEtudiants.map(e => `<option value="${e.id}">${e.nom} ${e.prenom}</option>`).join('');
+  if (selectId === 'input-absence-etudiant')
+    document.getElementById('input-absence-date').value = new Date().toISOString().split('T')[0];
 }
 
 async function enregistrerAbsence() {
-  const etudiant_id = document.getElementById('input-absence-etudiant').value;
-  const matiere     = document.getElementById('input-absence-matiere').value.trim();
-  const date_absence= document.getElementById('input-absence-date').value;
-  const statut      = document.getElementById('input-absence-statut').value;
-
+  const etudiant_id   = document.getElementById('input-absence-etudiant').value;
+  const matiere       = document.getElementById('input-absence-matiere').value.trim();
+  const date_absence  = document.getElementById('input-absence-date').value;
+  const statut        = document.getElementById('input-absence-statut').value;
+  const justification = document.getElementById('input-absence-justification').value.trim();
   if (!matiere) { showToast('Entrez le nom de la matière.', 'error'); return; }
-
-  const { error } = await db.from('absences').insert([{ etudiant_id, matiere, date_absence, statut }]);
+  const { error } = await db.from('absences').insert([{ etudiant_id, matiere, date_absence, statut, justification }]);
   if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
-
   fermerModal('modal-absence');
   document.getElementById('input-absence-matiere').value = '';
+  document.getElementById('input-absence-justification').value = '';
   showToast('Absence enregistrée !', 'success');
-  chargerAbsences();
-  chargerDashboard();
+  chargerAbsences(); chargerDashboard();
 }
 
-// ── Chargement initial ────────────────────────────────────
-chargerDashboard();
-</script>
+// ══ NOTES & BULLETINS  ════════════════════════
+async function chargerNotes() {
+  const tbody = document.getElementById('tbody-notes');
+  tbody.innerHTML = '<tr><td colspan="7" class="loading">Chargement...</td></tr>';
+  let q = db.from('notes').select('*, etudiants(nom, prenom)').order('created_at', { ascending:false });
+  if (currentEcoleId) q = q.eq('ecole_id', currentEcoleId);
+  const filtPeriode  = document.getElementById('filter-notes-periode')?.value;
+  const filtMatiere  = document.getElementById('filter-notes-matiere')?.value;
+  if (filtPeriode) q = q.eq('periode', filtPeriode);
+  if (filtMatiere) q = q.eq('matiere', filtMatiere);
+  const { data, error } = await q;
+  toutesLesNotes = data || [];
+  if (!toutesLesNotes.length) {
+    tbody.innerHTML = '<tr><td colspan="7" class="loading">Aucune note enregistrée.</td></tr>';
+    return;
+  }
+  // Mettre à jour le filtre matières
+  const matieres = [...new Set(toutesLesNotes.map(n => n.matiere))].sort();
+  const filtMat = document.getElementById('filter-notes-matiere');
+  const curVal = filtMat.value;
+  filtMat.innerHTML = '<option value="">Toutes les matières</option>' +
+    matieres.map(m => `<option value="${m}" ${curVal===m?'selected':''}>${m}</option>`).join('');
 
+  tbody.innerHTML = toutesLesNotes.map(n => {
+    const app = getAppreciation(n.note);
+    return `<tr>
+      <td>${n.etudiants ? n.etudiants.nom+' '+n.etudiants.prenom : 'N/A'}</td>
+      <td>${n.matiere}</td>
+      <td><span class="note-badge ${app.cls}">${n.note}/20</span></td>
+      <td>${n.coefficient || 1}</td>
+      <td><span class="badge gray">${n.periode}</span></td>
+      <td><span class="badge ${app.cls}">${app.label}</span></td>
+      <td>
+        <button class="btn-sm btn-red" onclick="supprimerNote('${n.id}')">✕</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+async function enregistrerNote() {
+  const etudiant_id  = document.getElementById('input-note-etudiant').value;
+  const matiere      = document.getElementById('input-note-matiere').value.trim();
+  const note         = parseFloat(document.getElementById('input-note-valeur').value);
+  const coefficient  = parseInt(document.getElementById('input-note-coeff').value) || 2;
+  const periode      = document.getElementById('input-note-periode').value;
+  const commentaire  = document.getElementById('input-note-commentaire').value.trim();
+  if (!matiere || isNaN(note)) { showToast('Remplissez matière et note.', 'error'); return; }
+  if (note < 0 || note > 20)   { showToast('La note doit être entre 0 et 20.', 'error'); return; }
+  const { error } = await db.from('notes').insert([{
+    ecole_id: currentEcoleId, etudiant_id, matiere, note, coefficient, periode, commentaire
+  }]);
+  if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
+  fermerModal('modal-note');
+  ['input-note-matiere','input-note-valeur','input-note-commentaire'].forEach(id => document.getElementById(id).value='');
+  document.getElementById('input-note-coeff').value = '2';
+  showToast('Note enregistrée !', 'success');
+  chargerNotes(); chargerDashboard();
+}
+
+async function supprimerNote(id) {
+  if (!confirm('Supprimer cette note ?')) return;
+  const { error } = await db.from('notes').delete().eq('id', id);
+  if (error) { showToast('Erreur suppression.', 'error'); return; }
+  showToast('Note supprimée.', 'success');
+  chargerNotes(); chargerDashboard();
+}
+
+// ── Bulletins ────────────────────────────────
+async function remplirSelectBulletin() {
+  if (tousLesEtudiants.length === 0) {
+    let q = db.from('etudiants').select('id, nom, prenom').order('nom');
+    if (currentEcoleId) q = q.eq('ecole_id', currentEcoleId);
+    const { data } = await q;
+    tousLesEtudiants = data || [];
+  }
+  const sel = document.getElementById('select-bulletin-etudiant');
+  sel.innerHTML = '<option value="">— Sélectionner un étudiant —</option>' +
+    tousLesEtudiants.map(e => `<option value="${e.id}">${e.nom} ${e.prenom}</option>`).join('');
+}
+
+async function chargerBulletin() {
+  const etudiantId = document.getElementById('select-bulletin-etudiant').value;
+  const periode    = document.getElementById('select-bulletin-periode').value;
+  const container  = document.getElementById('bulletin-container');
+  if (!etudiantId) {
+    container.innerHTML = '<div class="empty-state"><div class="icon">📄</div><h3>Sélectionnez un étudiant</h3></div>';
+    return;
+  }
+  container.innerHTML = '<div class="loading">Génération du bulletin...</div>';
+  const { data: notes } = await db.from('notes')
+    .select('*').eq('etudiant_id', etudiantId).eq('periode', periode);
+  const etudiant = tousLesEtudiants.find(e => e.id === etudiantId);
+  if (!notes?.length) {
+    container.innerHTML = '<div class="empty-state"><div class="icon">📭</div><h3>Aucune note</h3><p>Aucune note pour cette période.</p></div>';
+    return;
+  }
+  // Calcul moyenne
+  let totalPts = 0, totalCoeff = 0;
+  notes.forEach(n => { totalPts += n.note * (n.coefficient || 1); totalCoeff += (n.coefficient || 1); });
+  const moyenne = totalCoeff > 0 ? (totalPts / totalCoeff) : 0;
+  const app = getAppreciation(moyenne);
+  const rang = '—'; // Calculable avec plus de données
+  container.innerHTML = `
+    <div class="bulletin-wrap" id="bulletin-print">
+      <div class="bulletin-header">
+        <h3>Bulletin de Notes — ${etudiant?.nom || ''} ${etudiant?.prenom || ''}</h3>
+        <p>${periode} · Édité le ${new Date().toLocaleDateString('fr-FR')}</p>
+      </div>
+      <div class="bulletin-stats">
+        <div class="bstat"><div class="val">${moyenne.toFixed(2)}/20</div><div class="lbl">Moyenne générale</div></div>
+        <div class="bstat"><div class="val">${notes.length}</div><div class="lbl">Matières évaluées</div></div>
+        <div class="bstat"><div class="val"><span class="badge ${app.cls}">${app.label}</span></div><div class="lbl">Mention</div></div>
+      </div>
+      <table>
+        <tr><th>Matière</th><th>Note /20</th><th>Coefficient</th><th>Points (Note × Coeff)</th><th>Appréciation</th></tr>
+        ${notes.map(n => {
+          const a = getAppreciation(n.note);
+          return `<tr>
+            <td>${n.matiere}</td>
+            <td><strong>${n.note}/20</strong></td>
+            <td>${n.coefficient || 1}</td>
+            <td>${(n.note * (n.coefficient || 1)).toFixed(2)}</td>
+            <td><span class="badge ${a.cls}">${a.label}</span></td>
+          </tr>`;
+        }).join('')}
+        <tr style="background:#f9fafb;font-weight:700">
+          <td>MOYENNE GÉNÉRALE</td>
+          <td><strong style="color:#1e3a5f;font-size:15px">${moyenne.toFixed(2)}/20</strong></td>
+          <td>${totalCoeff}</td>
+          <td>${totalPts.toFixed(2)}</td>
+          <td><span class="badge ${app.cls}">${app.label}</span></td>
+        </tr>
+      </table>
+    </div>`;
+}
+
+function imprimerBulletin() {
+  const el = document.getElementById('bulletin-print');
+  if (!el) { showToast('Générez d\'abord un bulletin.', 'error'); return; }
+  const w = window.open('', '_blank');
+  w.document.write(`<html><head><title>Bulletin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+      * { font-family:'Poppins',sans-serif; margin:0; box-sizing:border-box; }
+      body { padding: 2rem; }
+      table { width:100%; border-collapse:collapse; margin-top:1rem; }
+      th,td { border:1px solid #e5e7eb; padding:8px 12px; font-size:12px; }
+      th { background:#f3f4f6; font-weight:700; }
+      .bulletin-header { background:#1e3a5f; color:#fff; padding:1rem; border-radius:8px; margin-bottom:1rem; }
+      .badge { padding:2px 8px; border-radius:20px; font-size:11px; font-weight:600; }
+      .green { background:#dcfce7; color:#059669; }
+      .blue  { background:#dbeafe; color:#1d4ed8; }
+      .amber { background:#fef9c3; color:#d97706; }
+      .red   { background:#fee2e2; color:#dc2626; }
+    </style></head><body>${el.outerHTML}</body></html>`);
+  w.document.close(); w.print();
+}
+
+// ══ MESSAGERIE  ═══════════════════════════════
+async function chargerMessages() {
+  const body = document.getElementById('msg-list-body');
+  body.innerHTML = '<div class="loading">Chargement...</div>';
+  let q = db.from('messages').select('*').order('created_at', { ascending:false });
+  if (currentEcoleId) q = q.eq('ecole_id', currentEcoleId);
+  const { data } = await q;
+  tousLesMessages = data || [];
+  document.getElementById('count-msgs').textContent = tousLesMessages.length + ' message(s)';
+  if (!tousLesMessages.length) {
+    body.innerHTML = '<div class="empty-state" style="padding:2rem"><div class="icon">📭</div><p style="font-size:12px">Aucun message</p></div>';
+    return;
+  }
+  body.innerHTML = tousLesMessages.map(m => `
+    <div class="msg-item ${m.lu?'':'unread'} ${m.id===selectedMsgId?'selected':''}" onclick="lireMessage('${m.id}')">
+      <span class="msg-date">${fmtDate(m.created_at)}</span>
+      <div class="msg-sender">${m.expediteur_nom || 'Inconnu'}</div>
+      <div class="msg-subject">${m.objet}</div>
+      <div class="msg-preview">${(m.contenu || '').substring(0,60)}…</div>
+    </div>`).join('');
+  // Compter non lus
+  const nonLus = tousLesMessages.filter(m => !m.lu).length;
+  const badge = document.getElementById('badge-msg');
+  if (nonLus > 0) { badge.textContent = nonLus; badge.style.display = 'inline'; }
+  else badge.style.display = 'none';
+}
+
+async function lireMessage(id) {
+  selectedMsgId = id;
+  const msg = tousLesMessages.find(m => m.id === id);
+  if (!msg) return;
+  // Marquer comme lu
+  if (!msg.lu) {
+    await db.from('messages').update({ lu:true }).eq('id', id);
+    msg.lu = true;
+    chargerMessages();
+    chargerDashboard();
+  }
+  document.getElementById('msg-detail-empty').style.display = 'none';
+  const detail = document.getElementById('msg-detail-content');
+  detail.style.display = 'flex';
+  document.getElementById('msg-detail-objet').textContent = msg.objet;
+  document.getElementById('msg-detail-from').textContent = msg.expediteur_nom || 'Inconnu';
+  document.getElementById('msg-detail-role').innerHTML = `<span class="badge blue">${msg.expediteur_role || '—'}</span>`;
+  document.getElementById('msg-detail-date').textContent = fmtDateTime(msg.created_at);
+  document.getElementById('msg-detail-body').textContent = msg.contenu || '';
+  document.getElementById('msg-reply-input').dataset.replyTo = id;
+}
+
+async function envoyerMessage() {
+  const destinataire = document.getElementById('input-msg-destinataire').value.trim();
+  const role         = document.getElementById('input-msg-role').value;
+  const objet        = document.getElementById('input-msg-objet').value.trim();
+  const contenu      = document.getElementById('input-msg-contenu').value.trim();
+  if (!destinataire || !objet || !contenu) { showToast('Remplissez tous les champs.', 'error'); return; }
+  const { error } = await db.from('messages').insert([{
+    ecole_id: currentEcoleId,
+    expediteur_nom: 'Administration',
+    expediteur_role: 'admin',
+    destinataire_nom: destinataire,
+    destinataire_role: role,
+    objet, contenu, lu: true
+  }]);
+  if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
+  fermerModal('modal-message');
+  ['input-msg-destinataire','input-msg-objet','input-msg-contenu'].forEach(id => document.getElementById(id).value='');
+  showToast('Message envoyé !', 'success');
+  chargerMessages();
+}
+
+async function envoyerReponse() {
+  const input = document.getElementById('msg-reply-input');
+  const contenu = input.value.trim();
+  if (!contenu) return;
+  const msgOriginal = tousLesMessages.find(m => m.id === selectedMsgId);
+  const { error } = await db.from('messages').insert([{
+    ecole_id: currentEcoleId,
+    expediteur_nom: 'Administration',
+    expediteur_role: 'admin',
+    destinataire_nom: msgOriginal?.expediteur_nom || '',
+    destinataire_role: msgOriginal?.expediteur_role || '',
+    objet: 'RE: ' + (msgOriginal?.objet || ''),
+    contenu, lu: true
+  }]);
+  if (error) { showToast('Erreur envoi.', 'error'); return; }
+  input.value = '';
+  showToast('Réponse envoyée !', 'success');
+  chargerMessages();
+}
+
+// ══ EMPLOI DU TEMPS  ══════════════════════════
+const JOURS = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+const HEURES = ['07:00','08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00'];
+const TYPE_COLORS = { cours:'blue', td:'green', tp:'purple', exam:'amber' };
+
+async function chargerEmploiDuTemps() {
+  const classe = document.getElementById('edt-filter-classe')?.value;
+  let q = db.from('emploi_du_temps').select('*').order('heure_debut');
+  if (currentEcoleId) q = q.eq('ecole_id', currentEcoleId);
+  if (classe) q = q.eq('classe', classe);
+  const { data } = await q;
+  tousLesCreneaux = data || [];
+  renderGrilleEDT();
+}
+
+function renderGrilleEDT() {
+  const table = document.getElementById('edt-table');
+  // Index des créneaux par clé "jour|heure"
+  const index = {};
+  tousLesCreneaux.forEach(c => {
+    const key = c.jour + '|' + c.heure_debut;
+    if (!index[key]) index[key] = [];
+    index[key].push(c);
+  });
+
+  // Générer lignes
+  let rowsHtml = '';
+  HEURES.forEach((h, i) => {
+    const hNext = HEURES[i+1] || '18:00';
+    let cells = `<td>${h}</td>`;
+    JOURS.forEach(j => {
+      const key = j + '|' + h;
+      const slots = index[key] || [];
+      if (slots.length > 0) {
+        cells += `<td>${slots.map(s => {
+          const color = TYPE_COLORS[s.type] || 'blue';
+          return `<div class="edt-slot edt-slot-${color}" onclick="supprimerCreneau('${s.id}','${j}','${h}')">
+            <div class="s-mat">${s.matiere}</div>
+            ${s.professeur?`<div class="s-prof">${s.professeur}</div>`:''}
+            ${s.salle?`<div class="s-salle">📍 ${s.salle}</div>`:''}
+          </div>`;
+        }).join('')}</td>`;
+      } else {
+        cells += `<td><button class="edt-add-btn" title="Ajouter" onclick="ouvrirEdtAvec('${j}','${h}')">+</button></td>`;
+      }
+    });
+    rowsHtml += `<tr>${cells}</tr>`;
+  });
+
+  // Garder l'en-tête, remplacer les lignes
+  const headerRow = table.querySelector('tr');
+  table.innerHTML = '';
+  table.appendChild(headerRow);
+  table.insertAdjacentHTML('beforeend', rowsHtml);
+}
+
+function ouvrirEdtAvec(jour, heure) {
+  ouvrirModal('modal-emploi');
+  document.getElementById('input-edt-jour').value = jour;
+  document.getElementById('input-edt-debut').value = heure;
+  // Calculer fin automatiquement
+  const idx = HEURES.indexOf(heure);
+  const fin = HEURES[idx+1] || '18:00';
+  document.getElementById('input-edt-fin').value = fin;
+}
+
+async function ajouterCreneau() {
+  const jour        = document.getElementById('input-edt-jour').value;
+  const classe      = document.getElementById('input-edt-classe').value;
+  const heure_debut = document.getElementById('input-edt-debut').value;
+  const heure_fin   = document.getElementById('input-edt-fin').value;
+  const matiere     = document.getElementById('input-edt-matiere').value.trim();
+  const professeur  = document.getElementById('input-edt-prof').value.trim();
+  const salle       = document.getElementById('input-edt-salle').value.trim();
+  const type        = document.getElementById('input-edt-type').value;
+  if (!matiere) { showToast('Entrez le nom de la matière.', 'error'); return; }
+  const { error } = await db.from('emploi_du_temps').insert([{
+    ecole_id: currentEcoleId, jour, classe, heure_debut, heure_fin, matiere, professeur, salle, type
+  }]);
+  if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
+  fermerModal('modal-emploi');
+  ['input-edt-matiere','input-edt-prof','input-edt-salle'].forEach(id => document.getElementById(id).value='');
+  showToast('Créneau ajouté !', 'success');
+  chargerEmploiDuTemps();
+}
+
+async function supprimerCreneau(id, jour, heure) {
+  if (!confirm(`Supprimer ce créneau (${jour} ${heure}) ?`)) return;
+  const { error } = await db.from('emploi_du_temps').delete().eq('id', id);
+  if (error) { showToast('Erreur suppression.', 'error'); return; }
+  showToast('Créneau supprimé.', 'success');
+  chargerEmploiDuTemps();
+}
+
+// ══ INIT ══════════════════════════════════════
+chargerEcoles();
+</script>
 </body>
 </html>
