@@ -5,17 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>EduLink Bénin — Back-office</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 * { margin: 0; box-sizing: border-box; font-family: 'Poppins', sans-serif; }
 body { background: #f3f4f6; display: flex; }
 nav { width: 220px; background: #1e3a5f; min-height: 100vh; padding: 1rem; flex-shrink: 0; }
-nav h1 { color: #fff; font-size: 18px; font-weight: 700; margin-bottom: 1.5rem; line-height: 1.3; }
+nav h1 { color: #fff; font-size: 16px; font-weight: 700; margin-bottom: 1.5rem; line-height: 1.3; }
 nav a { display: block; color: rgba(255,255,255,.7); padding: 8px 12px; border-radius: 6px; text-decoration: none; font-size: 13px; margin-bottom: 4px; cursor: pointer; }
 nav a:hover, nav a.on { background: rgba(255,255,255,.15); color: #fff; }
 main { flex: 1; padding: 1.5rem; overflow: auto; }
 .page { display: none; }
 .page.active { display: block; }
-.top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+.top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; flex-wrap: wrap; gap: 10px; }
 .top h2 { font-size: 22px; font-weight: 600; }
 .cards { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; margin-bottom: 1.5rem; }
 .card { background: #fff; border-radius: 16px; padding: 1rem; border: 0.5px solid #e5e7eb; }
@@ -33,21 +34,33 @@ tr:last-child td { border-bottom: none; }
 .blue { background: #dbeafe; color: #1d4ed8; }
 button { background: #c97c1a; color: #fff; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; font-weight: 600; font-family: 'Poppins', sans-serif; }
 button:hover { background: #a86615; }
+.btn-sm { padding: 4px 10px; font-size: 11px; }
+.btn-blue { background: #1e3a5f; }
+.btn-blue:hover { background: #152c4a; }
+.loading { text-align: center; padding: 2rem; color: #6b7280; font-size: 13px; }
 .empty-state { text-align: center; padding: 3rem; color: #6b7280; }
 .empty-state .icon { font-size: 48px; margin-bottom: 1rem; }
 .empty-state h3 { font-size: 16px; font-weight: 600; margin-bottom: .5rem; color: #374151; }
-.empty-state p { font-size: 13px; }
-.form-group { margin-bottom: 1rem; }
-.form-group label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 4px; color: #374151; }
-.form-group input, .form-group select { width: 100%; padding: 8px 12px; border: 0.5px solid #e5e7eb; border-radius: 8px; font-size: 13px; font-family: 'Poppins', sans-serif; outline: none; }
-.form-group input:focus, .form-group select:focus { border-color: #1e3a5f; }
-.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+.search-bar { display: flex; gap: 8px; margin-bottom: 1rem; }
+.search-bar input { flex: 1; padding: 8px 12px; border: 0.5px solid #e5e7eb; border-radius: 8px; font-size: 13px; font-family: 'Poppins', sans-serif; outline: none; }
+.search-bar input:focus { border-color: #1e3a5f; }
 .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 100; align-items: center; justify-content: center; }
 .modal-overlay.open { display: flex; }
-.modal { background: #fff; border-radius: 16px; padding: 1.5rem; width: 500px; max-width: 90%; }
+.modal { background: #fff; border-radius: 16px; padding: 1.5rem; width: 500px; max-width: 90%; max-height: 90vh; overflow-y: auto; }
 .modal h3 { font-size: 16px; font-weight: 600; margin-bottom: 1.5rem; }
+.form-group { margin-bottom: 1rem; }
+.form-group label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 4px; color: #374151; }
+.form-group input, .form-group select, .form-group textarea { width: 100%; padding: 8px 12px; border: 0.5px solid #e5e7eb; border-radius: 8px; font-size: 13px; font-family: 'Poppins', sans-serif; outline: none; }
+.form-group input:focus, .form-group select:focus { border-color: #1e3a5f; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
 .modal-footer { display: flex; gap: 8px; justify-content: flex-end; margin-top: 1.5rem; }
 .btn-secondary { background: #f3f4f6; color: #374151; border: none; padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 13px; font-family: 'Poppins', sans-serif; }
+.toast { position: fixed; bottom: 1.5rem; right: 1.5rem; background: #1e3a5f; color: #fff; padding: 12px 20px; border-radius: 10px; font-size: 13px; z-index: 999; display: none; animation: fadein .3s; }
+.toast.show { display: block; }
+.toast.success { background: #059669; }
+.toast.error { background: #dc2626; }
+@keyframes fadein { from { opacity:0; transform: translateY(10px); } to { opacity:1; transform: translateY(0); } }
+.stat-num { font-size: 28px; font-weight: 700; }
 </style>
 </head>
 <body>
@@ -75,33 +88,17 @@ button:hover { background: #a86615; }
       <button onclick="ouvrirModal('modal-annonce')">+ Envoyer annonce</button>
     </div>
     <div class="cards">
-      <div class="card">
-        <div class="i">🚫</div>
-        <div class="n" style="color:#dc2626">8</div>
-        <div class="l">Absences aujourd'hui</div>
-      </div>
-      <div class="card">
-        <div class="i">⚠️</div>
-        <div class="n" style="color:#f59e0b">5</div>
-        <div class="l">Incidents ouverts</div>
-      </div>
-      <div class="card">
-        <div class="i">💳</div>
-        <div class="n" style="color:#c97c1a">3</div>
-        <div class="l">Paiements en attente</div>
-      </div>
-      <div class="card">
-        <div class="i">🎓</div>
-        <div class="n" style="color:#1e3a5f">1000</div>
-        <div class="l">Étudiants inscrits</div>
-      </div>
+      <div class="card"><div class="i">🎓</div><div class="n" style="color:#1e3a5f" id="stat-etudiants">...</div><div class="l">Étudiants inscrits</div></div>
+      <div class="card"><div class="i">🚫</div><div class="n" style="color:#dc2626" id="stat-absences">...</div><div class="l">Absences aujourd'hui</div></div>
+      <div class="card"><div class="i">⚠️</div><div class="n" style="color:#f59e0b">0</div><div class="l">Incidents ouverts</div></div>
+      <div class="card"><div class="i">💳</div><div class="n" style="color:#c97c1a">0</div><div class="l">Paiements en attente</div></div>
     </div>
+    <div style="font-size:13px;font-weight:600;margin-bottom:.75rem;color:#374151">Absences récentes</div>
     <table>
-      <tr><th>Étudiant</th><th>Filière</th><th>Matière</th><th>Heure</th><th>Statut</th><th>Parent notifié</th></tr>
-      <tr><td>Kossi Agbodjan</td><td>L2 Informatique</td><td>Algorithmique</td><td>08:00</td><td><span class="badge red">Absent</span></td><td><span class="badge green">✓ Notifié</span></td></tr>
-      <tr><td>Adjoavi Hountondji</td><td>L3 Gestion</td><td>Comptabilité</td><td>09:00</td><td><span class="badge amber">Retard</span></td><td><span class="badge green">✓ Notifié</span></td></tr>
-      <tr><td>Moussa Idrissou</td><td>M1 Droit</td><td>Droit civil</td><td>10:00</td><td><span class="badge red">Absent</span></td><td><span class="badge amber">En attente</span></td></tr>
-      <tr><td>Blandine Ahounou</td><td>L1 Médecine</td><td>Anatomie</td><td>11:00</td><td><span class="badge red">Absent</span></td><td><span class="badge green">✓ Notifié</span></td></tr>
+      <tr><th>Étudiant</th><th>Matière</th><th>Date</th><th>Statut</th><th>Parent notifié</th></tr>
+      <tbody id="tbody-absences-dashboard">
+        <tr><td colspan="5" class="loading">Chargement...</td></tr>
+      </tbody>
     </table>
   </div>
 
@@ -111,33 +108,28 @@ button:hover { background: #a86615; }
       <h2>Étudiants</h2>
       <button onclick="ouvrirModal('modal-etudiant')">+ Ajouter étudiant</button>
     </div>
+    <div class="search-bar">
+      <input type="text" id="search-etudiants" placeholder="Rechercher par nom, prénom, matricule..." oninput="filtrerEtudiants()">
+    </div>
     <table>
       <tr><th>Matricule</th><th>Nom complet</th><th>Filière</th><th>Niveau</th><th>Statut</th><th>Actions</th></tr>
-      <tr><td>2024-001</td><td>Kossi Agbodjan</td><td>Informatique</td><td>L2</td><td><span class="badge green">Actif</span></td><td><button style="padding:4px 10px;font-size:11px">Voir</button></td></tr>
-      <tr><td>2024-002</td><td>Adjoavi Hountondji</td><td>Gestion</td><td>L3</td><td><span class="badge green">Actif</span></td><td><button style="padding:4px 10px;font-size:11px">Voir</button></td></tr>
-      <tr><td>2024-003</td><td>Moussa Idrissou</td><td>Droit</td><td>M1</td><td><span class="badge green">Actif</span></td><td><button style="padding:4px 10px;font-size:11px">Voir</button></td></tr>
-      <tr><td>2024-004</td><td>Blandine Ahounou</td><td>Médecine</td><td>L1</td><td><span class="badge green">Actif</span></td><td><button style="padding:4px 10px;font-size:11px">Voir</button></td></tr>
-      <tr><td>2024-005</td><td>Romuald Dansou</td><td>Finance</td><td>M2</td><td><span class="badge amber">Suspendu</span></td><td><button style="padding:4px 10px;font-size:11px">Voir</button></td></tr>
+      <tbody id="tbody-etudiants">
+        <tr><td colspan="6" class="loading">Chargement des étudiants...</td></tr>
+      </tbody>
     </table>
   </div>
 
   <!-- PAGE : Présences -->
   <div class="page" id="page-presences">
     <div class="top">
-      <h2>Présences</h2>
-      <button>+ Nouvelle séance</button>
-    </div>
-    <div class="cards">
-      <div class="card"><div class="i">✅</div><div class="n" style="color:#059669">87%</div><div class="l">Taux présence semaine</div></div>
-      <div class="card"><div class="i">🚫</div><div class="n" style="color:#dc2626">8</div><div class="l">Absences aujourd'hui</div></div>
-      <div class="card"><div class="i">⏰</div><div class="n" style="color:#f59e0b">3</div><div class="l">Retards aujourd'hui</div></div>
-      <div class="card"><div class="i">📋</div><div class="n" style="color:#1e3a5f">12</div><div class="l">Séances ce mois</div></div>
+      <h2>Présences & Absences</h2>
+      <button onclick="ouvrirModal('modal-absence')">+ Enregistrer absence</button>
     </div>
     <table>
-      <tr><th>Date</th><th>Filière</th><th>Matière</th><th>Enseignant</th><th>Présents</th><th>Absents</th><th>Statut</th></tr>
-      <tr><td>18/03/2026</td><td>L2 Informatique</td><td>Algorithmique</td><td>Prof. Koffi</td><td>28</td><td>2</td><td><span class="badge green">Validé</span></td></tr>
-      <tr><td>18/03/2026</td><td>L3 Gestion</td><td>Comptabilité</td><td>Prof. Agba</td><td>35</td><td>1</td><td><span class="badge green">Validé</span></td></tr>
-      <tr><td>18/03/2026</td><td>M1 Droit</td><td>Droit civil</td><td>Prof. Hounsou</td><td>22</td><td>3</td><td><span class="badge amber">En cours</span></td></tr>
+      <tr><th>Étudiant</th><th>Matière</th><th>Date</th><th>Statut</th><th>Justification</th><th>Parent notifié</th></tr>
+      <tbody id="tbody-presences">
+        <tr><td colspan="6" class="loading">Chargement...</td></tr>
+      </tbody>
     </table>
   </div>
 
@@ -156,50 +148,31 @@ button:hover { background: #a86615; }
   <!-- PAGE : Messages -->
   <div class="page" id="page-messages">
     <div class="top"><h2>Messagerie</h2><button onclick="ouvrirModal('modal-message')">+ Nouveau message</button></div>
-    <table>
-      <tr><th>De</th><th>Objet</th><th>Date</th><th>Priorité</th><th>Statut</th></tr>
-      <tr><td>Direction</td><td>Réunion pédagogique vendredi</td><td>18/03/2026</td><td><span class="badge amber">Urgent</span></td><td><span class="badge red">Non lu</span></td></tr>
-      <tr><td>Parent Agbodjan</td><td>Justification absence Kossi</td><td>17/03/2026</td><td><span class="badge blue">Normal</span></td><td><span class="badge green">Lu</span></td></tr>
-      <tr><td>Prof. Koffi</td><td>Notes du DS1 saisies</td><td>17/03/2026</td><td><span class="badge blue">Normal</span></td><td><span class="badge green">Lu</span></td></tr>
-    </table>
+    <div class="empty-state"><div class="icon">✉️</div><h3>Messagerie</h3><p>Les messages apparaîtront ici. Envoyez votre premier message !</p></div>
   </div>
 
   <!-- PAGE : Paiements -->
   <div class="page" id="page-paiements">
     <div class="top"><h2>Paiements</h2><button>+ Nouvelle facture</button></div>
-    <div class="cards">
-      <div class="card"><div class="i">✅</div><div class="n" style="color:#059669">720</div><div class="l">Paiements reçus</div></div>
-      <div class="card"><div class="i">⏳</div><div class="n" style="color:#f59e0b">187</div><div class="l">En attente</div></div>
-      <div class="card"><div class="i">🚫</div><div class="n" style="color:#dc2626">93</div><div class="l">En retard</div></div>
-      <div class="card"><div class="i">💰</div><div class="n" style="color:#1e3a5f">72M</div><div class="l">Total reçu (XOF)</div></div>
-    </div>
-    <table>
-      <tr><th>Étudiant</th><th>Libellé</th><th>Montant</th><th>Échéance</th><th>Statut</th><th>Actions</th></tr>
-      <tr><td>Kossi Agbodjan</td><td>Frais S1 2025-26</td><td>150 000 XOF</td><td>31/03/2026</td><td><span class="badge green">Payé</span></td><td><button style="padding:4px 10px;font-size:11px">Reçu</button></td></tr>
-      <tr><td>Adjoavi Hountondji</td><td>Frais S1 2025-26</td><td>150 000 XOF</td><td>31/03/2026</td><td><span class="badge amber">Partiel</span></td><td><button style="padding:4px 10px;font-size:11px">Voir</button></td></tr>
-      <tr><td>Moussa Idrissou</td><td>Frais S1 2025-26</td><td>150 000 XOF</td><td>28/02/2026</td><td><span class="badge red">En retard</span></td><td><button style="padding:4px 10px;font-size:11px">Relancer</button></td></tr>
-    </table>
+    <div class="empty-state"><div class="icon">💳</div><h3>Paiements</h3><p>Les factures et paiements seront affichés ici.</p></div>
   </div>
 
-  <!-- PAGES simples pour les autres modules -->
+  <!-- PAGES simples -->
   <div class="page" id="page-discipline">
     <div class="top"><h2>Discipline</h2><button>+ Nouvel incident</button></div>
-    <div class="empty-state"><div class="icon">⚠️</div><h3>Module Discipline</h3><p>Aucun incident enregistré cette semaine.</p></div>
+    <div class="empty-state"><div class="icon">⚠️</div><h3>Discipline</h3><p>Aucun incident enregistré.</p></div>
   </div>
-
   <div class="page" id="page-emploi">
     <div class="top"><h2>Emploi du temps</h2><button>+ Ajouter créneau</button></div>
-    <div class="empty-state"><div class="icon">📅</div><h3>Module Emploi du temps</h3><p>Les emplois du temps seront affichés ici.</p></div>
+    <div class="empty-state"><div class="icon">📅</div><h3>Emploi du temps</h3><p>Les emplois du temps seront affichés ici.</p></div>
   </div>
-
   <div class="page" id="page-documents">
-    <div class="top"><h2>Documents</h2><button>+ Uploader document</button></div>
-    <div class="empty-state"><div class="icon">📄</div><h3>Module Documents</h3><p>Les documents administratifs seront listés ici.</p></div>
+    <div class="top"><h2>Documents</h2><button>+ Uploader</button></div>
+    <div class="empty-state"><div class="icon">📄</div><h3>Documents</h3><p>Les documents seront listés ici.</p></div>
   </div>
-
   <div class="page" id="page-rapports">
-    <div class="top"><h2>Rapports</h2><button>+ Générer rapport</button></div>
-    <div class="empty-state"><div class="icon">📈</div><h3>Module Rapports</h3><p>Les rapports d'absences, notes et paiements seront générés ici.</p></div>
+    <div class="top"><h2>Rapports</h2><button>+ Générer</button></div>
+    <div class="empty-state"><div class="icon">📈</div><h3>Rapports</h3><p>Les rapports seront générés ici.</p></div>
   </div>
 
 </main>
@@ -208,21 +181,12 @@ button:hover { background: #a86615; }
 <div class="modal-overlay" id="modal-annonce">
   <div class="modal">
     <h3>✉️ Envoyer une annonce</h3>
-    <div class="form-group">
-      <label>Destinataires</label>
-      <select><option>Tous les étudiants</option><option>L2 Informatique</option><option>L3 Gestion</option><option>M1 Droit</option></select>
+    <div class="form-group"><label>Destinataires</label>
+      <select><option>Tous les étudiants</option><option>L2 Informatique</option><option>L3 Gestion</option></select>
     </div>
-    <div class="form-group">
-      <label>Objet</label>
-      <input type="text" placeholder="Ex: Réunion pédagogique vendredi">
-    </div>
-    <div class="form-group">
-      <label>Message</label>
-      <textarea style="width:100%;padding:8px 12px;border:0.5px solid #e5e7eb;border-radius:8px;font-size:13px;font-family:'Poppins',sans-serif;height:100px;outline:none" placeholder="Écrivez votre message..."></textarea>
-    </div>
-    <div class="form-group">
-      <label>Canal d'envoi</label>
-      <select><option>SMS + Notification</option><option>SMS uniquement</option><option>Notification uniquement</option></select>
+    <div class="form-group"><label>Objet</label><input type="text" placeholder="Objet de l'annonce"></div>
+    <div class="form-group"><label>Message</label>
+      <textarea rows="4" placeholder="Écrivez votre message..."></textarea>
     </div>
     <div class="modal-footer">
       <button class="btn-secondary" onclick="fermerModal('modal-annonce')">Annuler</button>
@@ -236,31 +200,61 @@ button:hover { background: #a86615; }
   <div class="modal">
     <h3>👥 Ajouter un étudiant</h3>
     <div class="form-grid">
-      <div class="form-group"><label>Nom</label><input type="text" placeholder="Nom de famille"></div>
-      <div class="form-group"><label>Prénom</label><input type="text" placeholder="Prénom"></div>
-      <div class="form-group"><label>Date de naissance</label><input type="date"></div>
-      <div class="form-group"><label>Sexe</label><select><option>Masculin</option><option>Féminin</option></select></div>
-      <div class="form-group"><label>Filière</label><select><option>Informatique</option><option>Gestion</option><option>Droit</option><option>Médecine</option><option>Finance</option></select></div>
-      <div class="form-group"><label>Niveau</label><select><option>L1</option><option>L2</option><option>L3</option><option>M1</option><option>M2</option></select></div>
-      <div class="form-group"><label>Téléphone parent</label><input type="tel" placeholder="+229 XX XX XX XX"></div>
-      <div class="form-group"><label>Email parent</label><input type="email" placeholder="parent@email.com"></div>
+      <div class="form-group"><label>Nom *</label><input type="text" id="input-nom" placeholder="Nom de famille"></div>
+      <div class="form-group"><label>Prénom *</label><input type="text" id="input-prenom" placeholder="Prénom"></div>
+      <div class="form-group"><label>Matricule *</label><input type="text" id="input-matricule" placeholder="Ex: 2024-006"></div>
+      <div class="form-group"><label>Sexe</label>
+        <select id="input-sexe"><option value="M">Masculin</option><option value="F">Féminin</option></select>
+      </div>
+      <div class="form-group"><label>Filière *</label>
+        <select id="input-filiere">
+          <option>Informatique</option><option>Gestion</option><option>Droit</option>
+          <option>Médecine</option><option>Finance</option><option>Lettres</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Niveau *</label>
+        <select id="input-niveau">
+          <option>L1</option><option>L2</option><option>L3</option><option>M1</option><option>M2</option>
+        </select>
+      </div>
     </div>
     <div class="modal-footer">
       <button class="btn-secondary" onclick="fermerModal('modal-etudiant')">Annuler</button>
-      <button onclick="fermerModal('modal-etudiant')">Enregistrer</button>
+      <button onclick="ajouterEtudiant()">Enregistrer</button>
     </div>
   </div>
 </div>
 
-<!-- MODAL : Nouveau message -->
+<!-- MODAL : Enregistrer absence -->
+<div class="modal-overlay" id="modal-absence">
+  <div class="modal">
+    <h3>🚫 Enregistrer une absence</h3>
+    <div class="form-group"><label>Étudiant *</label>
+      <select id="input-absence-etudiant"></select>
+    </div>
+    <div class="form-group"><label>Matière *</label><input type="text" id="input-absence-matiere" placeholder="Ex: Algorithmique"></div>
+    <div class="form-group"><label>Date</label><input type="date" id="input-absence-date"></div>
+    <div class="form-group"><label>Statut</label>
+      <select id="input-absence-statut">
+        <option value="absent">Absent</option>
+        <option value="retard">Retard</option>
+        <option value="excuse">Excusé</option>
+      </select>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="fermerModal('modal-absence')">Annuler</button>
+      <button onclick="enregistrerAbsence()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL : Message -->
 <div class="modal-overlay" id="modal-message">
   <div class="modal">
     <h3>✉️ Nouveau message</h3>
-    <div class="form-group"><label>À</label><input type="text" placeholder="Nom du destinataire"></div>
-    <div class="form-group"><label>Objet</label><input type="text" placeholder="Objet du message"></div>
-    <div class="form-group"><label>Message</label>
-      <textarea style="width:100%;padding:8px 12px;border:0.5px solid #e5e7eb;border-radius:8px;font-size:13px;font-family:'Poppins',sans-serif;height:120px;outline:none" placeholder="Écrivez votre message..."></textarea>
-    </div>
+    <div class="form-group"><label>À</label><input type="text" placeholder="Destinataire"></div>
+    <div class="form-group"><label>Objet</label><input type="text" placeholder="Objet"></div>
+    <div class="form-group"><label>Message</label><textarea rows="4" placeholder="Votre message..."></textarea></div>
     <div class="modal-footer">
       <button class="btn-secondary" onclick="fermerModal('modal-message')">Annuler</button>
       <button onclick="fermerModal('modal-message')">Envoyer</button>
@@ -268,40 +262,206 @@ button:hover { background: #a86615; }
   </div>
 </div>
 
+<!-- Toast notification -->
+<div class="toast" id="toast"></div>
+
 <script>
-// ── Navigation entre les pages ──────────────────────────────
+// ══════════════════════════════════════════════════════════
+// CONFIGURATION SUPABASE — REMPLACEZ CES 2 VALEURS
+// ══════════════════════════════════════════════════════════
+const SUPABASE_URL = 'https://wpexhfngdbagmgodgzzt.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_8e4xKWS3YpfwGFAQlZ7lgQ_9hDx8ljQ';
+// ══════════════════════════════════════════════════════════
+
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+let tousLesEtudiants = [];
+
+// ── Navigation ──────────────────────────────────────────
 function showPage(pageName) {
-  // Cacher toutes les pages
-  document.querySelectorAll('.page').forEach(function(p) {
-    p.classList.remove('active');
-  });
-  // Enlever la surbrillance de tous les liens
-  document.querySelectorAll('nav a').forEach(function(a) {
-    a.classList.remove('on');
-  });
-  // Afficher la page choisie
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('nav a').forEach(a => a.classList.remove('on'));
   document.getElementById('page-' + pageName).classList.add('active');
-  // Mettre en surbrillance le lien actif
   document.getElementById('nav-' + pageName).classList.add('on');
+  if (pageName === 'etudiants') chargerEtudiants();
+  if (pageName === 'presences') chargerAbsences();
+  if (pageName === 'dashboard') chargerDashboard();
 }
 
-// ── Modals (fenêtres popup) ──────────────────────────────────
-function ouvrirModal(modalId) {
-  document.getElementById(modalId).classList.add('open');
+// ── Modals ──────────────────────────────────────────────
+function ouvrirModal(id) {
+  document.getElementById(id).classList.add('open');
+  if (id === 'modal-absence') remplirSelectEtudiants();
 }
-
-function fermerModal(modalId) {
-  document.getElementById(modalId).classList.remove('open');
-}
-
-// Fermer le modal en cliquant en dehors
-document.querySelectorAll('.modal-overlay').forEach(function(overlay) {
-  overlay.addEventListener('click', function(e) {
-    if (e.target === overlay) {
-      overlay.classList.remove('open');
-    }
-  });
+function fermerModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(o => {
+  o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); });
 });
+
+// ── Toast ────────────────────────────────────────────────
+function showToast(msg, type = '') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show ' + type;
+  setTimeout(() => t.className = 'toast', 3000);
+}
+
+// ── Dashboard ────────────────────────────────────────────
+async function chargerDashboard() {
+  const { count: nbEtudiants } = await db.from('etudiants').select('*', { count: 'exact', head: true });
+  document.getElementById('stat-etudiants').textContent = nbEtudiants || 0;
+
+  const today = new Date().toISOString().split('T')[0];
+  const { count: nbAbsences } = await db.from('absences').select('*', { count: 'exact', head: true }).eq('date_absence', today);
+  document.getElementById('stat-absences').textContent = nbAbsences || 0;
+
+  const { data: absences } = await db.from('absences')
+    .select('*, etudiants(nom, prenom)')
+    .order('created_at', { ascending: false })
+    .limit(5);
+
+  const tbody = document.getElementById('tbody-absences-dashboard');
+  if (!absences || absences.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5" class="loading">Aucune absence enregistrée.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = absences.map(a => `
+    <tr>
+      <td>${a.etudiants ? a.etudiants.nom + ' ' + a.etudiants.prenom : 'N/A'}</td>
+      <td>${a.matiere}</td>
+      <td>${new Date(a.date_absence).toLocaleDateString('fr-FR')}</td>
+      <td><span class="badge ${a.statut === 'absent' ? 'red' : a.statut === 'retard' ? 'amber' : 'blue'}">${a.statut}</span></td>
+      <td><span class="badge ${a.parent_notifie ? 'green' : 'amber'}">${a.parent_notifie ? '✓ Notifié' : 'En attente'}</span></td>
+    </tr>`).join('');
+}
+
+// ── Étudiants ────────────────────────────────────────────
+async function chargerEtudiants() {
+  const tbody = document.getElementById('tbody-etudiants');
+  tbody.innerHTML = '<tr><td colspan="6" class="loading">Chargement...</td></tr>';
+
+  const { data, error } = await db.from('etudiants').select('*').order('nom');
+  if (error) { tbody.innerHTML = '<tr><td colspan="6" class="loading">Erreur de chargement.</td></tr>'; return; }
+
+  tousLesEtudiants = data || [];
+  afficherEtudiants(tousLesEtudiants);
+}
+
+function afficherEtudiants(liste) {
+  const tbody = document.getElementById('tbody-etudiants');
+  if (!liste || liste.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6" class="loading">Aucun étudiant trouvé.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = liste.map(e => `
+    <tr>
+      <td>${e.matricule}</td>
+      <td>${e.nom} ${e.prenom}</td>
+      <td>${e.filiere}</td>
+      <td>${e.niveau}</td>
+      <td><span class="badge ${e.statut === 'actif' ? 'green' : 'amber'}">${e.statut}</span></td>
+      <td><button class="btn-sm btn-blue" onclick="voirEtudiant('${e.id}')">Voir</button></td>
+    </tr>`).join('');
+}
+
+function filtrerEtudiants() {
+  const q = document.getElementById('search-etudiants').value.toLowerCase();
+  const filtrés = tousLesEtudiants.filter(e =>
+    e.nom.toLowerCase().includes(q) ||
+    e.prenom.toLowerCase().includes(q) ||
+    e.matricule.toLowerCase().includes(q)
+  );
+  afficherEtudiants(filtrés);
+}
+
+function voirEtudiant(id) { showToast('Fiche étudiant — bientôt disponible', 'success'); }
+
+async function ajouterEtudiant() {
+  const nom      = document.getElementById('input-nom').value.trim();
+  const prenom   = document.getElementById('input-prenom').value.trim();
+  const matricule= document.getElementById('input-matricule').value.trim();
+  const sexe     = document.getElementById('input-sexe').value;
+  const filiere  = document.getElementById('input-filiere').value;
+  const niveau   = document.getElementById('input-niveau').value;
+
+  if (!nom || !prenom || !matricule) { showToast('Remplissez les champs obligatoires (*)', 'error'); return; }
+
+  const { data: ecole } = await db.from('ecoles').select('id').limit(1).single();
+
+  const { error } = await db.from('etudiants').insert([{
+    ecole_id: ecole?.id, nom, prenom, matricule, sexe, filiere, niveau, statut: 'actif'
+  }]);
+
+  if (error) {
+    showToast('Erreur : ' + (error.message.includes('unique') ? 'Ce matricule existe déjà.' : error.message), 'error');
+    return;
+  }
+
+  fermerModal('modal-etudiant');
+  document.getElementById('input-nom').value = '';
+  document.getElementById('input-prenom').value = '';
+  document.getElementById('input-matricule').value = '';
+  showToast('Étudiant ajouté avec succès !', 'success');
+  chargerEtudiants();
+  chargerDashboard();
+}
+
+// ── Absences ─────────────────────────────────────────────
+async function chargerAbsences() {
+  const tbody = document.getElementById('tbody-presences');
+  tbody.innerHTML = '<tr><td colspan="6" class="loading">Chargement...</td></tr>';
+
+  const { data, error } = await db.from('absences')
+    .select('*, etudiants(nom, prenom)')
+    .order('created_at', { ascending: false });
+
+  if (!data || data.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="6" class="loading">Aucune absence enregistrée.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = data.map(a => `
+    <tr>
+      <td>${a.etudiants ? a.etudiants.nom + ' ' + a.etudiants.prenom : 'N/A'}</td>
+      <td>${a.matiere}</td>
+      <td>${new Date(a.date_absence).toLocaleDateString('fr-FR')}</td>
+      <td><span class="badge ${a.statut === 'absent' ? 'red' : a.statut === 'retard' ? 'amber' : 'blue'}">${a.statut}</span></td>
+      <td>${a.justification || '—'}</td>
+      <td><span class="badge ${a.parent_notifie ? 'green' : 'amber'}">${a.parent_notifie ? '✓ Notifié' : 'En attente'}</span></td>
+    </tr>`).join('');
+}
+
+async function remplirSelectEtudiants() {
+  const sel = document.getElementById('input-absence-etudiant');
+  if (tousLesEtudiants.length === 0) {
+    const { data } = await db.from('etudiants').select('id, nom, prenom').order('nom');
+    tousLesEtudiants = data || [];
+  }
+  sel.innerHTML = tousLesEtudiants.map(e =>
+    `<option value="${e.id}">${e.nom} ${e.prenom}</option>`).join('');
+  document.getElementById('input-absence-date').value = new Date().toISOString().split('T')[0];
+}
+
+async function enregistrerAbsence() {
+  const etudiant_id = document.getElementById('input-absence-etudiant').value;
+  const matiere     = document.getElementById('input-absence-matiere').value.trim();
+  const date_absence= document.getElementById('input-absence-date').value;
+  const statut      = document.getElementById('input-absence-statut').value;
+
+  if (!matiere) { showToast('Entrez le nom de la matière.', 'error'); return; }
+
+  const { error } = await db.from('absences').insert([{ etudiant_id, matiere, date_absence, statut }]);
+  if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
+
+  fermerModal('modal-absence');
+  document.getElementById('input-absence-matiere').value = '';
+  showToast('Absence enregistrée !', 'success');
+  chargerAbsences();
+  chargerDashboard();
+}
+
+// ── Chargement initial ────────────────────────────────────
+chargerDashboard();
 </script>
 
 </body>
