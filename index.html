@@ -1509,7 +1509,7 @@ function showPage(p) {
   if (pageEl) pageEl.classList.add('active');
   if (navEl)  navEl.classList.add('on');
   const loaders = {
-    dashboard:    chargerDashboard,
+    dashboard:    () => { chargerDashboard(); setTimeout(chargerDashboardCharts, 600); },
     etudiants:    chargerEtudiants,
     presences:    chargerAbsences,
     notes:        () => { chargerNotes(); remplirSelectBulletin(); },
@@ -2269,31 +2269,6 @@ let ficheEtudiantCourant = null;
 let dashChartFilieres = null;
 let dashChartFinances = null;
 let ficheTabActive = 'infos';
-
-// ── Navigation J6 : Paramètres ──
-// Ajout de 'parametres' dans la map de showPage
-const _origShowPage = showPage;
-// Override showPage to handle parametres
-(function(){
-  const origLoaders_ref = {
-    parametres: chargerParametres,
-  };
-  const _origShowPage2 = showPage;
-  window.showPage = function(p) {
-    if (p === 'parametres') {
-      document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
-      document.querySelectorAll('nav a').forEach(x => x.classList.remove('on'));
-      const pageEl = document.getElementById('page-' + p);
-      const navEl  = document.getElementById('nav-' + p);
-      if (pageEl) pageEl.classList.add('active');
-      if (navEl)  navEl.classList.add('on');
-      chargerParametres();
-      return;
-    }
-    _origShowPage2(p);
-    if (p === 'dashboard') setTimeout(chargerDashboardCharts, 500);
-  };
-})();
 
 // ══ FICHE ÉTUDIANT  ★ JOUR 6 ══════════════════
 async function voirEtudiant(id) {
