@@ -1,21 +1,20 @@
 {
   "version": 2,
-  "builds": [
-    { "src": "*.html", "use": "@vercel/static" },
-    { "src": "*.js",   "use": "@vercel/static" },
-    { "src": "*.json", "use": "@vercel/static" }
-  ],
   "routes": [
     {
       "src": "/",
-      "dest": "/edulink-jour5.html"
+      "dest": "/index.html"
     },
     {
       "src": "/admin",
-      "dest": "/edulink-jour5.html"
+      "dest": "/index.html"
     },
     {
       "src": "/portail",
+      "dest": "/edulink-portail.html"
+    },
+    {
+      "src": "/edulink-portail.html",
       "dest": "/edulink-portail.html"
     },
     {
@@ -26,8 +25,12 @@
       }
     },
     {
+      "src": "/(.*\\.(js|json|png|ico|html))",
+      "dest": "/$1"
+    },
+    {
       "src": "/(.*)",
-      "dest": "/edulink-jour5.html"
+      "dest": "/index.html"
     }
   ],
   "headers": [
