@@ -2,7 +2,7 @@
    EduLink — Service Worker (PWA) v5.1
    ===================================================================== */
 
-var CACHE_NAME    = 'edulink-v5';
+var CACHE_NAME    = 'edulink-v6';
 
 var FILES_TO_CACHE = [
   './',
@@ -61,6 +61,9 @@ self.addEventListener('activate', function(e) {
 self.addEventListener('fetch', function(e) {
   var url = e.request.url;
   if (url.indexOf('supabase.co') !== -1 || url.indexOf('brevo.com') !== -1) return;
+
+  // Laisser Vercel gérer les redirections /portail et /admin
+  if (url.endsWith('/portail') || url.endsWith('/portail/') || url.endsWith('/admin')) return;
 
   if (e.request.mode === 'navigate') {
     e.respondWith(
