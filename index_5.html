@@ -1,0 +1,2888 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduLink — Back-office J6</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+<!-- PWA -->
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1e3a5f">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="EduLink">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+<script data-cfasync="false" src="edulink-auth.js" defer></script>
+<script data-cfasync="false" src="edulink-notif.js" defer></script>
+<style>
+/* ══════════════════════════════════════════════
+   BASE
+══════════════════════════════════════════════ */
+* { margin:0; box-sizing:border-box; font-family:'Poppins',sans-serif; }
+body { background:#f3f4f6; display:flex; }
+
+/* ── Navigation ── */
+nav { width:230px; background:#1e3a5f; min-height:100vh; padding:1rem; flex-shrink:0; display:flex; flex-direction:column; }
+nav .logo { color:#fff; font-size:15px; font-weight:700; margin-bottom:.5rem; }
+nav .ecole-selector-wrap { margin-bottom:1.2rem; }
+nav .ecole-selector-wrap select { width:100%; padding:6px 10px; border-radius:8px; border:1px solid rgba(255,255,255,.25); background:rgba(255,255,255,.1); color:#fff; font-size:12px; font-family:'Poppins',sans-serif; cursor:pointer; outline:none; }
+nav .ecole-selector-wrap select option { background:#1e3a5f; }
+nav .nav-section { font-size:9px; font-weight:600; color:rgba(255,255,255,.4); text-transform:uppercase; letter-spacing:.08em; padding:6px 12px 2px; margin-top:4px; }
+nav a { display:flex; align-items:center; gap:8px; color:rgba(255,255,255,.7); padding:8px 12px; border-radius:6px; text-decoration:none; font-size:12.5px; margin-bottom:2px; cursor:pointer; transition:all .15s; }
+nav a:hover, nav a.on { background:rgba(255,255,255,.15); color:#fff; }
+nav a .ico { font-size:14px; width:18px; text-align:center; }
+nav .nav-bottom { margin-top:auto; padding-top:1rem; border-top:1px solid rgba(255,255,255,.1); }
+nav .nav-bottom a { font-size:11px; color:rgba(255,255,255,.5); }
+.ecole-badge { display:flex; align-items:center; gap:6px; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.2); border-radius:8px; padding:6px 10px; margin-bottom:1rem; }
+.ecole-badge .eb-nom { font-size:12px; font-weight:600; color:#fff; }
+.ecole-badge .eb-type { font-size:10px; color:rgba(255,255,255,.6); }
+
+main { flex:1; padding:1.5rem; overflow:auto; min-height:100vh; }
+.page { display:none; }
+.page.active { display:block; animation:fadeIn .2s ease; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── Top ── */
+.top { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:10px; }
+.top h2 { font-size:20px; font-weight:700; color:#111827; }
+.page-subtitle { font-size:13px; color:#6b7280; margin-top:-1rem; margin-bottom:1.2rem; }
+.top-actions { display:flex; gap:8px; }
+
+/* ── Cards ── */
+.cards { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:1.5rem; }
+.card { background:#fff; border-radius:14px; padding:1.1rem; border:1px solid #e5e7eb; transition:box-shadow .15s; }
+.card:hover { box-shadow:0 4px 12px rgba(0,0,0,.07); }
+.card .n { font-size:24px; font-weight:700; margin:6px 0 2px; }
+.card .l { font-size:11px; color:#6b7280; font-weight:500; }
+.card .i { font-size:18px; }
+
+/* ── Tables ── */
+table { width:100%; background:#fff; border-radius:12px; border-collapse:collapse; border:1px solid #e5e7eb; overflow:hidden; }
+th { background:#f9fafb; padding:10px 14px; text-align:left; font-size:10.5px; font-weight:600; color:#6b7280; border-bottom:1px solid #e5e7eb; text-transform:uppercase; letter-spacing:.04em; }
+td { padding:10px 14px; font-size:13px; border-bottom:1px solid #f3f4f6; color:#374151; }
+tr:last-child td { border-bottom:none; }
+tr:hover td { background:#fafafa; }
+
+/* ── Badges ── */
+.badge { font-size:10.5px; padding:2px 8px; border-radius:20px; font-weight:600; white-space:nowrap; }
+.red    { background:#fee2e2; color:#dc2626; }
+.green  { background:#dcfce7; color:#059669; }
+.amber  { background:#fef9c3; color:#d97706; }
+.blue   { background:#dbeafe; color:#1d4ed8; }
+.purple { background:#ede9fe; color:#7c3aed; }
+.gray   { background:#f3f4f6; color:#6b7280; }
+.teal   { background:#ccfbf1; color:#0d9488; }
+.pink   { background:#fce7f3; color:#be185d; }
+
+/* ── Buttons ── */
+button { background:#c97c1a; color:#fff; border:none; padding:8px 16px; border-radius:8px; cursor:pointer; font-size:13px; font-weight:600; font-family:'Poppins',sans-serif; transition:all .15s; }
+button:hover { background:#a86615; transform:translateY(-1px); }
+.btn-sm { padding:4px 10px; font-size:11px; border-radius:6px; }
+.btn-blue { background:#1e3a5f; }
+.btn-blue:hover { background:#152c4a; }
+.btn-red { background:#dc2626; }
+.btn-red:hover { background:#b91c1c; }
+.btn-green { background:#059669; }
+.btn-green:hover { background:#047857; }
+.btn-purple { background:#7c3aed; }
+.btn-purple:hover { background:#6d28d9; }
+.btn-secondary { background:#f3f4f6; color:#374151; }
+.btn-secondary:hover { background:#e5e7eb; transform:none; }
+.btn-outline { background:transparent; border:1px solid #e5e7eb; color:#374151; }
+.btn-outline:hover { background:#f9fafb; transform:none; }
+.btn-ghost { background:transparent; color:#6b7280; font-weight:500; }
+.btn-ghost:hover { background:#f3f4f6; transform:none; color:#374151; }
+
+/* ── Search / Filters ── */
+.search-bar { display:flex; gap:8px; margin-bottom:1rem; }
+.search-bar input { flex:1; padding:8px 12px; border:1px solid #e5e7eb; border-radius:8px; font-size:13px; font-family:'Poppins',sans-serif; outline:none; }
+.search-bar input:focus { border-color:#1e3a5f; }
+.filters { display:flex; gap:8px; margin-bottom:1rem; flex-wrap:wrap; align-items:center; }
+.filters select,.filters input { padding:6px 10px; border:1px solid #e5e7eb; border-radius:8px; font-size:12px; font-family:'Poppins',sans-serif; outline:none; background:#fff; }
+.filter-label { font-size:12px; color:#6b7280; font-weight:500; }
+
+/* ── Modals ── */
+.modal-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.5); z-index:100; align-items:center; justify-content:center; }
+.modal-overlay.open { display:flex; }
+.modal { background:#fff; border-radius:16px; padding:1.5rem; width:540px; max-width:94%; max-height:92vh; overflow-y:auto; }
+.modal-lg { width:700px; }
+.modal h3 { font-size:16px; font-weight:700; margin-bottom:1.5rem; color:#111827; }
+.form-group { margin-bottom:1rem; }
+.form-group label { display:block; font-size:12px; font-weight:600; margin-bottom:4px; color:#374151; text-transform:uppercase; letter-spacing:.03em; }
+.form-group input,.form-group select,.form-group textarea { width:100%; padding:8px 12px; border:1px solid #e5e7eb; border-radius:8px; font-size:13px; font-family:'Poppins',sans-serif; outline:none; transition:border-color .15s; }
+.form-group input:focus,.form-group select:focus,.form-group textarea:focus { border-color:#1e3a5f; box-shadow:0 0 0 3px rgba(30,58,95,.08); }
+.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+.form-grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem; }
+.modal-footer { display:flex; gap:8px; justify-content:flex-end; margin-top:1.5rem; padding-top:1rem; border-top:1px solid #f3f4f6; }
+
+/* ── Toast ── */
+.toast { position:fixed; bottom:1.5rem; right:1.5rem; background:#1e3a5f; color:#fff; padding:12px 20px; border-radius:10px; font-size:13px; z-index:999; display:none; animation:slidein .3s; box-shadow:0 8px 24px rgba(0,0,0,.2); }
+.toast.show { display:block; }
+.toast.success { background:#059669; }
+.toast.error   { background:#dc2626; }
+.toast.info    { background:#1d4ed8; }
+@keyframes slidein { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+/* ── States ── */
+.loading    { text-align:center; padding:2rem; color:#6b7280; font-size:13px; }
+.empty-state { text-align:center; padding:3rem; color:#9ca3af; }
+.empty-state .icon { font-size:44px; margin-bottom:.75rem; }
+.empty-state h3 { font-size:15px; font-weight:600; margin-bottom:.4rem; color:#374151; }
+.empty-state p { font-size:13px; }
+
+/* ── Tabs ── */
+.tabs { display:flex; gap:4px; margin-bottom:1.2rem; background:#f3f4f6; border-radius:10px; padding:4px; width:fit-content; }
+.tab { padding:6px 16px; border-radius:7px; font-size:12.5px; font-weight:600; cursor:pointer; color:#6b7280; transition:all .15s; border:none; background:transparent; }
+.tab.active { background:#fff; color:#1e3a5f; box-shadow:0 1px 4px rgba(0,0,0,.1); }
+
+/* ── Section label ── */
+.section-label { font-size:12px; font-weight:600; color:#374151; margin-bottom:.7rem; margin-top:1.2rem; }
+
+/* ══════════════════════════════════════════════
+   NOTES & BULLETINS (repris du Jour 2)
+══════════════════════════════════════════════ */
+.note-badge { font-size:13px; font-weight:700; padding:3px 10px; border-radius:8px; }
+.bulletin-wrap { background:#fff; border-radius:14px; border:1px solid #e5e7eb; overflow:hidden; }
+.bulletin-header { background:#1e3a5f; color:#fff; padding:1.2rem 1.5rem; }
+.bulletin-header h3 { font-size:16px; font-weight:700; margin-bottom:2px; }
+.bulletin-header p { font-size:12px; opacity:.7; }
+.bulletin-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; padding:1rem 1.5rem; border-bottom:1px solid #e5e7eb; }
+.bstat { text-align:center; }
+.bstat .val { font-size:22px; font-weight:700; color:#1e3a5f; }
+.bstat .lbl { font-size:11px; color:#6b7280; font-weight:500; }
+.bulletin-select { display:flex; gap:10px; align-items:center; margin-bottom:1rem; }
+
+/* ══════════════════════════════════════════════
+   MESSAGERIE (repris du Jour 2)
+══════════════════════════════════════════════ */
+.msg-layout { display:grid; grid-template-columns:300px 1fr; gap:1rem; height:calc(100vh - 180px); min-height:400px; }
+.msg-list { background:#fff; border-radius:12px; border:1px solid #e5e7eb; overflow-y:auto; }
+.msg-list-header { padding:12px 14px; border-bottom:1px solid #e5e7eb; font-size:12px; font-weight:600; color:#374151; display:flex; justify-content:space-between; align-items:center; }
+.msg-item { padding:12px 14px; border-bottom:1px solid #f3f4f6; cursor:pointer; transition:background .1s; }
+.msg-item:hover { background:#f9fafb; }
+.msg-item.selected { background:#eff6ff; border-left:3px solid #1e3a5f; }
+.msg-item.unread .msg-sender { font-weight:700; }
+.msg-sender { font-size:12.5px; font-weight:600; color:#111827; margin-bottom:2px; }
+.msg-subject { font-size:12px; color:#374151; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.msg-preview { font-size:11px; color:#9ca3af; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.msg-date { font-size:10px; color:#9ca3af; float:right; margin-top:-18px; }
+.msg-detail { background:#fff; border-radius:12px; border:1px solid #e5e7eb; display:flex; flex-direction:column; }
+.msg-detail-header { padding:1.2rem 1.5rem; border-bottom:1px solid #e5e7eb; }
+.msg-detail-header h3 { font-size:15px; font-weight:700; color:#111827; margin-bottom:4px; }
+.msg-detail-meta { display:flex; gap:12px; font-size:12px; color:#6b7280; }
+.msg-detail-body { flex:1; padding:1.5rem; font-size:13.5px; line-height:1.7; color:#374151; white-space:pre-wrap; }
+.msg-detail-empty { flex:1; display:flex; align-items:center; justify-content:center; color:#9ca3af; font-size:13px; }
+.msg-reply { padding:1rem 1.5rem; border-top:1px solid #e5e7eb; display:flex; gap:8px; }
+.msg-reply input { flex:1; padding:8px 12px; border:1px solid #e5e7eb; border-radius:8px; font-size:13px; font-family:'Poppins',sans-serif; outline:none; }
+.msg-reply input:focus { border-color:#1e3a5f; }
+
+/* ══════════════════════════════════════════════
+   EMPLOI DU TEMPS (repris du Jour 2)
+══════════════════════════════════════════════ */
+.edt-controls { display:flex; gap:10px; margin-bottom:1rem; align-items:center; flex-wrap:wrap; }
+.edt-controls select { padding:7px 12px; border:1px solid #e5e7eb; border-radius:8px; font-size:12.5px; font-family:'Poppins',sans-serif; outline:none; }
+.edt-wrap { overflow-x:auto; }
+.edt-grid { width:100%; background:#fff; border-radius:12px; border:1px solid #e5e7eb; border-collapse:collapse; min-width:700px; }
+.edt-grid th { background:#1e3a5f; color:#fff; padding:10px 8px; font-size:11.5px; font-weight:600; text-align:center; border-right:1px solid rgba(255,255,255,.1); }
+.edt-grid th:first-child { width:70px; border-radius:12px 0 0 0; }
+.edt-grid th:last-child { border-radius:0 12px 0 0; border-right:none; }
+.edt-grid td { padding:0; height:52px; border-right:1px solid #e5e7eb; border-bottom:1px solid #e5e7eb; vertical-align:top; position:relative; }
+.edt-grid td:first-child { background:#f9fafb; text-align:center; font-size:11px; font-weight:600; color:#6b7280; vertical-align:middle; }
+.edt-grid td:last-child { border-right:none; }
+.edt-grid tr:last-child td { border-bottom:none; }
+.edt-slot { height:100%; padding:5px 7px; font-size:11px; line-height:1.35; border-radius:6px; margin:2px; cursor:pointer; }
+.edt-slot:hover { opacity:.85; }
+.edt-slot .s-mat { font-weight:700; font-size:11.5px; }
+.edt-slot-blue   { background:#dbeafe; color:#1d4ed8; }
+.edt-slot-green  { background:#dcfce7; color:#059669; }
+.edt-slot-purple { background:#ede9fe; color:#7c3aed; }
+.edt-slot-amber  { background:#fef9c3; color:#d97706; }
+.edt-add-btn { width:100%; height:100%; display:flex; align-items:center; justify-content:center; color:#d1d5db; font-size:18px; cursor:pointer; border:none; background:transparent; }
+.edt-add-btn:hover { color:#1e3a5f; background:#f3f4f6; }
+
+/* ══════════════════════════════════════════════
+   PAIEMENTS  ★ JOUR 3
+══════════════════════════════════════════════ */
+.pay-stat-bar { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:1.5rem; }
+.pay-stat { background:#fff; border-radius:14px; padding:1.1rem; border:1px solid #e5e7eb; }
+.pay-stat .ps-val { font-size:22px; font-weight:700; margin:4px 0 2px; }
+.pay-stat .ps-lbl { font-size:11px; color:#6b7280; font-weight:500; }
+.pay-stat .ps-ico { font-size:18px; }
+.facture-row td { vertical-align:middle; }
+.pay-prog-bar { height:6px; background:#e5e7eb; border-radius:3px; overflow:hidden; margin-top:4px; }
+.pay-prog-fill { height:100%; border-radius:3px; background:#059669; transition:width .5s; }
+.facture-detail { background:#fff; border-radius:12px; border:1px solid #e5e7eb; overflow:hidden; }
+.facture-detail-header { background:#1e3a5f; color:#fff; padding:1rem 1.5rem; display:flex; justify-content:space-between; align-items:center; }
+.facture-detail-header h3 { font-size:15px; font-weight:700; }
+.facture-lignes table { border-radius:0; border:none; }
+.facture-lignes th { border-bottom:1px solid #e5e7eb; }
+.facture-total { display:flex; justify-content:flex-end; padding:1rem 1.5rem; background:#f9fafb; border-top:1px solid #e5e7eb; }
+.facture-total-box { text-align:right; }
+.facture-total-box .ft-label { font-size:12px; color:#6b7280; font-weight:500; }
+.facture-total-box .ft-val { font-size:22px; font-weight:700; color:#1e3a5f; }
+
+/* ══════════════════════════════════════════════
+   DISCIPLINE  ★ JOUR 3
+══════════════════════════════════════════════ */
+.incident-card { background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:1rem 1.2rem; margin-bottom:.75rem; display:flex; gap:1rem; align-items:flex-start; transition:box-shadow .15s; }
+.incident-card:hover { box-shadow:0 4px 12px rgba(0,0,0,.06); }
+.incident-ico { width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+.incident-ico.sev-haute  { background:#fee2e2; }
+.incident-ico.sev-moyenne { background:#fef9c3; }
+.incident-ico.sev-faible  { background:#dcfce7; }
+.incident-body { flex:1; }
+.incident-body .inc-titre { font-size:13.5px; font-weight:600; color:#111827; margin-bottom:2px; }
+.incident-body .inc-meta  { font-size:12px; color:#6b7280; display:flex; gap:12px; flex-wrap:wrap; }
+.incident-body .inc-desc  { font-size:12.5px; color:#374151; margin-top:5px; }
+.incident-actions { display:flex; gap:6px; align-items:flex-start; }
+.discipline-stats { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:1.5rem; }
+.disc-stat { background:#fff; border-radius:14px; padding:1rem; border:1px solid #e5e7eb; text-align:center; }
+.disc-stat .ds-val { font-size:24px; font-weight:700; }
+.disc-stat .ds-lbl { font-size:11px; color:#6b7280; font-weight:500; }
+
+/* ══════════════════════════════════════════════
+   DOCUMENTS  ★ JOUR 3
+══════════════════════════════════════════════ */
+.doc-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:1rem; margin-top:1rem; }
+.doc-card { background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:1.2rem; text-align:center; transition:all .15s; cursor:pointer; }
+.doc-card:hover { box-shadow:0 4px 14px rgba(0,0,0,.08); transform:translateY(-2px); }
+.doc-card .dc-ico { font-size:36px; margin-bottom:.6rem; }
+.doc-card .dc-nom { font-size:13px; font-weight:600; color:#111827; margin-bottom:3px; word-break:break-word; }
+.doc-card .dc-meta { font-size:11px; color:#9ca3af; }
+.doc-card .dc-actions { margin-top:.75rem; display:flex; gap:6px; justify-content:center; }
+.doc-cat-header { display:flex; align-items:center; gap:8px; margin-bottom:.75rem; margin-top:1.2rem; }
+.doc-cat-header .dch-label { font-size:12px; font-weight:700; color:#374151; text-transform:uppercase; letter-spacing:.04em; }
+.doc-cat-header .dch-line { flex:1; height:1px; background:#e5e7eb; }
+.upload-drop { border:2px dashed #d1d5db; border-radius:12px; padding:2.5rem; text-align:center; color:#9ca3af; font-size:13px; cursor:pointer; transition:all .2s; background:#fafafa; }
+.upload-drop:hover { border-color:#1e3a5f; color:#1e3a5f; background:#f0f4ff; }
+.upload-drop .ud-ico { font-size:32px; margin-bottom:.5rem; }
+.upload-drop .ud-txt { font-size:14px; font-weight:600; }
+.upload-drop .ud-sub { font-size:12px; margin-top:3px; }
+
+/* ══════════════════════════════════════════════
+   RAPPORTS  ★ JOUR 3
+══════════════════════════════════════════════ */
+.rapport-layout { display:grid; grid-template-columns:260px 1fr; gap:1.2rem; }
+.rapport-menu { background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:.75rem; }
+.rapport-menu-item { padding:9px 12px; border-radius:8px; cursor:pointer; font-size:13px; font-weight:500; color:#374151; transition:all .15s; display:flex; align-items:center; gap:8px; margin-bottom:2px; }
+.rapport-menu-item:hover { background:#f3f4f6; }
+.rapport-menu-item.active { background:#eff6ff; color:#1d4ed8; font-weight:600; }
+.rapport-view { background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:1.5rem; }
+.rapport-view h3 { font-size:16px; font-weight:700; color:#111827; margin-bottom:1.2rem; }
+.chart-wrap { position:relative; max-width:600px; margin:0 auto; }
+.rapport-grid { display:grid; grid-template-columns:1fr 1fr; gap:1.2rem; }
+.rapport-block { background:#f9fafb; border-radius:10px; padding:1rem; border:1px solid #e5e7eb; }
+.rapport-block .rb-title { font-size:12px; font-weight:700; color:#374151; margin-bottom:1rem; text-transform:uppercase; letter-spacing:.04em; }
+.kpi-row { display:flex; justify-content:space-between; align-items:center; padding:7px 0; border-bottom:1px solid #e5e7eb; }
+.kpi-row:last-child { border-bottom:none; }
+.kpi-label { font-size:13px; color:#374151; }
+.kpi-value { font-size:13px; font-weight:700; color:#1e3a5f; }
+.export-bar { display:flex; gap:8px; margin-bottom:1.2rem; }
+
+/* ── Dashboard ── */
+.dash-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+.dash-block { background:#fff; border-radius:14px; border:1px solid #e5e7eb; padding:1.2rem; }
+.dash-block .block-title { font-size:12.5px; font-weight:600; color:#374151; margin-bottom:1rem; }
+
+/* ══════════════════════════════════════════════
+   JOUR 4 — AUTH + NOTIFS + USERS
+══════════════════════════════════════════════ */
+#login-screen { position:fixed; top:0; left:0; width:100%; height:100%; background:linear-gradient(135deg,#1e3a5f 0%,#163050 60%,#0f2040 100%); display:flex; align-items:center; justify-content:center; z-index:2000; }
+.login-card { background:#fff; border-radius:20px; padding:2.5rem; width:420px; max-width:95%; box-shadow:0 25px 60px rgba(0,0,0,.35); }
+.login-logo { text-align:center; margin-bottom:2rem; }
+.login-logo .l-ico { font-size:44px; }
+.login-logo h1 { font-size:26px; font-weight:700; color:#1e3a5f; margin:.4rem 0 .2rem; }
+.login-logo p { font-size:12.5px; color:#6b7280; }
+.login-btn { width:100%; padding:12px; background:#c97c1a; color:#fff; border:none; border-radius:10px; font-size:14px; font-weight:700; cursor:pointer; font-family:'Poppins',sans-serif; margin-top:.5rem; letter-spacing:.02em; transition:all .2s; }
+.login-btn:hover { background:#a86615; transform:translateY(-1px); }
+.login-btn:disabled { background:#9ca3af; transform:none; cursor:default; }
+.login-error { color:#dc2626; font-size:12px; text-align:center; margin-top:.75rem; display:none; background:#fee2e2; padding:8px 12px; border-radius:8px; }
+.login-demo { background:#f0f4ff; border-radius:10px; padding:.85rem 1rem; margin-top:1.2rem; font-size:11.5px; color:#374151; }
+.login-demo strong { font-size:12px; color:#1e3a5f; display:block; margin-bottom:.35rem; }
+.login-demo .demo-line { display:flex; justify-content:space-between; margin-bottom:.25rem; align-items:center; }
+.login-demo .demo-role { color:#6b7280; font-size:11.5px; }
+.login-demo .demo-creds { font-family:monospace; font-size:11px; color:#1d4ed8; cursor:pointer; }
+.login-demo .demo-creds:hover { text-decoration:underline; }
+#app-main { display:none; width:100%; }
+.notif-panel { position:fixed; top:0; right:-380px; width:370px; height:100%; background:#fff; box-shadow:-6px 0 30px rgba(0,0,0,.12); z-index:500; transition:right .28s cubic-bezier(.4,0,.2,1); display:flex; flex-direction:column; }
+.notif-panel.open { right:0; }
+.notif-header { padding:1rem 1.2rem; background:#1e3a5f; color:#fff; display:flex; justify-content:space-between; align-items:center; flex-shrink:0; }
+.notif-header h3 { font-size:14px; font-weight:700; }
+.notif-header-actions { display:flex; gap:8px; align-items:center; }
+.notif-list { flex:1; overflow-y:auto; }
+.notif-item { padding:.85rem 1.2rem; border-bottom:1px solid #f3f4f6; cursor:pointer; transition:background .1s; display:flex; gap:.75rem; }
+.notif-item:hover { background:#f9fafb; }
+.notif-item.unread { background:#eff6ff; border-left:3px solid #1e3a5f; }
+.notif-item .ni-ico { width:32px; height:32px; border-radius:50%; background:#f3f4f6; display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0; }
+.notif-item.unread .ni-ico { background:#dbeafe; }
+.notif-item .ni-body { flex:1; min-width:0; }
+.notif-item .ni-title { font-size:12.5px; font-weight:600; color:#111827; margin-bottom:2px; }
+.notif-item.unread .ni-title { color:#1e3a5f; }
+.notif-item .ni-msg { font-size:11.5px; color:#6b7280; line-height:1.4; }
+.notif-item .ni-time { font-size:10.5px; color:#9ca3af; margin-top:4px; }
+.notif-empty { text-align:center; padding:3rem 1rem; color:#9ca3af; }
+.notif-footer { padding:.75rem 1.2rem; border-top:1px solid #e5e7eb; flex-shrink:0; }
+.notif-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; z-index:499; }
+.notif-overlay.open { display:block; }
+.nav-bell-wrap { position:relative; display:inline-flex; cursor:pointer; padding:5px; border-radius:8px; color:rgba(255,255,255,.7); transition:all .15s; }
+.nav-bell-wrap:hover { background:rgba(255,255,255,.12); color:#fff; }
+.nav-bell-badge { position:absolute; top:-1px; right:-1px; background:#dc2626; color:#fff; font-size:9px; font-weight:700; border-radius:10px; padding:0 4px; min-width:16px; height:16px; display:none; align-items:center; justify-content:center; }
+.nav-user { display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:10px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.1); margin-bottom:.4rem; }
+.nav-user .u-avatar { width:32px; height:32px; border-radius:50%; background:#c97c1a; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:12px; flex-shrink:0; }
+.nav-user .u-name { font-size:12px; font-weight:600; color:#fff; line-height:1.2; }
+.nav-user .u-role { font-size:10px; color:rgba(255,255,255,.55); }
+.nav-actions { display:flex; align-items:center; justify-content:space-between; margin-bottom:.6rem; }
+.nav-logout { display:flex; align-items:center; gap:6px; color:rgba(255,255,255,.45); padding:6px 10px; border-radius:6px; font-size:11px; cursor:pointer; transition:all .15s; }
+.nav-logout:hover { background:rgba(255,255,255,.08); color:rgba(255,255,255,.75); }
+#pwa-banner { display:none; position:fixed; bottom:1rem; left:50%; transform:translateX(-50%); background:#1e3a5f; color:#fff; padding:12px 20px; border-radius:14px; box-shadow:0 8px 30px rgba(0,0,0,.25); z-index:600; align-items:center; gap:12px; font-size:13px; max-width:94%; }
+#pwa-banner.show { display:flex; animation:slidein .3s ease; }
+#pwa-banner .pb-btn { background:#c97c1a; color:#fff; border:none; padding:7px 14px; border-radius:8px; cursor:pointer; font-size:12px; font-weight:600; font-family:'Poppins',sans-serif; }
+#pwa-banner .pb-close { cursor:pointer; opacity:.6; font-size:18px; margin-left:4px; }
+#auth-source-badge { font-size:10px; padding:2px 8px; border-radius:20px; font-weight:600; margin-top:3px; display:none; }
+/* ══════════════════════════════════════════════
+   FICHE ÉTUDIANT  ★ JOUR 6
+══════════════════════════════════════════════ */
+.fiche-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.5); z-index:200; align-items:flex-start; justify-content:flex-end; }
+.fiche-overlay.open { display:flex; }
+.fiche-panel { background:#fff; width:660px; max-width:95vw; height:100%; overflow-y:auto; box-shadow:-8px 0 40px rgba(0,0,0,.15); display:flex; flex-direction:column; animation:slideInRight .25s cubic-bezier(.4,0,.2,1); }
+@keyframes slideInRight { from{transform:translateX(100%)} to{transform:translateX(0)} }
+.fiche-header { background:#1e3a5f; color:#fff; padding:1.2rem 1.5rem; display:flex; align-items:center; gap:1rem; flex-shrink:0; }
+.fiche-avatar { width:54px; height:54px; border-radius:50%; background:#c97c1a; display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:700; color:#fff; flex-shrink:0; }
+.fiche-header-info h3 { font-size:17px; font-weight:700; margin-bottom:2px; }
+.fiche-header-info p { font-size:12px; opacity:.75; }
+.fiche-close { margin-left:auto; cursor:pointer; font-size:22px; opacity:.7; flex-shrink:0; }
+.fiche-close:hover { opacity:1; }
+.fiche-tabs { display:flex; border-bottom:1px solid #e5e7eb; background:#f9fafb; flex-shrink:0; }
+.fiche-tab { flex:1; padding:10px 8px; text-align:center; font-size:12px; font-weight:600; color:#6b7280; cursor:pointer; border-bottom:2px solid transparent; transition:all .15s; }
+.fiche-tab.active { color:#1e3a5f; border-bottom-color:#1e3a5f; background:#fff; }
+.fiche-tab:hover { color:#1e3a5f; }
+.fiche-body { flex:1; padding:1.5rem; }
+.fiche-section { margin-bottom:1.5rem; }
+.fiche-section-title { font-size:11px; font-weight:700; color:#6b7280; text-transform:uppercase; letter-spacing:.06em; margin-bottom:.75rem; padding-bottom:.5rem; border-bottom:1px solid #f3f4f6; }
+.fiche-info-grid { display:grid; grid-template-columns:1fr 1fr; gap:.75rem; }
+.fiche-info-item label { display:block; font-size:10.5px; font-weight:600; color:#9ca3af; text-transform:uppercase; letter-spacing:.04em; margin-bottom:2px; }
+.fiche-info-item span { font-size:13px; color:#111827; font-weight:500; }
+.fiche-stat-row { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin-bottom:1.2rem; }
+.fiche-stat { background:#f9fafb; border:1px solid #e5e7eb; border-radius:10px; padding:.9rem; text-align:center; }
+.fiche-stat .fs-val { font-size:22px; font-weight:700; }
+.fiche-stat .fs-lbl { font-size:11px; color:#6b7280; font-weight:500; margin-top:2px; }
+.fiche-actions { display:flex; gap:8px; flex-shrink:0; padding:1rem 1.5rem; border-top:1px solid #e5e7eb; background:#f9fafb; }
+
+/* ══════════════════════════════════════════════
+   DASHBOARD CHARTS  ★ JOUR 6
+══════════════════════════════════════════════ */
+.dash-chart-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:1rem; }
+.dash-chart-block { background:#fff; border-radius:14px; border:1px solid #e5e7eb; padding:1.2rem; }
+.dash-chart-block .block-title { font-size:12.5px; font-weight:600; color:#374151; margin-bottom:1rem; }
+
+/* ══════════════════════════════════════════════
+   PARAMÈTRES  ★ JOUR 6
+══════════════════════════════════════════════ */
+.param-section { background:#fff; border-radius:14px; border:1px solid #e5e7eb; padding:1.5rem; margin-bottom:1.2rem; }
+.param-section-title { font-size:13px; font-weight:700; color:#111827; margin-bottom:1.2rem; padding-bottom:.75rem; border-bottom:1px solid #f3f4f6; display:flex; align-items:center; gap:8px; }
+.param-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+.color-picker-wrap { display:flex; align-items:center; gap:10px; }
+.color-picker-wrap input[type=color] { width:36px; height:36px; border-radius:8px; border:1px solid #e5e7eb; cursor:pointer; padding:2px; }
+
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════ ÉCRAN DE CONNEXION ═══════════════════════ -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="l-ico">🎓</div>
+      <h1>EduLink</h1>
+      <p>Plateforme de gestion scolaire — Bénin</p>
+    </div>
+    <div class="form-group">
+      <label style="text-transform:none;font-size:13px">Adresse e-mail</label>
+      <input type="email" id="login-email" placeholder="admin@edulink.bj" onkeypress="if(event.key==='Enter')seConnecter()" />
+    </div>
+    <div class="form-group">
+      <label style="text-transform:none;font-size:13px">Mot de passe</label>
+      <input type="password" id="login-pwd" placeholder="••••••••" onkeypress="if(event.key==='Enter')seConnecter()" />
+    </div>
+    <button class="login-btn" id="login-btn" onclick="seConnecter()">Se connecter →</button>
+    <div class="login-error" id="login-error"></div>
+    <div class="login-demo">
+      <strong>🔑 Comptes de démonstration</strong>
+      <div class="demo-line">
+        <span class="demo-role">👨‍💼 Administrateur</span>
+        <span class="demo-creds" data-e="admin@edulink.bj" data-p="admin123" onclick="fillDemo(this.dataset.e,this.dataset.p)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1b7a7f7672755b7e7f6e77727570357971">[email&#160;protected]</a> / admin123</span>
+      </div>
+      <div class="demo-line">
+        <span class="demo-role">💰 Comptable</span>
+        <span class="demo-creds" data-e="compta@edulink.bj" data-p="compta123" onclick="fillDemo(this.dataset.e,this.dataset.p)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="8eede1e3fefaefceebeafbe2e7e0e5a0ece4">[email&#160;protected]</a> / compta123</span>
+      </div>
+      <div class="demo-line">
+        <span class="demo-role">👨‍🏫 Enseignant</span>
+        <span class="demo-creds" data-e="prof@edulink.bj" data-p="prof123" onclick="fillDemo(this.dataset.e,this.dataset.p)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="2252504d44624746574e4b4c490c4048">[email&#160;protected]</a> / prof123</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════ PANNEAU NOTIFICATIONS ═══════════════════════ -->
+<div class="notif-panel" id="notif-panel">
+  <div class="notif-header">
+    <h3>🔔 Notifications</h3>
+    <div class="notif-header-actions">
+      <button onclick="toutMarquerLu()" style="background:rgba(255,255,255,.2);color:#fff;font-size:10px;padding:4px 10px;border-radius:6px;border:none;cursor:pointer;font-family:'Poppins'">Tout lire</button>
+      <span onclick="fermerNotifPanel()" style="cursor:pointer;font-size:20px;color:#fff;opacity:.7">✕</span>
+    </div>
+  </div>
+  <div class="notif-list" id="notif-list"><div class="notif-empty">🔔<br><br>Aucune notification</div></div>
+  <div class="notif-footer">
+    <button onclick="fermerNotifPanel()" class="btn-ghost" style="width:100%;font-size:12px">Fermer</button>
+  </div>
+</div>
+<div class="notif-overlay" id="notif-overlay" onclick="fermerNotifPanel()"></div>
+
+<!-- ═══════════════════════ APPLICATION PRINCIPALE ═══════════════════════ -->
+<div id="app-main">
+
+<!-- ═══════════════════════════════════════
+     NAVIGATION
+═══════════════════════════════════════ -->
+<nav>
+  <div class="logo">🎓 EduLink</div>
+  <div class="ecole-badge">
+    <span>🏫</span>
+    <div>
+      <div class="eb-nom" id="ecole-nom-nav">Chargement...</div>
+      <div class="eb-type" id="ecole-type-nav">—</div>
+    </div>
+  </div>
+  <div class="ecole-selector-wrap">
+    <select id="ecole-selector" onchange="changerEcole()"><option>Chargement...</option></select>
+  </div>
+
+  <div class="nav-section">Vue d'ensemble</div>
+  <a onclick="showPage('dashboard')" id="nav-dashboard" class="on"><span class="ico">⊞</span> Tableau de bord</a>
+
+  <div class="nav-section">Académique</div>
+  <a onclick="showPage('etudiants')" id="nav-etudiants"><span class="ico">👥</span> Étudiants</a>
+  <a onclick="showPage('presences')" id="nav-presences"><span class="ico">✅</span> Présences</a>
+  <a onclick="showPage('notes')" id="nav-notes"><span class="ico">📊</span> Notes & Bulletins</a>
+  <a onclick="showPage('emploi')" id="nav-emploi"><span class="ico">📅</span> Emploi du temps</a>
+
+  <div class="nav-section">Communication</div>
+  <a onclick="showPage('messages')" id="nav-messages"><span class="ico">✉️</span> Messagerie <span id="badge-msg" style="margin-left:auto;background:#c97c1a;color:#fff;border-radius:10px;padding:1px 6px;font-size:10px;display:none"></span></a>
+  <a onclick="showPage('discipline')" id="nav-discipline"><span class="ico">⚠️</span> Discipline <span id="badge-disc" style="margin-left:auto;background:#dc2626;color:#fff;border-radius:10px;padding:1px 6px;font-size:10px;display:none"></span></a>
+
+  <div class="nav-section">Administration</div>
+  <a onclick="showPage('paiements')" id="nav-paiements"><span class="ico">💳</span> Paiements</a>
+  <a onclick="showPage('documents')" id="nav-documents"><span class="ico">📄</span> Documents</a>
+  <a onclick="showPage('rapports')"  id="nav-rapports"><span class="ico">📈</span> Rapports</a>
+  <a onclick="showPage('utilisateurs')" id="nav-utilisateurs" style="display:none"><span class="ico">👥</span> Utilisateurs</a>
+  <a onclick="ouvrirConfigNotif()" id="nav-notifs" style="display:none"><span class="ico">📧</span> Notifications</a>
+  <a onclick="showPage('parametres')" id="nav-parametres" style="display:none"><span class="ico">⚙️</span> Paramètres école</a>
+
+  <div class="nav-bottom">
+    <div class="nav-actions">
+      <div class="nav-bell-wrap" onclick="ouvrirNotifPanel()" title="Notifications">
+        🔔<span class="nav-bell-badge" id="notif-badge"></span>
+      </div>
+      <a href="edulink-portail.html" target="_blank" style="font-size:11px;color:rgba(255,255,255,.55);padding:5px 8px;border-radius:6px;background:rgba(255,255,255,.06);text-decoration:none">🌐 Portail</a>
+    </div>
+    <div class="nav-user">
+      <div class="u-avatar" id="nav-avatar">?</div>
+      <div>
+        <div class="u-name" id="nav-user-name">—</div>
+        <div class="u-role" id="nav-user-role">—</div>
+        <div id="auth-source-badge"></div>
+      </div>
+    </div>
+    <div class="nav-logout" onclick="seDeconnecter()">🚪 Déconnexion</div>
+  </div>
+</nav>
+
+<main>
+
+<!-- ═══════════════════════════════════════
+     DASHBOARD
+═══════════════════════════════════════ -->
+<div class="page active" id="page-dashboard">
+  <div class="top">
+    <div>
+      <h2>Tableau de bord</h2>
+      <p class="page-subtitle" id="dash-subtitle">Vue générale de l'établissement</p>
+    </div>
+    <button onclick="ouvrirModal('modal-annonce')">+ Envoyer annonce</button>
+    <button class="btn-blue btn-sm" onclick="envoyerNotifAbsencesJour()" title="Notifier les parents des absences du jour">📧 Notifier absences</button>
+    <button class="btn-secondary btn-sm" onclick="ouvrirConfigNotif()" title="Configurer les emails" style="background:rgba(255,255,255,.1);color:#374151;border:1px solid #e5e7eb">⚙️ Emails</button>
+  </div>
+  <div class="cards">
+    <div class="card"><div class="i">🎓</div><div class="n" style="color:#1e3a5f" id="stat-etudiants">…</div><div class="l">Étudiants inscrits</div></div>
+    <div class="card"><div class="i">🚫</div><div class="n" style="color:#dc2626" id="stat-absences">…</div><div class="l">Absences aujourd'hui</div></div>
+    <div class="card"><div class="i">💳</div><div class="n" style="color:#c97c1a" id="stat-impayés">…</div><div class="l">Factures impayées</div></div>
+    <div class="card"><div class="i">⚠️</div><div class="n" style="color:#7c3aed" id="stat-incidents">…</div><div class="l">Incidents ouverts</div></div>
+  </div>
+  <div class="dash-grid">
+    <div class="dash-block">
+      <div class="block-title">Absences récentes</div>
+      <table>
+        <tr><th>Étudiant</th><th>Matière</th><th>Date</th><th>Statut</th></tr>
+        <tbody id="tbody-absences-dashboard"><tr><td colspan="4" class="loading">Chargement...</td></tr></tbody>
+      </table>
+    </div>
+    <div class="dash-block">
+      <div class="block-title">Dernières notes saisies</div>
+      <table>
+        <tr><th>Étudiant</th><th>Matière</th><th>Note</th><th>Appréciation</th></tr>
+        <tbody id="tbody-notes-dashboard"><tr><td colspan="4" class="loading">Chargement...</td></tr></tbody>
+      </table>
+    </div>
+
+  <!-- ★ JOUR 6 : Graphiques Dashboard -->
+  <div class="dash-chart-grid" id="dash-charts-wrap">
+    <div class="dash-chart-block">
+      <div class="block-title">📊 Répartition par filière</div>
+      <div style="position:relative;max-width:100%;height:200px"><canvas id="dash-chart-filieres"></canvas></div>
+    </div>
+    <div class="dash-chart-block">
+      <div class="block-title">💳 Bilan financier (FCFA)</div>
+      <div style="position:relative;max-width:100%;height:200px"><canvas id="dash-chart-finances"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     ÉTUDIANTS
+═══════════════════════════════════════ -->
+<div class="page" id="page-etudiants">
+  <div class="top">
+    <h2>Étudiants</h2>
+    <div class="top-actions">
+      <button class="btn-secondary btn-outline" onclick="telechargerModeleCSV()" title="Télécharger un modèle CSV vide">⬇️ Modèle CSV</button>
+      <button class="btn-purple" onclick="ouvrirModal('modal-import-csv')">📥 Import CSV</button>
+      <button onclick="ouvrirModal('modal-etudiant')">+ Ajouter étudiant</button>
+    </div>
+  </div>
+  <div class="search-bar"><input type="text" id="search-etudiants" placeholder="Rechercher par nom, prénom, matricule..." oninput="filtrerEtudiants()"></div>
+  <table>
+    <tr><th>Matricule</th><th>Nom complet</th><th>Filière</th><th>Niveau</th><th>Statut</th><th>Actions</th></tr>
+    <tbody id="tbody-etudiants"><tr><td colspan="6" class="loading">Chargement...</td></tr></tbody>
+  </table>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PRÉSENCES
+═══════════════════════════════════════ -->
+<div class="page" id="page-presences">
+  <div class="top"><h2>Présences & Absences</h2><button onclick="ouvrirModal('modal-absence')">+ Enregistrer absence</button></div>
+  <div class="filters">
+    <span class="filter-label">Filtrer :</span>
+    <select id="filter-absence-statut" onchange="chargerAbsences()">
+      <option value="">Tous les statuts</option>
+      <option value="absent">Absent</option><option value="retard">Retard</option><option value="excuse">Excusé</option>
+    </select>
+    <input type="date" id="filter-absence-date" onchange="chargerAbsences()" style="padding:6px 10px;border:1px solid #e5e7eb;border-radius:8px;font-size:12px;font-family:'Poppins',sans-serif;outline:none;">
+  </div>
+  <table>
+    <tr><th>Étudiant</th><th>Matière</th><th>Date</th><th>Statut</th><th>Justification</th><th>Parent notifié</th></tr>
+    <tbody id="tbody-presences"><tr><td colspan="6" class="loading">Chargement...</td></tr></tbody>
+  </table>
+</div>
+
+<!-- ═══════════════════════════════════════
+     NOTES & BULLETINS
+═══════════════════════════════════════ -->
+<div class="page" id="page-notes">
+  <div class="top">
+    <h2>Notes & Bulletins</h2>
+    <div class="top-actions">
+      <button class="btn-outline" onclick="showTab('notes','tab-bulletins')">📄 Voir bulletins</button>
+      <button onclick="ouvrirModal('modal-note')">+ Saisir note</button>
+    </div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" id="tab-saisie-btn" onclick="showTab('notes','tab-saisie')">📝 Saisie des notes</button>
+    <button class="tab" id="tab-bulletins-btn" onclick="showTab('notes','tab-bulletins')">📄 Bulletins</button>
+  </div>
+  <div id="tab-saisie">
+    <div class="filters">
+      <span class="filter-label">Filtrer :</span>
+      <select id="filter-notes-periode" onchange="chargerNotes()">
+        <option value="">Toutes périodes</option>
+        <option value="S1">Semestre 1</option><option value="S2">Semestre 2</option>
+        <option value="T1">Trimestre 1</option><option value="T2">Trimestre 2</option><option value="T3">Trimestre 3</option>
+      </select>
+      <select id="filter-notes-matiere" onchange="chargerNotes()"><option value="">Toutes les matières</option></select>
+    </div>
+    <table>
+      <tr><th>Étudiant</th><th>Matière</th><th>Note /20</th><th>Coefficient</th><th>Période</th><th>Appréciation</th><th>Actions</th></tr>
+      <tbody id="tbody-notes"><tr><td colspan="7" class="loading">Chargement...</td></tr></tbody>
+    </table>
+  </div>
+  <div id="tab-bulletins" style="display:none">
+    <div class="bulletin-select">
+      <span class="filter-label">Étudiant :</span>
+      <select id="select-bulletin-etudiant" onchange="chargerBulletin()" style="padding:7px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:13px;font-family:'Poppins',sans-serif;outline:none;min-width:220px;">
+        <option value="">— Sélectionner un étudiant —</option>
+      </select>
+      <select id="select-bulletin-periode" onchange="chargerBulletin()" style="padding:7px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:13px;font-family:'Poppins',sans-serif;outline:none;">
+        <option value="S1">Semestre 1</option><option value="S2">Semestre 2</option>
+        <option value="T1">Trimestre 1</option><option value="T2">Trimestre 2</option><option value="T3">Trimestre 3</option>
+      </select>
+      <button class="btn-blue btn-sm" onclick="imprimerBulletin()">🖨️ Imprimer</button>
+    </div>
+    <div id="bulletin-container">
+      <div class="empty-state"><div class="icon">📄</div><h3>Sélectionnez un étudiant</h3></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     EMPLOI DU TEMPS
+═══════════════════════════════════════ -->
+<div class="page" id="page-emploi">
+  <div class="top"><h2>Emploi du temps</h2><button onclick="ouvrirModal('modal-emploi')">+ Ajouter créneau</button></div>
+  <div class="edt-controls">
+    <span class="filter-label">Classe :</span>
+    <select id="edt-filter-classe" onchange="chargerEmploiDuTemps()">
+      <option value="">Toutes les classes</option>
+      <option>L1 Informatique</option><option>L2 Informatique</option><option>L3 Informatique</option>
+      <option>L1 Gestion</option><option>L2 Gestion</option><option>L3 Gestion</option>
+      <option>M1</option><option>M2</option>
+    </select>
+    <div style="margin-left:auto;display:flex;gap:6px;align-items:center">
+      <span style="font-size:11px;color:#6b7280">Légende :</span>
+      <span class="badge blue">Cours</span><span class="badge green">TD</span>
+      <span class="badge purple">TP</span><span class="badge amber">Exam</span>
+    </div>
+  </div>
+  <div class="edt-wrap">
+    <table class="edt-grid" id="edt-table">
+      <tr>
+        <th>Heure</th>
+        <th>Lundi</th><th>Mardi</th><th>Mercredi</th>
+        <th>Jeudi</th><th>Vendredi</th><th>Samedi</th>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     MESSAGERIE
+═══════════════════════════════════════ -->
+<div class="page" id="page-messages">
+  <div class="top"><h2>Messagerie</h2><button onclick="ouvrirModal('modal-message')">+ Nouveau message</button></div>
+  <div class="msg-layout">
+    <div class="msg-list">
+      <div class="msg-list-header">
+        <span>Boîte de réception</span>
+        <span id="count-msgs" style="font-size:11px;color:#6b7280"></span>
+      </div>
+      <div id="msg-list-body"><div class="loading">Chargement...</div></div>
+    </div>
+    <div class="msg-detail">
+      <div class="msg-detail-empty" id="msg-detail-empty">✉️ &nbsp; Sélectionnez un message</div>
+      <div id="msg-detail-content" style="display:none;flex-direction:column;height:100%">
+        <div class="msg-detail-header">
+          <h3 id="msg-detail-objet">—</h3>
+          <div class="msg-detail-meta">
+            <span>De : <strong id="msg-detail-from">—</strong></span>
+            <span>Rôle : <span id="msg-detail-role">—</span></span>
+            <span id="msg-detail-date" style="margin-left:auto"></span>
+          </div>
+        </div>
+        <div class="msg-detail-body" id="msg-detail-body"></div>
+        <div class="msg-reply">
+          <input type="text" id="msg-reply-input" placeholder="Répondre...">
+          <button class="btn-sm btn-blue" onclick="envoyerReponse()">Envoyer</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PAIEMENTS  ★ JOUR 3
+═══════════════════════════════════════ -->
+<div class="page" id="page-paiements">
+  <div class="top">
+    <div>
+      <h2>Paiements & Facturation</h2>
+      <p class="page-subtitle">Suivi des frais scolaires et des paiements</p>
+    </div>
+    <div class="top-actions">
+      <button class="btn-outline" onclick="showTab('pay','tab-pay-historique')">📋 Historique</button>
+      <button onclick="ouvrirModal('modal-facture')">+ Nouvelle facture</button>
+      <button class="btn-secondary btn-sm" onclick="envoyerRappelsPaiement()" style="background:#fef9c3;color:#d97706;border:1px solid #fde68a" title="Envoyer rappels email aux parents">📧 Rappels email</button>
+    </div>
+  </div>
+
+  <!-- Stats paiements -->
+  <div class="pay-stat-bar">
+    <div class="pay-stat"><div class="ps-ico">📋</div><div class="ps-val" id="ps-total" style="color:#1e3a5f">0</div><div class="ps-lbl">Total factures</div></div>
+    <div class="pay-stat"><div class="ps-ico">✅</div><div class="ps-val" id="ps-payees" style="color:#059669">0</div><div class="ps-lbl">Payées</div></div>
+    <div class="pay-stat"><div class="ps-ico">⏳</div><div class="ps-val" id="ps-attente" style="color:#d97706">0</div><div class="ps-lbl">En attente</div></div>
+    <div class="pay-stat"><div class="ps-ico">🚨</div><div class="ps-val" id="ps-retard" style="color:#dc2626">0</div><div class="ps-lbl">En retard</div></div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" id="tab-pay-liste-btn" onclick="showTab('pay','tab-pay-liste')">📋 Factures</button>
+    <button class="tab" id="tab-pay-historique-btn" onclick="showTab('pay','tab-pay-historique')">💰 Paiements reçus</button>
+  </div>
+
+  <!-- Tab : Factures -->
+  <div id="tab-pay-liste">
+    <div class="filters">
+      <span class="filter-label">Statut :</span>
+      <select id="filter-pay-statut" onchange="chargerFactures()">
+        <option value="">Tous</option>
+        <option value="payée">Payée</option>
+        <option value="en_attente">En attente</option>
+        <option value="retard">En retard</option>
+        <option value="partiellement_payée">Partielle</option>
+      </select>
+      <select id="filter-pay-type" onchange="chargerFactures()">
+        <option value="">Tous les types</option>
+        <option value="scolarite">Scolarité</option>
+        <option value="inscription">Inscription</option>
+        <option value="examen">Examen</option>
+        <option value="autre">Autre</option>
+      </select>
+    </div>
+    <table>
+      <tr><th>Référence</th><th>Étudiant</th><th>Objet</th><th>Montant</th><th>Payé</th><th>Progression</th><th>Statut</th><th>Échéance</th><th>Actions</th></tr>
+      <tbody id="tbody-factures"><tr><td colspan="9" class="loading">Chargement...</td></tr></tbody>
+    </table>
+  </div>
+
+  <!-- Tab : Paiements reçus -->
+  <div id="tab-pay-historique" style="display:none">
+    <table>
+      <tr><th>Date</th><th>Référence facture</th><th>Étudiant</th><th>Montant payé</th><th>Mode</th><th>Référence</th></tr>
+      <tbody id="tbody-paiements"><tr><td colspan="6" class="loading">Chargement...</td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     DISCIPLINE  ★ JOUR 3
+═══════════════════════════════════════ -->
+<div class="page" id="page-discipline">
+  <div class="top">
+    <div>
+      <h2>Discipline</h2>
+      <p class="page-subtitle">Gestion des incidents et sanctions</p>
+    </div>
+    <button onclick="ouvrirModal('modal-incident')">+ Nouvel incident</button>
+  </div>
+
+  <div class="discipline-stats">
+    <div class="disc-stat"><div class="ds-val" id="ds-total" style="color:#1e3a5f">0</div><div class="ds-lbl">Incidents total</div></div>
+    <div class="disc-stat"><div class="ds-val" id="ds-ouverts" style="color:#dc2626">0</div><div class="ds-lbl">En cours / Ouverts</div></div>
+    <div class="disc-stat"><div class="ds-val" id="ds-resolus" style="color:#059669">0</div><div class="ds-lbl">Résolus</div></div>
+  </div>
+
+  <div class="filters">
+    <span class="filter-label">Sévérité :</span>
+    <select id="filter-disc-sev" onchange="chargerIncidents()">
+      <option value="">Toutes</option>
+      <option value="haute">Haute</option>
+      <option value="moyenne">Moyenne</option>
+      <option value="faible">Faible</option>
+    </select>
+    <select id="filter-disc-statut" onchange="chargerIncidents()">
+      <option value="">Tous les statuts</option>
+      <option value="ouvert">Ouvert</option>
+      <option value="en_traitement">En traitement</option>
+      <option value="résolu">Résolu</option>
+    </select>
+  </div>
+
+  <div id="incidents-list">
+    <div class="loading">Chargement des incidents...</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     DOCUMENTS  ★ JOUR 3
+═══════════════════════════════════════ -->
+<div class="page" id="page-documents">
+  <div class="top">
+    <div>
+      <h2>Documents</h2>
+      <p class="page-subtitle">Bibliothèque de documents de l'établissement</p>
+    </div>
+    <div class="top-actions">
+      <button class="btn-outline" onclick="showTab('docs','tab-docs-liste')">📋 Liste</button>
+      <button onclick="ouvrirModal('modal-document')">+ Ajouter document</button>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" id="tab-docs-galerie-btn" onclick="showTab('docs','tab-docs-galerie')">🗂️ Galerie</button>
+    <button class="tab" id="tab-docs-liste-btn" onclick="showTab('docs','tab-docs-liste')">📋 Liste</button>
+  </div>
+
+  <!-- Tab : Galerie -->
+  <div id="tab-docs-galerie">
+    <div id="docs-galerie-container">
+      <div class="loading">Chargement des documents...</div>
+    </div>
+  </div>
+
+  <!-- Tab : Liste -->
+  <div id="tab-docs-liste" style="display:none">
+    <div class="search-bar">
+      <input type="text" id="search-docs" placeholder="Rechercher un document..." oninput="filtrerDocuments()">
+    </div>
+    <table>
+      <tr><th>Nom</th><th>Type</th><th>Catégorie</th><th>Étudiant concerné</th><th>Ajouté le</th><th>Taille</th><th>Actions</th></tr>
+      <tbody id="tbody-documents"><tr><td colspan="7" class="loading">Chargement...</td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     RAPPORTS  ★ JOUR 3
+═══════════════════════════════════════ -->
+<div class="page" id="page-rapports">
+  <div class="top">
+    <h2>Rapports & Statistiques</h2>
+    <div class="top-actions">
+      <button class="btn-outline" onclick="exporterRapport('csv')">⬇️ Export CSV</button>
+      <button onclick="exporterRapport('print')">🖨️ Imprimer</button>
+    </div>
+  </div>
+
+  <div class="rapport-layout">
+    <!-- Menu -->
+    <div class="rapport-menu">
+      <div class="section-label" style="padding:0 8px;margin-bottom:.5rem">Sélectionner un rapport</div>
+      <div class="rapport-menu-item active" id="rmenu-effectifs" onclick="afficherRapport('effectifs')">👥 Effectifs par filière</div>
+      <div class="rapport-menu-item" id="rmenu-absences" onclick="afficherRapport('absences')">🚫 Taux d'absentéisme</div>
+      <div class="rapport-menu-item" id="rmenu-moyennes" onclick="afficherRapport('moyennes')">📊 Moyennes par matière</div>
+      <div class="rapport-menu-item" id="rmenu-paiements" onclick="afficherRapport('paiements')">💳 État des paiements</div>
+      <div class="rapport-menu-item" id="rmenu-discipline" onclick="afficherRapport('discipline')">⚠️ Rapport disciplinaire</div>
+    </div>
+
+    <!-- Vue rapport -->
+    <div class="rapport-view" id="rapport-view">
+      <div class="loading">Sélectionnez un rapport pour l'afficher</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     UTILISATEURS  ★ JOUR 4
+═══════════════════════════════════════ -->
+<div class="page" id="page-utilisateurs">
+  <div class="top">
+    <div>
+      <h2>👥 Utilisateurs &amp; Accès</h2>
+      <p class="page-subtitle">Gestion des comptes — <span id="sub-ecole-util-nom"></span></p>
+    </div>
+    <button onclick="ouvrirModal('modal-user')">+ Nouvel utilisateur</button>
+  </div>
+  <div class="cards">
+    <div class="card"><div class="i">👨‍💼</div><div class="n" id="cnt-admins">0</div><div class="l">Administrateurs</div></div>
+    <div class="card"><div class="i">👨‍🏫</div><div class="n" id="cnt-profs">0</div><div class="l">Enseignants</div></div>
+    <div class="card"><div class="i">💰</div><div class="n"  id="cnt-comptas">0</div><div class="l">Comptables</div></div>
+    <div class="card"><div class="i">👨‍👩‍👧</div><div class="n" id="cnt-parents">0</div><div class="l">Parents/Étudiants</div></div>
+  </div>
+  <div class="search-bar">
+    <input type="text" placeholder="🔍 Rechercher..." oninput="filtrerUtilisateurs(this.value)">
+  </div>
+  <table>
+    <tr><th>Utilisateur</th><th>E-mail</th><th>Rôle</th><th>Statut</th><th>Dernière connexion</th><th>Actions</th></tr>
+    <tbody id="tbody-utilisateurs"><tr><td colspan="6" class="loading">Chargement...</td></tr></tbody>
+  </table>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     PARAMÈTRES ÉCOLE  ★ JOUR 6
+═══════════════════════════════════════ -->
+<div class="page" id="page-parametres">
+  <div class="top">
+    <div>
+      <h2>⚙️ Paramètres école</h2>
+      <p class="page-subtitle">Configuration de l'établissement courant</p>
+    </div>
+    <button onclick="sauvegarderParametres()">💾 Sauvegarder</button>
+  </div>
+
+  <div class="param-section">
+    <div class="param-section-title">🏫 Informations générales</div>
+    <div class="param-grid">
+      <div class="form-group"><label>Nom de l'établissement</label><input type="text" id="param-nom" placeholder="Ex: Université d'Abomey-Calavi"></div>
+      <div class="form-group"><label>Type d'établissement</label>
+        <select id="param-type">
+          <option value="université">Université</option>
+          <option value="école supérieure">École supérieure</option>
+          <option value="lycée">Lycée</option>
+          <option value="collège">Collège</option>
+          <option value="école primaire">École primaire</option>
+          <option value="centre de formation">Centre de formation</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Ville</label><input type="text" id="param-ville" placeholder="Ex: Cotonou"></div>
+      <div class="form-group"><label>Pays</label><input type="text" id="param-pays" value="Bénin"></div>
+      <div class="form-group"><label>Email officiel</label><input type="email" id="param-email" placeholder="contact@ecole.bj"></div>
+      <div class="form-group"><label>Téléphone</label><input type="tel" id="param-tel" placeholder="+229 XX XX XX XX"></div>
+    </div>
+    <div class="form-group"><label>Adresse complète</label><textarea id="param-adresse" rows="2" placeholder="Adresse postale..."></textarea></div>
+  </div>
+
+  <div class="param-section">
+    <div class="param-section-title">📅 Année scolaire</div>
+    <div class="param-grid">
+      <div class="form-group"><label>Année scolaire en cours</label><input type="text" id="param-annee" placeholder="Ex: 2024-2025"></div>
+      <div class="form-group"><label>Semestre / Trimestre actuel</label>
+        <select id="param-periode">
+          <option value="S1">Semestre 1</option><option value="S2">Semestre 2</option>
+          <option value="T1">Trimestre 1</option><option value="T2">Trimestre 2</option><option value="T3">Trimestre 3</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Date de début</label><input type="date" id="param-debut"></div>
+      <div class="form-group"><label>Date de fin</label><input type="date" id="param-fin"></div>
+    </div>
+  </div>
+
+  <div class="param-section">
+    <div class="param-section-title">📊 Configuration des notes</div>
+    <div class="param-grid">
+      <div class="form-group"><label>Note maximale</label>
+        <select id="param-note-max">
+          <option value="20">20 (système français)</option>
+          <option value="100">100 (système américain)</option>
+          <option value="10">10</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Note de passage</label><input type="number" id="param-note-passage" value="10" min="0" max="20" step="0.5"></div>
+      <div class="form-group"><label>Mention Passable à partir de</label><input type="number" id="param-mention-passable" value="10" min="0" step="0.5"></div>
+      <div class="form-group"><label>Mention Bien à partir de</label><input type="number" id="param-mention-bien" value="14" min="0" step="0.5"></div>
+      <div class="form-group"><label>Mention Très Bien à partir de</label><input type="number" id="param-mention-tb" value="16" min="0" step="0.5"></div>
+      <div class="form-group"><label>Coefficient par défaut</label><input type="number" id="param-coeff-def" value="2" min="1" max="10"></div>
+    </div>
+  </div>
+
+  <div class="param-section">
+    <div class="param-section-title">💳 Paramètres financiers</div>
+    <div class="param-grid">
+      <div class="form-group"><label>Devise</label>
+        <select id="param-devise">
+          <option value="FCFA">FCFA (XOF)</option>
+          <option value="EUR">Euro (€)</option>
+          <option value="USD">Dollar (USD)</option>
+          <option value="GNF">Franc guinéen (GNF)</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Frais de scolarité annuels (défaut)</label><input type="number" id="param-frais-scol" placeholder="Ex: 350000" min="0"></div>
+      <div class="form-group"><label>Frais d'inscription (défaut)</label><input type="number" id="param-frais-inscr" placeholder="Ex: 50000" min="0"></div>
+      <div class="form-group"><label>Délai de retard paiement (jours)</label><input type="number" id="param-delai-retard" value="30" min="1"></div>
+    </div>
+  </div>
+
+  <div class="param-section">
+    <div class="param-section-title">🔔 Préférences notifications</div>
+    <div style="display:flex;flex-direction:column;gap:.75rem">
+      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px"><input type="checkbox" id="param-notif-absence" checked style="width:16px;height:16px;cursor:pointer"> Notifier les parents automatiquement lors d'une absence</label>
+      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px"><input type="checkbox" id="param-notif-retard" checked style="width:16px;height:16px;cursor:pointer"> Notifier les parents lors d'un retard</label>
+      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px"><input type="checkbox" id="param-notif-paiement" checked style="width:16px;height:16px;cursor:pointer"> Envoyer des rappels automatiques pour les paiements en retard</label>
+      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px"><input type="checkbox" id="param-notif-bulletin" style="width:16px;height:16px;cursor:pointer"> Notifier quand un bulletin est disponible</label>
+    </div>
+  </div>
+
+  <div class="param-section">
+    <div class="param-section-title">🎓 Filières et niveaux disponibles</div>
+    <div class="form-group">
+      <label>Filières (une par ligne)</label>
+      <textarea id="param-filieres" rows="5" placeholder="Informatique&#10;Gestion&#10;Droit&#10;Médecine&#10;Finance&#10;Lettres">Informatique
+Gestion
+Droit
+Médecine
+Finance
+Lettres</textarea>
+    </div>
+    <div class="form-group">
+      <label>Niveaux (une par ligne)</label>
+      <textarea id="param-niveaux" rows="4" placeholder="L1&#10;L2&#10;L3&#10;M1&#10;M2">L1
+L2
+L3
+M1
+M2</textarea>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<!-- ═══════════════════════════════════════
+     FICHE ÉTUDIANT (panel latéral)  ★ JOUR 6
+═══════════════════════════════════════ -->
+<div class="fiche-overlay" id="fiche-etudiant-overlay">
+  <div class="fiche-panel" id="fiche-etudiant-panel">
+    <div class="fiche-header">
+      <div class="fiche-avatar" id="fiche-avatar">?</div>
+      <div class="fiche-header-info">
+        <h3 id="fiche-nom-complet">Étudiant</h3>
+        <p id="fiche-meta">Filière · Niveau · Matricule</p>
+      </div>
+      <span class="fiche-close" onclick="fermerFiche()">✕</span>
+    </div>
+    <div class="fiche-tabs">
+      <div class="fiche-tab active" id="ftab-infos" onclick="showFicheTab('infos')">📋 Infos</div>
+      <div class="fiche-tab" id="ftab-notes" onclick="showFicheTab('notes')">📊 Notes</div>
+      <div class="fiche-tab" id="ftab-absences" onclick="showFicheTab('absences')">🚫 Absences</div>
+      <div class="fiche-tab" id="ftab-paiements" onclick="showFicheTab('paiements')">💳 Paiements</div>
+    </div>
+    <div class="fiche-body" id="fiche-body">
+      <div class="loading">Chargement...</div>
+    </div>
+    <div class="fiche-actions">
+      <button class="btn-sm btn-blue" onclick="imprimerFiche()">🖨️ Imprimer fiche</button>
+      <button class="btn-sm btn-secondary" onclick="fermerFiche()">Fermer</button>
+    </div>
+  </div>
+</div>
+</div><!-- /#app-main -->
+
+<!-- ═══════════════════════════════════════════
+     MODALS
+═══════════════════════════════════════════ -->
+
+<!-- ★ Modal : Import CSV étudiants  JOUR 7 ★ -->
+<div class="modal-overlay" id="modal-import-csv">
+  <div class="modal modal-lg">
+    <h3>📥 Import CSV — Étudiants en masse</h3>
+
+    <!-- Étape 1 : Upload -->
+    <div id="csv-step-1">
+      <div style="background:#eff6ff;border-radius:10px;padding:.9rem 1rem;margin-bottom:1rem;font-size:12.5px;color:#374151">
+        <strong style="color:#1e3a5f">Format attendu :</strong><br>
+        Colonnes : <code style="background:#dbeafe;padding:1px 5px;border-radius:4px">matricule, nom, prenom, sexe, filiere, niveau, email</code><br>
+        <span style="font-size:11.5px;color:#6b7280">• Séparateur : virgule (,) · Encodage : UTF-8 · Ligne 1 = en-têtes</span>
+      </div>
+      <div class="upload-drop" id="csv-drop-zone" onclick="document.getElementById('csv-file-input').click()"
+           ondragover="event.preventDefault();this.style.borderColor='#1e3a5f'" ondragleave="this.style.borderColor=''"
+           ondrop="event.preventDefault();this.style.borderColor='';traiterFichierCSV(event.dataTransfer.files[0])">
+        <div class="ud-ico">📄</div>
+        <div class="ud-txt">Cliquer ou glisser un fichier CSV ici</div>
+        <div class="ud-sub">Fichier .csv uniquement</div>
+        <input type="file" id="csv-file-input" accept=".csv" style="display:none" onchange="traiterFichierCSV(this.files[0])">
+      </div>
+      <div style="margin-top:.75rem;display:flex;gap:8px;justify-content:space-between;align-items:center">
+        <button class="btn-secondary btn-sm" onclick="telechargerModeleCSV()">⬇️ Télécharger modèle CSV</button>
+        <button class="btn-secondary" onclick="fermerModal('modal-import-csv')">Annuler</button>
+      </div>
+    </div>
+
+    <!-- Étape 2 : Prévisualisation + Validation -->
+    <div id="csv-step-2" style="display:none">
+      <div id="csv-resume" style="display:flex;gap:1rem;margin-bottom:1rem"></div>
+      <div style="max-height:320px;overflow-y:auto;border-radius:10px;border:1px solid #e5e7eb">
+        <table style="border-radius:0">
+          <thead id="csv-thead"></thead>
+          <tbody id="csv-tbody"></tbody>
+        </table>
+      </div>
+      <div id="csv-erreurs" style="display:none;margin-top:.75rem;background:#fee2e2;border-radius:8px;padding:.75rem 1rem;font-size:12px;color:#dc2626"></div>
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="resetCSVImport()">← Recommencer</button>
+        <button class="btn-secondary" onclick="fermerModal('modal-import-csv')">Annuler</button>
+        <button class="btn-green" id="btn-confirmer-import" onclick="confirmerImportCSV()">✅ Importer <span id="csv-nb-valides"></span> étudiant(s)</button>
+      </div>
+    </div>
+
+    <!-- Étape 3 : Résultat -->
+    <div id="csv-step-3" style="display:none;text-align:center;padding:2rem 1rem">
+      <div id="csv-result-ico" style="font-size:52px;margin-bottom:1rem">✅</div>
+      <div id="csv-result-titre" style="font-size:18px;font-weight:700;color:#111827;margin-bottom:.5rem"></div>
+      <div id="csv-result-detail" style="font-size:13px;color:#6b7280;margin-bottom:1.5rem"></div>
+      <div style="display:flex;gap:8px;justify-content:center">
+        <button class="btn-secondary" onclick="resetCSVImport()">📥 Nouvel import</button>
+        <button onclick="fermerModal('modal-import-csv');chargerEtudiants()">✓ Terminer</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Annonce -->
+<div class="modal-overlay" id="modal-annonce">
+  <div class="modal">
+    <h3>✉️ Envoyer une annonce</h3>
+    <div class="form-group"><label>Destinataires</label>
+      <select><option>Tous les étudiants</option><option>L2 Informatique</option><option>L3 Gestion</option></select>
+    </div>
+    <div class="form-group"><label>Objet</label><input type="text" placeholder="Objet de l'annonce"></div>
+    <div class="form-group"><label>Message</label><textarea rows="4" placeholder="Écrivez votre message..."></textarea></div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="fermerModal('modal-annonce')">Annuler</button>
+      <button onclick="fermerModal('modal-annonce')">Envoyer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Étudiant -->
+<div class="modal-overlay" id="modal-etudiant">
+  <div class="modal">
+    <h3>👥 Ajouter un étudiant</h3>
+    <div class="form-grid">
+      <div class="form-group"><label>Nom *</label><input type="text" id="input-nom" placeholder="Nom de famille"></div>
+      <div class="form-group"><label>Prénom *</label><input type="text" id="input-prenom" placeholder="Prénom"></div>
+      <div class="form-group"><label>Matricule *</label><input type="text" id="input-matricule" placeholder="Ex: 2024-006"></div>
+      <div class="form-group"><label>Sexe</label>
+        <select id="input-sexe"><option value="M">Masculin</option><option value="F">Féminin</option></select>
+      </div>
+      <div class="form-group"><label>Filière *</label>
+        <select id="input-filiere"><option>Informatique</option><option>Gestion</option><option>Droit</option><option>Médecine</option><option>Finance</option><option>Lettres</option></select>
+      </div>
+      <div class="form-group"><label>Niveau *</label>
+        <select id="input-niveau"><option>L1</option><option>L2</option><option>L3</option><option>M1</option><option>M2</option></select>
+      </div>
+    </div>
+    <div class="form-group"><label>Email</label><input type="email" id="input-email" placeholder="email@etudiant.com"></div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="fermerModal('modal-etudiant')">Annuler</button>
+      <button onclick="ajouterEtudiant()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Absence -->
+<div class="modal-overlay" id="modal-absence">
+  <div class="modal">
+    <h3>🚫 Enregistrer une absence</h3>
+    <div class="form-group"><label>Étudiant *</label><select id="input-absence-etudiant"></select></div>
+    <div class="form-group"><label>Matière *</label><input type="text" id="input-absence-matiere" placeholder="Ex: Algorithmique"></div>
+    <div class="form-grid">
+      <div class="form-group"><label>Date</label><input type="date" id="input-absence-date"></div>
+      <div class="form-group"><label>Statut</label>
+        <select id="input-absence-statut"><option value="absent">Absent</option><option value="retard">Retard</option><option value="excuse">Excusé</option></select>
+      </div>
+    </div>
+    <div class="form-group"><label>Justification</label><textarea rows="2" id="input-absence-justification" placeholder="Motif (optionnel)..."></textarea></div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="fermerModal('modal-absence')">Annuler</button>
+      <button onclick="enregistrerAbsence()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Note -->
+<div class="modal-overlay" id="modal-note">
+  <div class="modal">
+    <h3>📊 Saisir une note</h3>
+    <div class="form-group"><label>Étudiant *</label><select id="input-note-etudiant"></select></div>
+    <div class="form-grid">
+      <div class="form-group"><label>Matière *</label><input type="text" id="input-note-matiere" placeholder="Ex: Algorithmique"></div>
+      <div class="form-group"><label>Période *</label>
+        <select id="input-note-periode"><option value="S1">Semestre 1</option><option value="S2">Semestre 2</option><option value="T1">Trimestre 1</option><option value="T2">Trimestre 2</option><option value="T3">Trimestre 3</option></select>
+      </div>
+      <div class="form-group"><label>Note /20 *</label><input type="number" id="input-note-valeur" min="0" max="20" step="0.25" placeholder="Ex: 14.5"></div>
+      <div class="form-group"><label>Coefficient</label><input type="number" id="input-note-coeff" min="1" max="10" value="2"></div>
+    </div>
+    <div class="form-group"><label>Commentaire</label><textarea rows="2" id="input-note-commentaire" placeholder="Appréciation (optionnel)..."></textarea></div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="fermerModal('modal-note')">Annuler</button>
+      <button onclick="enregistrerNote()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Emploi du temps -->
+<div class="modal-overlay" id="modal-emploi">
+  <div class="modal">
+    <h3>📅 Ajouter un créneau</h3>
+    <div class="form-grid">
+      <div class="form-group"><label>Jour *</label>
+        <select id="input-edt-jour"><option>Lundi</option><option>Mardi</option><option>Mercredi</option><option>Jeudi</option><option>Vendredi</option><option>Samedi</option></select>
+      </div>
+      <div class="form-group"><label>Classe *</label>
+        <select id="input-edt-classe"><option>L1 Informatique</option><option>L2 Informatique</option><option>L3 Informatique</option><option>L1 Gestion</option><option>L2 Gestion</option><option>L3 Gestion</option><option>M1</option><option>M2</option></select>
+      </div>
+      <div class="form-group"><label>Heure début *</label>
+        <select id="input-edt-debut"><option value="07:00">07:00</option><option value="08:00">08:00</option><option value="09:00">09:00</option><option value="10:00">10:00</option><option value="11:00">11:00</option><option value="12:00">12:00</option><option value="13:00">13:00</option><option value="14:00">14:00</option><option value="15:00">15:00</option><option value="16:00">16:00</option><option value="17:00">17:00</option></select>
+      </div>
+      <div class="form-group"><label>Heure fin *</label>
+        <select id="input-edt-fin"><option value="08:00">08:00</option><option value="09:00">09:00</option><option value="10:00">10:00</option><option value="11:00">11:00</option><option value="12:00">12:00</option><option value="13:00">13:00</option><option value="14:00">14:00</option><option value="15:00">15:00</option><option value="16:00">16:00</option><option value="17:00">17:00</option><option value="18:00">18:00</option></select>
+      </div>
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><label>Matière *</label><input type="text" id="input-edt-matiere" placeholder="Ex: Algorithmique"></div>
+      <div class="form-group"><label>Professeur</label><input type="text" id="input-edt-prof" placeholder="Ex: Dr. Kossivi"></div>
+      <div class="form-group"><label>Salle</label><input type="text" id="input-edt-salle" placeholder="Ex: A101"></div>
+      <div class="form-group"><label>Type</label>
+        <select id="input-edt-type"><option value="cours">Cours magistral</option><option value="td">Travaux dirigés</option><option value="tp">Travaux pratiques</option><option value="exam">Examen / Contrôle</option></select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="fermerModal('modal-emploi')">Annuler</button>
+      <button onclick="ajouterCreneau()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Message -->
+<div class="modal-overlay" id="modal-message">
+  <div class="modal">
+    <h3>✉️ Nouveau message</h3>
+    <div class="form-group"><label>Destinataire *</label><input type="text" id="input-msg-destinataire" placeholder="Ex: M. Kossi AGBODJAN (Parent)"></div>
+    <div class="form-group"><label>Rôle destinataire</label>
+      <select id="input-msg-role"><option value="parent">Parent d'élève</option><option value="etudiant">Étudiant</option><option value="professeur">Professeur</option><option value="administration">Administration</option></select>
+    </div>
+    <div class="form-group"><label>Objet *</label><input type="text" id="input-msg-objet" placeholder="Objet du message"></div>
+    <div class="form-group"><label>Message *</label><textarea rows="5" id="input-msg-contenu" placeholder="Saisissez votre message..."></textarea></div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="fermerModal('modal-message')">Annuler</button>
+      <button onclick="envoyerMessage()">Envoyer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ★ Modal : Facture  JOUR 3 ★ -->
+<div class="modal-overlay" id="modal-facture">
+  <div class="modal modal-lg">
+    <h3>💳 Nouvelle facture</h3>
+    <div class="form-grid">
+      <div class="form-group"><label>Étudiant *</label><select id="input-fac-etudiant"></select></div>
+      <div class="form-group"><label>Type *</label>
+        <select id="input-fac-type"><option value="scolarite">Frais de scolarité</option><option value="inscription">Inscription</option><option value="examen">Frais d'examen</option><option value="autre">Autre</option></select>
+      </div>
+      <div class="form-group"><label>Montant total (FCFA) *</label><input type="number" id="input-fac-montant" placeholder="Ex: 250000" min="0"></div>
+      <div class="form-group"><label>Date d'échéance *</label><input type="date" id="input-fac-echeance"></div>
+    </div>
+    <div class="form-group"><label>Description</label><textarea rows="2" id="input-fac-desc" placeholder="Description de la facture..."></textarea></div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="fermerModal('modal-facture')">Annuler</button>
+      <button onclick="creerFacture()">Créer la facture</button>
+    </div>
+  </div>
+</div>
+
+<!-- ★ Modal : Enregistrer paiement  JOUR 3 ★ -->
+<div class="modal-overlay" id="modal-paiement">
+  <div class="modal">
+    <h3>💰 Enregistrer un paiement</h3>
+    <input type="hidden" id="input-pay-fac-id">
+    <div class="form-group"><label>Facture</label><input type="text" id="input-pay-fac-ref" readonly style="background:#f9fafb;color:#6b7280"></div>
+    <div class="form-grid">
+      <div class="form-group"><label>Montant payé (FCFA) *</label><input type="number" id="input-pay-montant" placeholder="Ex: 100000" min="0"></div>
+      <div class="form-group"><label>Mode de paiement</label>
+        <select id="input-pay-mode"><option value="espèces">Espèces</option><option value="mobile_money">Mobile Money</option><option value="virement">Virement bancaire</option><option value="chèque">Chèque</option></select>
+      </div>
+    </div>
+    <div class="form-group"><label>Référence transaction</label><input type="text" id="input-pay-ref" placeholder="Numéro de reçu ou transaction (optionnel)"></div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="fermerModal('modal-paiement')">Annuler</button>
+      <button class="btn-green" onclick="enregistrerPaiement()">Valider le paiement</button>
+    </div>
+  </div>
+</div>
+
+<!-- ★ Modal : Incident discipline  JOUR 3 ★ -->
+<div class="modal-overlay" id="modal-incident">
+  <div class="modal">
+    <h3>⚠️ Signaler un incident</h3>
+    <div class="form-group"><label>Étudiant concerné *</label><select id="input-inc-etudiant"></select></div>
+    <div class="form-grid">
+      <div class="form-group"><label>Type d'incident *</label>
+        <select id="input-inc-type">
+          <option value="comportement">Comportement perturbateur</option>
+          <option value="violence">Violence / Bagarre</option>
+          <option value="fraude">Fraude / Triche</option>
+          <option value="absences">Absences répétées</option>
+          <option value="retards">Retards répétés</option>
+          <option value="autre">Autre</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Sévérité *</label>
+        <select id="input-inc-severite">
+          <option value="faible">Faible</option>
+          <option value="moyenne">Moyenne</option>
+          <option value="haute">Haute</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group"><label>Date de l'incident</label><input type="date" id="input-inc-date"></div>
+    <div class="form-group"><label>Description *</label><textarea rows="3" id="input-inc-desc" placeholder="Décrivez l'incident en détail..."></textarea></div>
+    <div class="form-group"><label>Sanction appliquée</label>
+      <select id="input-inc-sanction">
+        <option value="">Aucune pour l'instant</option>
+        <option value="avertissement">Avertissement verbal</option>
+        <option value="blame">Blâme écrit</option>
+        <option value="exclusion_temp">Exclusion temporaire</option>
+        <option value="exclusion_def">Exclusion définitive</option>
+        <option value="parents">Convocation des parents</option>
+      </select>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="fermerModal('modal-incident')">Annuler</button>
+      <button onclick="enregistrerIncident()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ★ Modal : Résoudre incident  JOUR 3 ★ -->
+<div class="modal-overlay" id="modal-resoudre">
+  <div class="modal">
+    <h3>✅ Résoudre l'incident</h3>
+    <input type="hidden" id="input-res-id">
+    <div class="form-group"><label>Résolution / Commentaire final</label>
+      <textarea rows="4" id="input-res-note" placeholder="Décrivez comment l'incident a été résolu..."></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="fermerModal('modal-resoudre')">Annuler</button>
+      <button class="btn-green" onclick="confirmerResolution()">Marquer comme résolu</button>
+    </div>
+  </div>
+</div>
+
+<!-- ★ Modal : Document  JOUR 3 ★ -->
+<div class="modal-overlay" id="modal-document">
+  <div class="modal">
+    <h3>📄 Ajouter un document</h3>
+    <div class="upload-drop" onclick="document.getElementById('input-doc-file').click()">
+      <div class="ud-ico">📁</div>
+      <div class="ud-txt">Cliquer pour choisir un fichier</div>
+      <div class="ud-sub">PDF, DOCX, XLSX, JPG, PNG — max 10 Mo</div>
+      <input type="file" id="input-doc-file" style="display:none" accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png" onchange="previewDocFichier(this)">
+    </div>
+    <div id="doc-file-preview" style="display:none;margin-top:.75rem;padding:8px 12px;background:#f9fafb;border-radius:8px;font-size:13px;color:#374151;border:1px solid #e5e7eb"></div>
+    <div class="form-group" style="margin-top:1rem"><label>Nom du document *</label><input type="text" id="input-doc-nom" placeholder="Ex: Règlement intérieur 2024"></div>
+    <div class="form-grid">
+      <div class="form-group"><label>Catégorie *</label>
+        <select id="input-doc-categorie">
+          <option value="administratif">Administratif</option>
+          <option value="pédagogique">Pédagogique</option>
+          <option value="etudiant">Dossier étudiant</option>
+          <option value="financier">Financier</option>
+          <option value="autre">Autre</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Étudiant concerné</label><select id="input-doc-etudiant"><option value="">— Aucun (général) —</option></select></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="fermerModal('modal-document')">Annuler</button>
+      <button onclick="ajouterDocument()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Nouvel utilisateur -->
+<div class="modal-overlay" id="modal-user">
+  <div class="modal">
+    <h3>👤 Nouvel utilisateur</h3>
+    <div class="form-grid">
+      <div class="form-group"><label>Prénom</label><input type="text" id="input-user-prenom" placeholder="Prénom" /></div>
+      <div class="form-group"><label>Nom</label><input type="text" id="input-user-nom" placeholder="Nom" /></div>
+    </div>
+    <div class="form-group"><label>E-mail</label><input type="email" id="input-user-email" placeholder="email@exemple.bj" /></div>
+    <div class="form-group"><label>Mot de passe</label><input type="password" id="input-user-mdp" placeholder="Minimum 6 caractères" /></div>
+    <div class="form-group">
+      <label>Rôle</label>
+      <select id="input-user-role" onchange="toggleEtudiantField()">
+        <option value="admin">👨‍💼 Administrateur</option>
+        <option value="enseignant">👨‍🏫 Enseignant</option>
+        <option value="comptable">💰 Comptable</option>
+        <option value="parent">👨‍👩‍👧 Parent</option>
+        <option value="etudiant">👨‍🎓 Étudiant</option>
+      </select>
+    </div>
+    <div class="form-group" id="user-etudiant-field" style="display:none">
+      <label>Étudiant associé</label>
+      <select id="input-user-etudiant"><option value="">— Sélectionner —</option></select>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="fermerModal('modal-user')">Annuler</button>
+      <button onclick="creerUtilisateur()">✅ Créer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ MODAL CONFIG NOTIFICATIONS ══════════════════ -->
+<div class="modal-overlay" id="modal-notif-config">
+  <div class="modal">
+    <h3>📧 Configuration Notifications Email</h3>
+    <div style="background:#eff6ff;border-radius:10px;padding:1rem;margin-bottom:1rem;font-size:12.5px;color:#374151">
+      <strong style="color:#1e3a5f">Comment obtenir votre clé Brevo ?</strong><br>
+      1. Créez un compte gratuit sur <a href="https://app.brevo.com" target="_blank" style="color:#1d4ed8">brevo.com</a> (300 emails/jour gratuits)<br>
+      2. Menu → <strong>SMTP &amp; API</strong> → <strong>API Keys</strong> → <strong>Generate a new API key</strong><br>
+      3. Copiez la clé et collez-la ci-dessous.
+    </div>
+    <div class="form-group">
+      <label>Clé API Brevo</label>
+      <input type="text" id="input-brevo-key" placeholder="xkeysib-..." />
+    </div>
+    <div class="form-group">
+      <label>Email expéditeur (facultatif)</label>
+      <input type="email" id="input-brevo-email" placeholder="noreply@votreecole.bj" />
+    </div>
+    <div style="background:#f0fdf4;border-radius:8px;padding:.8rem 1rem;font-size:12px;color:#374151;margin-bottom:1rem">
+      ✅ Une fois configuré, EduLink enverra automatiquement :<br>
+      &nbsp;&nbsp;• Alertes d'absence aux parents<br>
+      &nbsp;&nbsp;• Rappels de paiement<br>
+      &nbsp;&nbsp;• Bulletins disponibles
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="fermerModal('modal-notif-config')">Annuler</button>
+      <button onclick="sauvegarderConfigNotif()">💾 Sauvegarder</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ PWA INSTALL BANNER ══════════════════ -->
+<div id="pwa-banner">
+  <span style="font-size:22px">📱</span>
+  <div>
+    <div style="font-weight:600;font-size:13px">Installer EduLink</div>
+    <div style="font-size:11px;opacity:.75">Accès rapide depuis votre écran d'accueil</div>
+  </div>
+  <button class="pb-btn" id="pwa-install-btn">Installer</button>
+  <span class="pb-close" onclick="document.getElementById('pwa-banner').classList.remove('show')">✕</span>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<!-- ═══════════════════════════════════════════
+     JAVASCRIPT
+═══════════════════════════════════════════ -->
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// ══ SUPABASE ══════════════════════════════════
+const SUPABASE_URL = 'https://wpexhfngdbagmgodgzzt.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_8e4xKWS3YpfwGFAQlZ7lgQ_9hDx8ljQ';
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ══ ÉTAT GLOBAL ═══════════════════════════════
+let currentEcoleId   = null;
+let tousLesEcoles    = [];
+let tousLesEtudiants = [];
+let toutesLesNotes   = [];
+let tousLesMessages  = [];
+let tousLesCreneaux  = [];
+let toutesLesFactures= [];
+let tousLesDocuments = [];
+let selectedMsgId    = null;
+let rapportChartInst = null;
+
+// ══ UTILS ══════════════════════════════════════
+function showToast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast show ' + type;
+  setTimeout(() => t.className = 'toast', 3500);
+}
+function getApp(note) {
+  if (note >= 16) return { label:'Très bien', cls:'green' };
+  if (note >= 14) return { label:'Bien', cls:'green' };
+  if (note >= 12) return { label:'Assez bien', cls:'blue' };
+  if (note >= 10) return { label:'Passable', cls:'amber' };
+  return { label:'Insuffisant', cls:'red' };
+}
+function fmtDate(d) { return d ? new Date(d).toLocaleDateString('fr-FR') : '—'; }
+function fmtDateTime(d) {
+  if (!d) return '—';
+  const dt = new Date(d);
+  return dt.toLocaleDateString('fr-FR') + ' ' + dt.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+}
+function fmtMontant(n) {
+  return new Intl.NumberFormat('fr-FR').format(n) + ' FCFA';
+}
+function genRef(prefix='FAC') {
+  return prefix + '-' + Date.now().toString().slice(-6);
+}
+function getDocIcon(nom) {
+  if (!nom) return '📄';
+  const ext = nom.split('.').pop().toLowerCase();
+  const icons = { pdf:'📕', doc:'📝', docx:'📝', xls:'📗', xlsx:'📗', jpg:'🖼️', jpeg:'🖼️', png:'🖼️' };
+  return icons[ext] || '📄';
+}
+
+// ══ NAVIGATION ════════════════════════════════
+function showPage(p) {
+  document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
+  document.querySelectorAll('nav a').forEach(x => x.classList.remove('on'));
+  const pageEl = document.getElementById('page-' + p);
+  const navEl  = document.getElementById('nav-' + p);
+  if (pageEl) pageEl.classList.add('active');
+  if (navEl)  navEl.classList.add('on');
+  const loaders = {
+    dashboard:    chargerDashboard,
+    etudiants:    chargerEtudiants,
+    presences:    chargerAbsences,
+    notes:        () => { chargerNotes(); remplirSelectBulletin(); },
+    messages:     chargerMessages,
+    emploi:       chargerEmploiDuTemps,
+    paiements:    chargerPaiements,
+    discipline:   chargerIncidents,
+    documents:    chargerDocuments,
+    rapports:     () => afficherRapport('effectifs'),
+    utilisateurs: () => { if (typeof chargerUtilisateurs === 'function') chargerUtilisateurs(); },
+    parametres: chargerParametres,
+  };
+  if (loaders[p]) loaders[p]();
+}
+
+function showTab(page, tabId) {
+  const maps = {
+    notes: { tabs:['tab-saisie','tab-bulletins'], btns:['tab-saisie-btn','tab-bulletins-btn'] },
+    pay:   { tabs:['tab-pay-liste','tab-pay-historique'], btns:['tab-pay-liste-btn','tab-pay-historique-btn'] },
+    docs:  { tabs:['tab-docs-galerie','tab-docs-liste'], btns:['tab-docs-galerie-btn','tab-docs-liste-btn'] },
+  };
+  const m = maps[page];
+  m.tabs.forEach(id => document.getElementById(id).style.display = 'none');
+  m.btns.forEach(id => document.getElementById(id).classList.remove('active'));
+  document.getElementById(tabId).style.display = 'block';
+  document.getElementById(tabId + '-btn').classList.add('active');
+  if (tabId === 'tab-bulletins') remplirSelectBulletin();
+  if (tabId === 'tab-pay-historique') chargerHistoriquePaiements();
+  if (tabId === 'tab-docs-liste') afficherDocumentsListe();
+}
+
+// ══ MODALS ════════════════════════════════════
+function ouvrirModal(id) {
+  document.getElementById(id).classList.add('open');
+  if (id === 'modal-absence')  remplirSelect('input-absence-etudiant');
+  if (id === 'modal-note')     remplirSelect('input-note-etudiant');
+  if (id === 'modal-facture')  { remplirSelect('input-fac-etudiant'); document.getElementById('input-fac-echeance').value = new Date(Date.now()+30*864e5).toISOString().split('T')[0]; }
+  if (id === 'modal-incident') { remplirSelect('input-inc-etudiant'); document.getElementById('input-inc-date').value = new Date().toISOString().split('T')[0]; }
+  if (id === 'modal-document') remplirSelect('input-doc-etudiant', true);
+}
+function fermerModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(o => {
+  o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); });
+});
+
+// ══ MULTI-ÉTABLISSEMENTS ══════════════════════
+async function chargerEcoles() {
+  const { data } = await db.from('ecoles').select('*').order('nom');
+  tousLesEcoles = data || [];
+  const sel = document.getElementById('ecole-selector');
+  if (tousLesEcoles.length > 0) {
+    sel.innerHTML = tousLesEcoles.map(e => `<option value="${e.id}">${e.nom}</option>`).join('');
+    currentEcoleId = tousLesEcoles[0].id;
+    mettreAJourBadgeEcole(tousLesEcoles[0]);
+  } else {
+    sel.innerHTML = '<option value="">Aucun établissement</option>';
+  }
+  chargerDashboard();
+  if (typeof afficherNavAdmin === 'function') afficherNavAdmin();
+}
+function changerEcole() {
+  currentEcoleId = document.getElementById('ecole-selector').value;
+  const ecole = tousLesEcoles.find(e => e.id === currentEcoleId);
+  mettreAJourBadgeEcole(ecole);
+  tousLesEtudiants = [];
+  chargerDashboard();
+  showToast('Établissement : ' + (ecole?.nom || ''), 'info');
+}
+function afficherNavAdmin() {
+  // Montrer les liens admin dans la nav
+  const adminEls = document.querySelectorAll('#nav-utilisateurs, #nav-notifs, #nav-parametres');
+  adminEls.forEach(el => { if(el) el.style.display='flex'; });
+}
+
+function mettreAJourBadgeEcole(ecole) {
+  if (!ecole) return;
+  document.getElementById('ecole-nom-nav').textContent = ecole.nom || 'EduLink';
+  document.getElementById('ecole-type-nav').textContent = ecole.type || 'Établissement';
+  document.title = 'EduLink — ' + ecole.nom;
+}
+
+// ══ DASHBOARD ════════════════════════════════
+async function chargerDashboard() {
+  let qE = db.from('etudiants').select('*',{count:'exact',head:true});
+  if (currentEcoleId) qE = qE.eq('ecole_id', currentEcoleId);
+  const { count: nb } = await qE;
+  document.getElementById('stat-etudiants').textContent = nb || 0;
+
+  const today = new Date().toISOString().split('T')[0];
+  const { count: nbAbs } = await db.from('absences').select('*',{count:'exact',head:true}).eq('date_absence', today);
+  document.getElementById('stat-absences').textContent = nbAbs || 0;
+
+  let qF = db.from('factures').select('*',{count:'exact',head:true}).in('statut',['en_attente','retard']);
+  if (currentEcoleId) qF = qF.eq('ecole_id', currentEcoleId);
+  const { count: nbF } = await qF;
+  document.getElementById('stat-impayés').textContent = nbF || 0;
+
+  let qI = db.from('incidents').select('*',{count:'exact',head:true}).neq('statut','résolu');
+  if (currentEcoleId) qI = qI.eq('ecole_id', currentEcoleId);
+  const { count: nbI } = await qI;
+  document.getElementById('stat-incidents').textContent = nbI || 0;
+  const bd = document.getElementById('badge-disc');
+  if (nbI > 0) { bd.textContent = nbI; bd.style.display='inline'; } else bd.style.display='none';
+
+  // Absences récentes
+  const { data: absences } = await db.from('absences').select('*, etudiants(nom, prenom)').order('created_at',{ascending:false}).limit(5);
+  document.getElementById('tbody-absences-dashboard').innerHTML = (absences?.length)
+    ? absences.map(a => `<tr><td>${a.etudiants?a.etudiants.nom+' '+a.etudiants.prenom:'N/A'}</td><td>${a.matiere}</td><td>${fmtDate(a.date_absence)}</td><td><span class="badge ${a.statut==='absent'?'red':a.statut==='retard'?'amber':'blue'}">${a.statut}</span></td></tr>`).join('')
+    : '<tr><td colspan="4" class="loading">Aucune absence.</td></tr>';
+
+  // Notes récentes
+  let qN = db.from('notes').select('*, etudiants(nom, prenom)').order('created_at',{ascending:false}).limit(5);
+  if (currentEcoleId) qN = qN.eq('ecole_id', currentEcoleId);
+  const { data: notesR } = await qN;
+  document.getElementById('tbody-notes-dashboard').innerHTML = (notesR?.length)
+    ? notesR.map(n => { const a = getApp(n.note); return `<tr><td>${n.etudiants?n.etudiants.nom+' '+n.etudiants.prenom:'N/A'}</td><td>${n.matiere}</td><td><strong>${n.note}/20</strong></td><td><span class="badge ${a.cls}">${a.label}</span></td></tr>`; }).join('')
+    : '<tr><td colspan="4" class="loading">Aucune note.</td></tr>';
+
+  const ecole = tousLesEcoles.find(e => e.id === currentEcoleId);
+  if (ecole) document.getElementById('dash-subtitle').textContent = 'Vue générale — ' + ecole.nom;
+}
+
+// ══ ÉTUDIANTS ════════════════════════════════
+async function chargerEtudiants() {
+  document.getElementById('tbody-etudiants').innerHTML = '<tr><td colspan="6" class="loading">Chargement...</td></tr>';
+  let q = db.from('etudiants').select('*').order('nom');
+  if (currentEcoleId) q = q.eq('ecole_id', currentEcoleId);
+  const { data } = await q;
+  tousLesEtudiants = data || [];
+  afficherEtudiants(tousLesEtudiants);
+}
+function afficherEtudiants(liste) {
+  const t = document.getElementById('tbody-etudiants');
+  t.innerHTML = liste?.length
+    ? liste.map(e => `<tr><td><code style="background:#f3f4f6;padding:2px 6px;border-radius:4px;font-size:11px">${e.matricule}</code></td><td><strong>${e.nom} ${e.prenom}</strong></td><td>${e.filiere}</td><td><span class="badge gray">${e.niveau}</span></td><td><span class="badge ${e.statut==='actif'?'green':'amber'}">${e.statut}</span></td><td><button class="btn-sm btn-blue" onclick="voirEtudiant('${e.id}')">Voir</button></td></tr>`).join('')
+    : '<tr><td colspan="6" class="loading">Aucun étudiant.</td></tr>';
+}
+function filtrerEtudiants() {
+  const q = document.getElementById('search-etudiants').value.toLowerCase();
+  afficherEtudiants(tousLesEtudiants.filter(e => e.nom.toLowerCase().includes(q) || e.prenom.toLowerCase().includes(q) || e.matricule.toLowerCase().includes(q)));
+}
+function voirEtudiant(id) { /* Handled by J6 voirEtudiant below */ }
+async function ajouterEtudiant() {
+  const nom=document.getElementById('input-nom').value.trim(), prenom=document.getElementById('input-prenom').value.trim(), matricule=document.getElementById('input-matricule').value.trim();
+  if (!nom||!prenom||!matricule) { showToast('Remplissez les champs obligatoires', 'error'); return; }
+  const { error } = await db.from('etudiants').insert([{ ecole_id:currentEcoleId, nom, prenom, matricule, sexe:document.getElementById('input-sexe').value, filiere:document.getElementById('input-filiere').value, niveau:document.getElementById('input-niveau').value, email:document.getElementById('input-email').value.trim(), statut:'actif' }]);
+  if (error) { showToast('Erreur : '+(error.message.includes('unique')?'Matricule déjà utilisé.':error.message),'error'); return; }
+  fermerModal('modal-etudiant');
+  ['input-nom','input-prenom','input-matricule','input-email'].forEach(id=>document.getElementById(id).value='');
+  showToast('Étudiant ajouté !','success'); chargerEtudiants(); chargerDashboard();
+}
+
+// ══ ABSENCES ══════════════════════════════════
+async function chargerAbsences() {
+  document.getElementById('tbody-presences').innerHTML = '<tr><td colspan="6" class="loading">Chargement...</td></tr>';
+  let q = db.from('absences').select('*, etudiants(nom, prenom)').order('created_at',{ascending:false});
+  const fs = document.getElementById('filter-absence-statut')?.value;
+  const fd = document.getElementById('filter-absence-date')?.value;
+  if (fs) q = q.eq('statut', fs);
+  if (fd) q = q.eq('date_absence', fd);
+  const { data } = await q;
+  document.getElementById('tbody-presences').innerHTML = data?.length
+    ? data.map(a => `<tr><td>${a.etudiants?a.etudiants.nom+' '+a.etudiants.prenom:'N/A'}</td><td>${a.matiere}</td><td>${fmtDate(a.date_absence)}</td><td><span class="badge ${a.statut==='absent'?'red':a.statut==='retard'?'amber':'blue'}">${a.statut}</span></td><td>${a.justification||'—'}</td><td><span class="badge ${a.parent_notifie?'green':'amber'}">${a.parent_notifie?'✓ Notifié':'En attente'}</span></td></tr>`).join('')
+    : '<tr><td colspan="6" class="loading">Aucune absence.</td></tr>';
+}
+async function remplirSelect(selectId, withEmpty=false) {
+  if (tousLesEtudiants.length === 0) {
+    let q = db.from('etudiants').select('id, nom, prenom').order('nom');
+    if (currentEcoleId) q = q.eq('ecole_id', currentEcoleId);
+    const { data } = await q;
+    tousLesEtudiants = data || [];
+  }
+  const sel = document.getElementById(selectId);
+  const emptyOpt = withEmpty ? '<option value="">— Aucun (général) —</option>' : '';
+  sel.innerHTML = emptyOpt + tousLesEtudiants.map(e => `<option value="${e.id}">${e.nom} ${e.prenom}</option>`).join('');
+  if (selectId === 'input-absence-etudiant')
+    document.getElementById('input-absence-date').value = new Date().toISOString().split('T')[0];
+}
+async function enregistrerAbsence() {
+  const matiere = document.getElementById('input-absence-matiere').value.trim();
+  if (!matiere) { showToast('Entrez la matière.','error'); return; }
+  const { error } = await db.from('absences').insert([{ etudiant_id:document.getElementById('input-absence-etudiant').value, matiere, date_absence:document.getElementById('input-absence-date').value, statut:document.getElementById('input-absence-statut').value, justification:document.getElementById('input-absence-justification').value.trim() }]);
+  if (error) { showToast('Erreur : '+error.message,'error'); return; }
+  fermerModal('modal-absence'); document.getElementById('input-absence-matiere').value='';
+  showToast('Absence enregistrée !','success'); chargerAbsences(); chargerDashboard();
+}
+
+// ══ NOTES & BULLETINS ════════════════════════
+async function chargerNotes() {
+  document.getElementById('tbody-notes').innerHTML = '<tr><td colspan="7" class="loading">Chargement...</td></tr>';
+  let q = db.from('notes').select('*, etudiants(nom, prenom)').order('created_at',{ascending:false});
+  if (currentEcoleId) q = q.eq('ecole_id', currentEcoleId);
+  const fp = document.getElementById('filter-notes-periode')?.value;
+  const fm = document.getElementById('filter-notes-matiere')?.value;
+  if (fp) q = q.eq('periode', fp);
+  if (fm) q = q.eq('matiere', fm);
+  const { data } = await q;
+  toutesLesNotes = data || [];
+  const matieres = [...new Set(toutesLesNotes.map(n => n.matiere))].sort();
+  const filtMat = document.getElementById('filter-notes-matiere');
+  const cur = filtMat.value;
+  filtMat.innerHTML = '<option value="">Toutes les matières</option>' + matieres.map(m => `<option value="${m}" ${cur===m?'selected':''}>${m}</option>`).join('');
+  document.getElementById('tbody-notes').innerHTML = toutesLesNotes.length
+    ? toutesLesNotes.map(n => { const a=getApp(n.note); return `<tr><td>${n.etudiants?n.etudiants.nom+' '+n.etudiants.prenom:'N/A'}</td><td>${n.matiere}</td><td><span class="note-badge ${a.cls}">${n.note}/20</span></td><td>${n.coefficient||1}</td><td><span class="badge gray">${n.periode}</span></td><td><span class="badge ${a.cls}">${a.label}</span></td><td><button class="btn-sm btn-red" onclick="supprimerNote('${n.id}')">✕</button></td></tr>`; }).join('')
+    : '<tr><td colspan="7" class="loading">Aucune note.</td></tr>';
+}
+async function enregistrerNote() {
+  const matiere=document.getElementById('input-note-matiere').value.trim(), note=parseFloat(document.getElementById('input-note-valeur').value);
+  if (!matiere||isNaN(note)) { showToast('Remplissez matière et note.','error'); return; }
+  if (note<0||note>20) { showToast('Note entre 0 et 20.','error'); return; }
+  const { error } = await db.from('notes').insert([{ ecole_id:currentEcoleId, etudiant_id:document.getElementById('input-note-etudiant').value, matiere, note, coefficient:parseInt(document.getElementById('input-note-coeff').value)||2, periode:document.getElementById('input-note-periode').value, commentaire:document.getElementById('input-note-commentaire').value.trim() }]);
+  if (error) { showToast('Erreur : '+error.message,'error'); return; }
+  fermerModal('modal-note'); ['input-note-matiere','input-note-valeur','input-note-commentaire'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('input-note-coeff').value='2';
+  showToast('Note enregistrée !','success'); chargerNotes(); chargerDashboard();
+}
+async function supprimerNote(id) {
+  if (!confirm('Supprimer cette note ?')) return;
+  await db.from('notes').delete().eq('id',id);
+  showToast('Note supprimée.','success'); chargerNotes(); chargerDashboard();
+}
+async function remplirSelectBulletin() {
+  if (!tousLesEtudiants.length) await remplirSelect('input-absence-etudiant'); // charge le cache
+  const sel = document.getElementById('select-bulletin-etudiant');
+  sel.innerHTML = '<option value="">— Sélectionner un étudiant —</option>' + tousLesEtudiants.map(e=>`<option value="${e.id}">${e.nom} ${e.prenom}</option>`).join('');
+}
+async function chargerBulletin() {
+  const etudiantId = document.getElementById('select-bulletin-etudiant').value;
+  const periode    = document.getElementById('select-bulletin-periode').value;
+  const container  = document.getElementById('bulletin-container');
+  if (!etudiantId) { container.innerHTML='<div class="empty-state"><div class="icon">📄</div><h3>Sélectionnez un étudiant</h3></div>'; return; }
+  container.innerHTML = '<div class="loading">Génération du bulletin...</div>';
+  const { data:notes } = await db.from('notes').select('*').eq('etudiant_id',etudiantId).eq('periode',periode);
+  const etudiant = tousLesEtudiants.find(e => e.id === etudiantId);
+  if (!notes?.length) { container.innerHTML='<div class="empty-state"><div class="icon">📭</div><h3>Aucune note pour cette période.</h3></div>'; return; }
+  let totalPts=0, totalCoeff=0;
+  notes.forEach(n => { totalPts+=n.note*(n.coefficient||1); totalCoeff+=(n.coefficient||1); });
+  const moy = totalCoeff>0?(totalPts/totalCoeff):0;
+  const app = getApp(moy);
+  container.innerHTML = `<div class="bulletin-wrap" id="bulletin-print">
+    <div class="bulletin-header"><h3>Bulletin de Notes — ${etudiant?.nom||''} ${etudiant?.prenom||''}</h3><p>${periode} · Édité le ${fmtDate(new Date())}</p></div>
+    <div class="bulletin-stats">
+      <div class="bstat"><div class="val">${moy.toFixed(2)}/20</div><div class="lbl">Moyenne générale</div></div>
+      <div class="bstat"><div class="val">${notes.length}</div><div class="lbl">Matières évaluées</div></div>
+      <div class="bstat"><div class="val"><span class="badge ${app.cls}">${app.label}</span></div><div class="lbl">Mention</div></div>
+    </div>
+    <table><tr><th>Matière</th><th>Note /20</th><th>Coefficient</th><th>Points</th><th>Appréciation</th></tr>
+    ${notes.map(n=>{const a=getApp(n.note);return`<tr><td>${n.matiere}</td><td><strong>${n.note}/20</strong></td><td>${n.coefficient||1}</td><td>${(n.note*(n.coefficient||1)).toFixed(2)}</td><td><span class="badge ${a.cls}">${a.label}</span></td></tr>`;}).join('')}
+    <tr style="background:#f9fafb;font-weight:700"><td>MOYENNE GÉNÉRALE</td><td><strong style="color:#1e3a5f;font-size:15px">${moy.toFixed(2)}/20</strong></td><td>${totalCoeff}</td><td>${totalPts.toFixed(2)}</td><td><span class="badge ${app.cls}">${app.label}</span></td></tr>
+    </table></div>`;
+}
+function imprimerBulletin() {
+  const el = document.getElementById('bulletin-print');
+  if (!el) { showToast('Générez d\'abord un bulletin.','error'); return; }
+  const w = window.open('','_blank');
+  w.document.write(`<html><head><title>Bulletin</title><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet"><style>*{font-family:'Poppins',sans-serif;margin:0;box-sizing:border-box}body{padding:2rem}table{width:100%;border-collapse:collapse;margin-top:1rem}th,td{border:1px solid #e5e7eb;padding:8px 12px;font-size:12px}th{background:#f3f4f6;font-weight:700}.bulletin-header{background:#1e3a5f;color:#fff;padding:1rem;border-radius:8px;margin-bottom:1rem}.badge{padding:2px 8px;border-radius:20px;font-size:11px;font-weight:600}.green{background:#dcfce7;color:#059669}.blue{background:#dbeafe;color:#1d4ed8}.amber{background:#fef9c3;color:#d97706}.red{background:#fee2e2;color:#dc2626}</style></head><body>${el.outerHTML}</body></html>`);
+  w.document.close(); w.print();
+}
+
+// ══ EMPLOI DU TEMPS ═══════════════════════════
+const JOURS=['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+const HEURES=['07:00','08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00'];
+const TC={ cours:'blue', td:'green', tp:'purple', exam:'amber' };
+async function chargerEmploiDuTemps() {
+  const classe = document.getElementById('edt-filter-classe')?.value;
+  let q = db.from('emploi_du_temps').select('*').order('heure_debut');
+  if (currentEcoleId) q = q.eq('ecole_id', currentEcoleId);
+  if (classe) q = q.eq('classe', classe);
+  const { data } = await q;
+  tousLesCreneaux = data || [];
+  renderGrilleEDT();
+}
+function renderGrilleEDT() {
+  const table = document.getElementById('edt-table');
+  const index = {};
+  tousLesCreneaux.forEach(c => { const k=c.jour+'|'+c.heure_debut; if(!index[k])index[k]=[]; index[k].push(c); });
+  let rows = '';
+  HEURES.forEach(h => {
+    let cells = `<td>${h}</td>`;
+    JOURS.forEach(j => {
+      const slots = index[j+'|'+h] || [];
+      cells += slots.length
+        ? `<td>${slots.map(s=>`<div class="edt-slot edt-slot-${TC[s.type]||'blue'}" onclick="supprimerCreneau('${s.id}','${j}','${h}')"><div class="s-mat">${s.matiere}</div>${s.professeur?`<div class="s-prof">${s.professeur}</div>`:''}</div>`).join('')}</td>`
+        : `<td><button class="edt-add-btn" onclick="ouvrirEdtAvec('${j}','${h}')">+</button></td>`;
+    });
+    rows += `<tr>${cells}</tr>`;
+  });
+  const hdr = table.querySelector('tr');
+  table.innerHTML = ''; table.appendChild(hdr);
+  table.insertAdjacentHTML('beforeend', rows);
+}
+function ouvrirEdtAvec(jour, heure) {
+  ouvrirModal('modal-emploi');
+  document.getElementById('input-edt-jour').value = jour;
+  document.getElementById('input-edt-debut').value = heure;
+  const idx = HEURES.indexOf(heure);
+  document.getElementById('input-edt-fin').value = HEURES[idx+1] || '18:00';
+}
+async function ajouterCreneau() {
+  const matiere = document.getElementById('input-edt-matiere').value.trim();
+  if (!matiere) { showToast('Entrez la matière.','error'); return; }
+  const { error } = await db.from('emploi_du_temps').insert([{ ecole_id:currentEcoleId, jour:document.getElementById('input-edt-jour').value, classe:document.getElementById('input-edt-classe').value, heure_debut:document.getElementById('input-edt-debut').value, heure_fin:document.getElementById('input-edt-fin').value, matiere, professeur:document.getElementById('input-edt-prof').value.trim(), salle:document.getElementById('input-edt-salle').value.trim(), type:document.getElementById('input-edt-type').value }]);
+  if (error) { showToast('Erreur : '+error.message,'error'); return; }
+  fermerModal('modal-emploi'); ['input-edt-matiere','input-edt-prof','input-edt-salle'].forEach(id=>document.getElementById(id).value='');
+  showToast('Créneau ajouté !','success'); chargerEmploiDuTemps();
+}
+async function supprimerCreneau(id, j, h) {
+  if (!confirm(`Supprimer ce créneau (${j} ${h}) ?`)) return;
+  await db.from('emploi_du_temps').delete().eq('id',id);
+  showToast('Créneau supprimé.','success'); chargerEmploiDuTemps();
+}
+
+// ══ MESSAGERIE ════════════════════════════════
+async function chargerMessages() {
+  document.getElementById('msg-list-body').innerHTML='<div class="loading">Chargement...</div>';
+  let q = db.from('messages').select('*').order('created_at',{ascending:false});
+  if (currentEcoleId) q = q.eq('ecole_id', currentEcoleId);
+  const { data } = await q;
+  tousLesMessages = data || [];
+  document.getElementById('count-msgs').textContent = tousLesMessages.length + ' message(s)';
+  document.getElementById('msg-list-body').innerHTML = tousLesMessages.length
+    ? tousLesMessages.map(m=>`<div class="msg-item ${m.lu?'':'unread'} ${m.id===selectedMsgId?'selected':''}" onclick="lireMessage('${m.id}')"><span class="msg-date">${fmtDate(m.created_at)}</span><div class="msg-sender">${m.expediteur_nom||'Inconnu'}</div><div class="msg-subject">${m.objet}</div><div class="msg-preview">${(m.contenu||'').substring(0,60)}…</div></div>`).join('')
+    : '<div class="empty-state" style="padding:2rem"><div class="icon">📭</div><p style="font-size:12px">Aucun message</p></div>';
+  const nonLus = tousLesMessages.filter(m=>!m.lu).length;
+  const b = document.getElementById('badge-msg');
+  if (nonLus>0){b.textContent=nonLus;b.style.display='inline';}else b.style.display='none';
+}
+async function lireMessage(id) {
+  selectedMsgId = id;
+  const msg = tousLesMessages.find(m=>m.id===id);
+  if (!msg) return;
+  if (!msg.lu) { await db.from('messages').update({lu:true}).eq('id',id); msg.lu=true; chargerMessages(); }
+  document.getElementById('msg-detail-empty').style.display='none';
+  const d = document.getElementById('msg-detail-content');
+  d.style.display='flex';
+  document.getElementById('msg-detail-objet').textContent = msg.objet;
+  document.getElementById('msg-detail-from').textContent = msg.expediteur_nom||'Inconnu';
+  document.getElementById('msg-detail-role').innerHTML = `<span class="badge blue">${msg.expediteur_role||'—'}</span>`;
+  document.getElementById('msg-detail-date').textContent = fmtDateTime(msg.created_at);
+  document.getElementById('msg-detail-body').textContent = msg.contenu||'';
+}
+async function envoyerMessage() {
+  const destinataire=document.getElementById('input-msg-destinataire').value.trim(), objet=document.getElementById('input-msg-objet').value.trim(), contenu=document.getElementById('input-msg-contenu').value.trim();
+  if (!destinataire||!objet||!contenu) { showToast('Remplissez tous les champs.','error'); return; }
+  const { error } = await db.from('messages').insert([{ ecole_id:currentEcoleId, expediteur_nom:'Administration', expediteur_role:'admin', destinataire_nom:destinataire, destinataire_role:document.getElementById('input-msg-role').value, objet, contenu, lu:true }]);
+  if (error) { showToast('Erreur : '+error.message,'error'); return; }
+  fermerModal('modal-message'); ['input-msg-destinataire','input-msg-objet','input-msg-contenu'].forEach(id=>document.getElementById(id).value='');
+  showToast('Message envoyé !','success'); chargerMessages();
+}
+async function envoyerReponse() {
+  const input=document.getElementById('msg-reply-input'), contenu=input.value.trim();
+  if (!contenu) return;
+  const orig = tousLesMessages.find(m=>m.id===selectedMsgId);
+  const { error } = await db.from('messages').insert([{ ecole_id:currentEcoleId, expediteur_nom:'Administration', expediteur_role:'admin', destinataire_nom:orig?.expediteur_nom||'', destinataire_role:orig?.expediteur_role||'', objet:'RE: '+(orig?.objet||''), contenu, lu:true }]);
+  if (error) { showToast('Erreur envoi.','error'); return; }
+  input.value=''; showToast('Réponse envoyée !','success'); chargerMessages();
+}
+
+// ══ PAIEMENTS  ★ JOUR 3 ══════════════════════
+async function chargerPaiements() {
+  await chargerFactures();
+  // Stats
+  let q = db.from('factures').select('statut');
+  if (currentEcoleId) q = q.eq('ecole_id', currentEcoleId);
+  const { data:facs } = await q;
+  const all = facs||[];
+  document.getElementById('ps-total').textContent   = all.length;
+  document.getElementById('ps-payees').textContent  = all.filter(f=>f.statut==='payée').length;
+  document.getElementById('ps-attente').textContent = all.filter(f=>f.statut==='en_attente').length;
+  document.getElementById('ps-retard').textContent  = all.filter(f=>f.statut==='retard').length;
+}
+
+async function chargerFactures() {
+  document.getElementById('tbody-factures').innerHTML='<tr><td colspan="9" class="loading">Chargement...</td></tr>';
+  let q = db.from('factures').select('*, etudiants(nom,prenom)').order('created_at',{ascending:false});
+  if (currentEcoleId) q = q.eq('ecole_id', currentEcoleId);
+  const fs = document.getElementById('filter-pay-statut')?.value;
+  const ft = document.getElementById('filter-pay-type')?.value;
+  if (fs) q = q.eq('statut', fs);
+  if (ft) q = q.eq('type_frais', ft);
+  const { data } = await q;
+  toutesLesFactures = data || [];
+  document.getElementById('tbody-factures').innerHTML = toutesLesFactures.length
+    ? toutesLesFactures.map(f => {
+        const pct = f.montant_total > 0 ? Math.min(100, Math.round(f.montant_paye / f.montant_total * 100)) : 0;
+        const sClass = f.statut==='payée'?'green':f.statut==='retard'?'red':f.statut==='partiellement_payée'?'amber':'amber';
+        return `<tr>
+          <td><code style="background:#f3f4f6;padding:2px 6px;border-radius:4px;font-size:11px">${f.reference||'—'}</code></td>
+          <td>${f.etudiants?f.etudiants.nom+' '+f.etudiants.prenom:'N/A'}</td>
+          <td>${f.description||f.type_frais||'—'}</td>
+          <td><strong>${fmtMontant(f.montant_total)}</strong></td>
+          <td>${fmtMontant(f.montant_paye||0)}</td>
+          <td><div style="font-size:11px;color:#6b7280">${pct}%</div><div class="pay-prog-bar"><div class="pay-prog-fill" style="width:${pct}%;background:${pct===100?'#059669':'#c97c1a'}"></div></div></td>
+          <td><span class="badge ${sClass}">${f.statut}</span></td>
+          <td>${fmtDate(f.date_echeance)}</td>
+          <td>
+            ${f.statut!=='payée'?`<button class="btn-sm btn-green" onclick="ouvrirPaiement('${f.id}','${f.reference}',${f.montant_total-(f.montant_paye||0)})">💰 Payer</button>`:''}
+            <button class="btn-sm btn-red" onclick="supprimerFacture('${f.id}')">✕</button>
+          </td>
+        </tr>`;
+      }).join('')
+    : '<tr><td colspan="9" class="empty-state" style="padding:2rem">Aucune facture. Créez la première !</td></tr>';
+}
+
+async function creerFacture() {
+  const montant = parseFloat(document.getElementById('input-fac-montant').value);
+  if (!montant || montant<=0) { showToast('Entrez un montant valide.','error'); return; }
+  const { error } = await db.from('factures').insert([{
+    ecole_id: currentEcoleId,
+    etudiant_id: document.getElementById('input-fac-etudiant').value,
+    reference: genRef('FAC'),
+    type_frais: document.getElementById('input-fac-type').value,
+    description: document.getElementById('input-fac-desc').value.trim(),
+    montant_total: montant,
+    montant_paye: 0,
+    date_echeance: document.getElementById('input-fac-echeance').value,
+    statut: 'en_attente'
+  }]);
+  if (error) { showToast('Erreur : '+error.message,'error'); return; }
+  fermerModal('modal-facture'); document.getElementById('input-fac-montant').value=''; document.getElementById('input-fac-desc').value='';
+  showToast('Facture créée !','success'); chargerPaiements(); chargerDashboard();
+}
+
+function ouvrirPaiement(facId, facRef, restant) {
+  document.getElementById('input-pay-fac-id').value = facId;
+  document.getElementById('input-pay-fac-ref').value = facRef;
+  document.getElementById('input-pay-montant').value = restant > 0 ? restant : '';
+  ouvrirModal('modal-paiement');
+}
+
+async function enregistrerPaiement() {
+  const facId   = document.getElementById('input-pay-fac-id').value;
+  const montant = parseFloat(document.getElementById('input-pay-montant').value);
+  const mode    = document.getElementById('input-pay-mode').value;
+  const ref     = document.getElementById('input-pay-ref').value.trim();
+  if (!montant||montant<=0) { showToast('Entrez un montant valide.','error'); return; }
+  const facture = toutesLesFactures.find(f=>f.id===facId);
+  if (!facture) return;
+  const nouveauPaye = (facture.montant_paye||0) + montant;
+  const nouveauStatut = nouveauPaye >= facture.montant_total ? 'payée' : 'partiellement_payée';
+  // Mettre à jour la facture
+  const { error:e1 } = await db.from('factures').update({ montant_paye:nouveauPaye, statut:nouveauStatut }).eq('id',facId);
+  if (e1) { showToast('Erreur mise à jour : '+e1.message,'error'); return; }
+  // Enregistrer le paiement
+  const { error:e2 } = await db.from('paiements').insert([{ ecole_id:currentEcoleId, facture_id:facId, montant_paye:montant, mode_paiement:mode, reference_transaction:ref, reference_facture:facture.reference, etudiant_id:facture.etudiant_id }]);
+  if (e2) { showToast('Erreur enregistrement paiement : '+e2.message,'error'); return; }
+  fermerModal('modal-paiement'); document.getElementById('input-pay-montant').value=''; document.getElementById('input-pay-ref').value='';
+  showToast(nouveauStatut==='payée'?'✅ Facture entièrement payée !':'💰 Paiement partiel enregistré !','success');
+  chargerPaiements(); chargerDashboard();
+}
+
+async function supprimerFacture(id) {
+  if (!confirm('Supprimer cette facture ?')) return;
+  await db.from('factures').delete().eq('id',id);
+  showToast('Facture supprimée.','success'); chargerPaiements(); chargerDashboard();
+}
+
+async function chargerHistoriquePaiements() {
+  let q = db.from('paiements').select('*, etudiants(nom,prenom)').order('created_at',{ascending:false});
+  if (currentEcoleId) q = q.eq('ecole_id', currentEcoleId);
+  const { data } = await q;
+  document.getElementById('tbody-paiements').innerHTML = data?.length
+    ? data.map(p=>`<tr><td>${fmtDateTime(p.created_at)}</td><td><code style="background:#f3f4f6;padding:2px 6px;border-radius:4px;font-size:11px">${p.reference_facture||'—'}</code></td><td>${p.etudiants?p.etudiants.nom+' '+p.etudiants.prenom:'N/A'}</td><td><strong style="color:#059669">${fmtMontant(p.montant_paye)}</strong></td><td><span class="badge teal">${p.mode_paiement}</span></td><td>${p.reference_transaction||'—'}</td></tr>`).join('')
+    : '<tr><td colspan="6" class="loading">Aucun paiement enregistré.</td></tr>';
+}
+
+// ══ DISCIPLINE  ★ JOUR 3 ══════════════════════
+async function chargerIncidents() {
+  document.getElementById('incidents-list').innerHTML='<div class="loading">Chargement...</div>';
+  let q = db.from('incidents').select('*, etudiants(nom,prenom)').order('created_at',{ascending:false});
+  if (currentEcoleId) q = q.eq('ecole_id', currentEcoleId);
+  const fs = document.getElementById('filter-disc-sev')?.value;
+  const fst= document.getElementById('filter-disc-statut')?.value;
+  if (fs)  q = q.eq('severite', fs);
+  if (fst) q = q.eq('statut', fst);
+  const { data } = await q;
+  const all = data || [];
+  document.getElementById('ds-total').textContent   = all.length;
+  document.getElementById('ds-ouverts').textContent = all.filter(i=>i.statut!=='résolu').length;
+  document.getElementById('ds-resolus').textContent = all.filter(i=>i.statut==='résolu').length;
+  const badgeD = document.getElementById('badge-disc');
+  const nbOuv = all.filter(i=>i.statut!=='résolu').length;
+  if (nbOuv>0){badgeD.textContent=nbOuv;badgeD.style.display='inline';}else badgeD.style.display='none';
+  if (!all.length) {
+    document.getElementById('incidents-list').innerHTML='<div class="empty-state"><div class="icon">✅</div><h3>Aucun incident signalé</h3><p>L\'établissement fonctionne normalement.</p></div>';
+    return;
+  }
+  const typeLabels = { comportement:'Comportement', violence:'Violence', fraude:'Fraude/Triche', absences:'Absences répétées', retards:'Retards répétés', autre:'Autre' };
+  const sanctLabels = { avertissement:'Avertissement verbal', blame:'Blâme écrit', exclusion_temp:'Exclusion temporaire', exclusion_def:'Exclusion définitive', parents:'Convocation parents' };
+  document.getElementById('incidents-list').innerHTML = all.map(i => {
+    const sevCls = i.severite==='haute'?'red':i.severite==='moyenne'?'amber':'green';
+    const ico = i.severite==='haute'?'🔴':i.severite==='moyenne'?'🟡':'🟢';
+    return `<div class="incident-card">
+      <div class="incident-ico sev-${i.severite}">${ico}</div>
+      <div class="incident-body">
+        <div class="inc-titre">${typeLabels[i.type_incident]||i.type_incident} — ${i.etudiants?i.etudiants.nom+' '+i.etudiants.prenom:'N/A'}</div>
+        <div class="inc-meta">
+          <span>📅 ${fmtDate(i.date_incident)}</span>
+          <span><span class="badge ${sevCls}">Sévérité : ${i.severite}</span></span>
+          <span><span class="badge ${i.statut==='résolu'?'green':i.statut==='en_traitement'?'blue':'red'}">${i.statut}</span></span>
+          ${i.sanction?`<span>⚖️ ${sanctLabels[i.sanction]||i.sanction}</span>`:''}
+        </div>
+        <div class="inc-desc">${i.description||''}</div>
+        ${i.note_resolution?`<div style="margin-top:6px;font-size:12px;color:#059669;background:#f0fdf4;padding:6px 10px;border-radius:6px">✅ Résolution : ${i.note_resolution}</div>`:''}
+      </div>
+      <div class="incident-actions">
+        ${i.statut!=='résolu'?`<button class="btn-sm btn-green" onclick="ouvrirResolution('${i.id}')">Résoudre</button>`:''}
+        <button class="btn-sm btn-red" onclick="supprimerIncident('${i.id}')">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+async function enregistrerIncident() {
+  const desc = document.getElementById('input-inc-desc').value.trim();
+  if (!desc) { showToast('Décrivez l\'incident.','error'); return; }
+  const { error } = await db.from('incidents').insert([{ ecole_id:currentEcoleId, etudiant_id:document.getElementById('input-inc-etudiant').value, type_incident:document.getElementById('input-inc-type').value, severite:document.getElementById('input-inc-severite').value, date_incident:document.getElementById('input-inc-date').value, description:desc, sanction:document.getElementById('input-inc-sanction').value, statut:'ouvert' }]);
+  if (error) { showToast('Erreur : '+error.message,'error'); return; }
+  fermerModal('modal-incident'); document.getElementById('input-inc-desc').value='';
+  showToast('Incident enregistré !','success'); chargerIncidents(); chargerDashboard();
+}
+function ouvrirResolution(id) {
+  document.getElementById('input-res-id').value = id;
+  document.getElementById('input-res-note').value = '';
+  ouvrirModal('modal-resoudre');
+}
+async function confirmerResolution() {
+  const id   = document.getElementById('input-res-id').value;
+  const note = document.getElementById('input-res-note').value.trim();
+  if (!note) { showToast('Décrivez la résolution.','error'); return; }
+  const { error } = await db.from('incidents').update({ statut:'résolu', note_resolution:note }).eq('id',id);
+  if (error) { showToast('Erreur : '+error.message,'error'); return; }
+  fermerModal('modal-resoudre'); showToast('Incident marqué résolu !','success'); chargerIncidents(); chargerDashboard();
+}
+async function supprimerIncident(id) {
+  if (!confirm('Supprimer cet incident ?')) return;
+  await db.from('incidents').delete().eq('id',id);
+  showToast('Incident supprimé.','success'); chargerIncidents();
+}
+
+// ══ DOCUMENTS  ★ JOUR 3 ══════════════════════
+async function chargerDocuments() {
+  let q = db.from('documents').select('*, etudiants(nom,prenom)').order('created_at',{ascending:false});
+  if (currentEcoleId) q = q.eq('ecole_id', currentEcoleId);
+  const { data } = await q;
+  tousLesDocuments = data || [];
+  afficherDocumentsGalerie();
+  afficherDocumentsListe();
+}
+function afficherDocumentsGalerie() {
+  const container = document.getElementById('docs-galerie-container');
+  if (!tousLesDocuments.length) {
+    container.innerHTML='<div class="empty-state"><div class="icon">📂</div><h3>Aucun document</h3><p>Ajoutez votre premier document.</p></div>';
+    return;
+  }
+  const cats = ['administratif','pédagogique','etudiant','financier','autre'];
+  const catLabels = { administratif:'📋 Administratif', pédagogique:'📚 Pédagogique', etudiant:'👤 Dossiers étudiants', financier:'💰 Financier', autre:'📁 Autres' };
+  let html = '';
+  cats.forEach(cat => {
+    const docs = tousLesDocuments.filter(d => d.categorie === cat);
+    if (!docs.length) return;
+    html += `<div class="doc-cat-header"><div class="dch-label">${catLabels[cat]||cat}</div><div class="dch-line"></div></div>
+    <div class="doc-grid">${docs.map(d=>`
+      <div class="doc-card">
+        <div class="dc-ico">${getDocIcon(d.nom_fichier||d.nom)}</div>
+        <div class="dc-nom">${d.nom}</div>
+        <div class="dc-meta">${fmtDate(d.created_at)}${d.taille_affichage?' · '+d.taille_affichage:''}</div>
+        ${d.etudiants?`<div class="dc-meta" style="margin-top:2px">👤 ${d.etudiants.nom} ${d.etudiants.prenom}</div>`:''}
+        <div class="dc-actions">
+          ${d.url?`<button class="btn-sm btn-blue" onclick="window.open('${d.url}','_blank')">Ouvrir</button>`:''}
+          <button class="btn-sm btn-red" onclick="supprimerDocument('${d.id}')">✕</button>
+        </div>
+      </div>`).join('')}</div>`;
+  });
+  container.innerHTML = html;
+}
+function afficherDocumentsListe() {
+  const q = document.getElementById('search-docs')?.value.toLowerCase()||'';
+  const liste = tousLesDocuments.filter(d => d.nom.toLowerCase().includes(q));
+  document.getElementById('tbody-documents').innerHTML = liste.length
+    ? liste.map(d=>`<tr><td>${getDocIcon(d.nom_fichier||d.nom)} ${d.nom}</td><td>${d.type_fichier||'—'}</td><td><span class="badge gray">${d.categorie}</span></td><td>${d.etudiants?d.etudiants.nom+' '+d.etudiants.prenom:'—'}</td><td>${fmtDate(d.created_at)}</td><td>${d.taille_affichage||'—'}</td><td><div style="display:flex;gap:4px">${d.url?`<button class="btn-sm btn-blue" onclick="window.open('${d.url}','_blank')">Ouvrir</button>`:''}<button class="btn-sm btn-red" onclick="supprimerDocument('${d.id}')">✕</button></div></td></tr>`).join('')
+    : '<tr><td colspan="7" class="loading">Aucun document trouvé.</td></tr>';
+}
+function filtrerDocuments() { afficherDocumentsListe(); }
+function previewDocFichier(input) {
+  if (!input.files.length) return;
+  const f = input.files[0];
+  const taille = f.size < 1024 ? f.size+' o' : f.size < 1048576 ? (f.size/1024).toFixed(1)+' Ko' : (f.size/1048576).toFixed(1)+' Mo';
+  document.getElementById('doc-file-preview').style.display='block';
+  document.getElementById('doc-file-preview').innerHTML=`📎 <strong>${f.name}</strong> — ${taille}`;
+  document.getElementById('input-doc-nom').value = document.getElementById('input-doc-nom').value || f.name.replace(/\.[^.]+$/,'');
+  document.getElementById('input-doc-nom-fichier-hidden') && (document.getElementById('input-doc-nom-fichier-hidden').value = f.name);
+}
+async function ajouterDocument() {
+  const nom  = document.getElementById('input-doc-nom').value.trim();
+  const cat  = document.getElementById('input-doc-categorie').value;
+  const etId = document.getElementById('input-doc-etudiant').value || null;
+  const file = document.getElementById('input-doc-file').files[0];
+  if (!nom) { showToast('Entrez un nom pour le document.','error'); return; }
+  const taille = file ? (file.size<1048576?(file.size/1024).toFixed(1)+' Ko':(file.size/1048576).toFixed(1)+' Mo') : null;
+  const { error } = await db.from('documents').insert([{
+    ecole_id: currentEcoleId, nom, categorie:cat, etudiant_id:etId,
+    nom_fichier: file?.name||null, type_fichier: file?.type||null, taille_affichage:taille,
+    url: null // L'URL réelle nécessite Supabase Storage — à configurer
+  }]);
+  if (error) { showToast('Erreur : '+error.message,'error'); return; }
+  fermerModal('modal-document');
+  document.getElementById('input-doc-nom').value='';
+  document.getElementById('input-doc-file').value='';
+  document.getElementById('doc-file-preview').style.display='none';
+  showToast('Document enregistré !','success'); chargerDocuments();
+}
+async function supprimerDocument(id) {
+  if (!confirm('Supprimer ce document ?')) return;
+  await db.from('documents').delete().eq('id',id);
+  showToast('Document supprimé.','success'); chargerDocuments();
+}
+
+// ══ RAPPORTS  ★ JOUR 3 ════════════════════════
+function selectRapportMenu(id) {
+  document.querySelectorAll('.rapport-menu-item').forEach(el => el.classList.remove('active'));
+  const el = document.getElementById('rmenu-'+id);
+  if (el) el.classList.add('active');
+}
+async function afficherRapport(type) {
+  selectRapportMenu(type);
+  const view = document.getElementById('rapport-view');
+  view.innerHTML = '<div class="loading">Génération du rapport...</div>';
+  if (rapportChartInst) { rapportChartInst.destroy(); rapportChartInst=null; }
+
+  if (type === 'effectifs') {
+    let q = db.from('etudiants').select('filiere, niveau');
+    if (currentEcoleId) q = q.eq('ecole_id', currentEcoleId);
+    const { data } = await q;
+    const filieres = {};
+    (data||[]).forEach(e => { filieres[e.filiere] = (filieres[e.filiere]||0)+1; });
+    const niveaux = {};
+    (data||[]).forEach(e => { niveaux[e.niveau] = (niveaux[e.niveau]||0)+1; });
+    view.innerHTML = `<h3>👥 Effectifs par filière</h3>
+      <div class="rapport-grid">
+        <div class="rapport-block">
+          <div class="rb-title">Répartition par filière</div>
+          <canvas id="chart-filieres" height="220"></canvas>
+        </div>
+        <div class="rapport-block">
+          <div class="rb-title">Répartition par niveau</div>
+          ${Object.entries(niveaux).map(([k,v])=>`<div class="kpi-row"><span class="kpi-label">${k}</span><span class="kpi-value">${v} étudiant(s)</span></div>`).join('')}
+          <div class="kpi-row" style="margin-top:.75rem"><span class="kpi-label" style="font-weight:700">Total</span><span class="kpi-value" style="color:#c97c1a">${data?.length||0}</span></div>
+        </div>
+      </div>`;
+    const COLORS=['#1e3a5f','#c97c1a','#059669','#dc2626','#7c3aed','#0d9488','#d97706'];
+    rapportChartInst = new Chart(document.getElementById('chart-filieres'), { type:'doughnut', data:{ labels:Object.keys(filieres), datasets:[{ data:Object.values(filieres), backgroundColor:COLORS, borderWidth:2, borderColor:'#fff' }] }, options:{ responsive:true, plugins:{ legend:{ position:'bottom', labels:{ font:{family:'Poppins',size:11} } } } } });
+
+  } else if (type === 'absences') {
+    const { data } = await db.from('absences').select('statut, date_absence').order('date_absence');
+    const stats = { absent:0, retard:0, excuse:0 };
+    (data||[]).forEach(a => { if(stats[a.statut]!==undefined) stats[a.statut]++; });
+    view.innerHTML = `<h3>🚫 Taux d'absentéisme</h3>
+      <div class="rapport-grid">
+        <div class="rapport-block">
+          <div class="rb-title">Par statut</div>
+          <canvas id="chart-absences" height="200"></canvas>
+        </div>
+        <div class="rapport-block">
+          <div class="rb-title">Chiffres clés</div>
+          <div class="kpi-row"><span class="kpi-label">Total absences enregistrées</span><span class="kpi-value">${data?.length||0}</span></div>
+          <div class="kpi-row"><span class="kpi-label">Absences injustifiées</span><span class="kpi-value" style="color:#dc2626">${stats.absent}</span></div>
+          <div class="kpi-row"><span class="kpi-label">Retards</span><span class="kpi-value" style="color:#d97706">${stats.retard}</span></div>
+          <div class="kpi-row"><span class="kpi-label">Absences excusées</span><span class="kpi-value" style="color:#059669">${stats.excuse}</span></div>
+        </div>
+      </div>`;
+    rapportChartInst = new Chart(document.getElementById('chart-absences'), { type:'bar', data:{ labels:['Absent','Retard','Excusé'], datasets:[{ label:'Nombre', data:[stats.absent,stats.retard,stats.excuse], backgroundColor:['#fee2e2','#fef9c3','#dcfce7'], borderColor:['#dc2626','#d97706','#059669'], borderWidth:2 }] }, options:{ responsive:true, scales:{ y:{ beginAtZero:true, ticks:{ font:{family:'Poppins',size:11} } } }, plugins:{ legend:{ display:false } } } });
+
+  } else if (type === 'moyennes') {
+    let q = db.from('notes').select('matiere, note, coefficient');
+    if (currentEcoleId) q = q.eq('ecole_id', currentEcoleId);
+    const { data } = await q;
+    const matieres = {};
+    (data||[]).forEach(n => {
+      if (!matieres[n.matiere]) matieres[n.matiere] = { pts:0, coeff:0 };
+      matieres[n.matiere].pts   += n.note*(n.coefficient||1);
+      matieres[n.matiere].coeff += (n.coefficient||1);
+    });
+    const moyMat = Object.entries(matieres).map(([m,v]) => ({ matiere:m, moy:v.coeff>0?v.pts/v.coeff:0 })).sort((a,b)=>b.moy-a.moy);
+    view.innerHTML = `<h3>📊 Moyennes par matière</h3>
+      <div class="chart-wrap"><canvas id="chart-moy" height="300"></canvas></div>
+      <div style="margin-top:1.2rem">
+        <table><tr><th>Matière</th><th>Moyenne</th><th>Appréciation</th></tr>
+        ${moyMat.map(m=>{const a=getApp(m.moy);return`<tr><td>${m.matiere}</td><td><strong>${m.moy.toFixed(2)}/20</strong></td><td><span class="badge ${a.cls}">${a.label}</span></td></tr>`;}).join('')||'<tr><td colspan="3" class="loading">Aucune note.</td></tr>'}
+        </table>
+      </div>`;
+    rapportChartInst = new Chart(document.getElementById('chart-moy'), { type:'bar', data:{ labels:moyMat.map(m=>m.matiere), datasets:[{ label:'Moyenne /20', data:moyMat.map(m=>parseFloat(m.moy.toFixed(2))), backgroundColor:moyMat.map(m=>m.moy>=10?'#dcfce7':'#fee2e2'), borderColor:moyMat.map(m=>m.moy>=10?'#059669':'#dc2626'), borderWidth:2 }] }, options:{ responsive:true, scales:{ y:{ min:0, max:20, ticks:{ font:{family:'Poppins',size:11} } } }, plugins:{ legend:{ display:false } } } });
+
+  } else if (type === 'paiements') {
+    let q = db.from('factures').select('statut, montant_total, montant_paye');
+    if (currentEcoleId) q = q.eq('ecole_id', currentEcoleId);
+    const { data } = await q;
+    const all = data || [];
+    const totalDu = all.reduce((s,f)=>s+f.montant_total,0);
+    const totalPaye = all.reduce((s,f)=>s+(f.montant_paye||0),0);
+    const totalReste = totalDu - totalPaye;
+    const statuts = { payée:0, en_attente:0, retard:0, partiellement_payée:0 };
+    all.forEach(f => { if(statuts[f.statut]!==undefined) statuts[f.statut]++; });
+    view.innerHTML = `<h3>💳 État des paiements</h3>
+      <div class="rapport-grid">
+        <div class="rapport-block">
+          <div class="rb-title">Répartition des factures</div>
+          <canvas id="chart-pay" height="220"></canvas>
+        </div>
+        <div class="rapport-block">
+          <div class="rb-title">Bilan financier</div>
+          <div class="kpi-row"><span class="kpi-label">Total facturé</span><span class="kpi-value">${fmtMontant(totalDu)}</span></div>
+          <div class="kpi-row"><span class="kpi-label">Total encaissé</span><span class="kpi-value" style="color:#059669">${fmtMontant(totalPaye)}</span></div>
+          <div class="kpi-row"><span class="kpi-label">Reste à percevoir</span><span class="kpi-value" style="color:#dc2626">${fmtMontant(totalReste)}</span></div>
+          <div class="kpi-row"><span class="kpi-label">Taux de recouvrement</span><span class="kpi-value">${totalDu>0?(totalPaye/totalDu*100).toFixed(1)+'%':'—'}</span></div>
+        </div>
+      </div>`;
+    rapportChartInst = new Chart(document.getElementById('chart-pay'), { type:'doughnut', data:{ labels:['Payées','En attente','En retard','Partielles'], datasets:[{ data:[statuts['payée'],statuts['en_attente'],statuts['retard'],statuts['partiellement_payée']], backgroundColor:['#dcfce7','#fef9c3','#fee2e2','#dbeafe'], borderColor:['#059669','#d97706','#dc2626','#1d4ed8'], borderWidth:2 }] }, options:{ responsive:true, plugins:{ legend:{ position:'bottom', labels:{ font:{family:'Poppins',size:11} } } } } });
+
+  } else if (type === 'discipline') {
+    let q = db.from('incidents').select('severite, statut, type_incident');
+    if (currentEcoleId) q = q.eq('ecole_id', currentEcoleId);
+    const { data } = await q;
+    const all = data || [];
+    const bySev = { haute:0, moyenne:0, faible:0 };
+    all.forEach(i => { if(bySev[i.severite]!==undefined) bySev[i.severite]++; });
+    const byType = {};
+    all.forEach(i => { byType[i.type_incident] = (byType[i.type_incident]||0)+1; });
+    view.innerHTML = `<h3>⚠️ Rapport disciplinaire</h3>
+      <div class="rapport-grid">
+        <div class="rapport-block">
+          <div class="rb-title">Par sévérité</div>
+          <canvas id="chart-disc" height="200"></canvas>
+        </div>
+        <div class="rapport-block">
+          <div class="rb-title">Par type d'incident</div>
+          ${Object.entries(byType).length
+            ? Object.entries(byType).sort((a,b)=>b[1]-a[1]).map(([k,v])=>`<div class="kpi-row"><span class="kpi-label">${k}</span><span class="kpi-value">${v}</span></div>`).join('')
+            : '<div class="kpi-row"><span class="kpi-label" style="color:#9ca3af">Aucun incident</span></div>'}
+          <div class="kpi-row" style="margin-top:.75rem"><span class="kpi-label" style="font-weight:700">Total incidents</span><span class="kpi-value">${all.length}</span></div>
+        </div>
+      </div>`;
+    rapportChartInst = new Chart(document.getElementById('chart-disc'), { type:'pie', data:{ labels:['Haute','Moyenne','Faible'], datasets:[{ data:[bySev.haute,bySev.moyenne,bySev.faible], backgroundColor:['#fee2e2','#fef9c3','#dcfce7'], borderColor:['#dc2626','#d97706','#059669'], borderWidth:2 }] }, options:{ responsive:true, plugins:{ legend:{ position:'bottom', labels:{ font:{family:'Poppins',size:11} } } } } });
+  }
+}
+function exporterRapport(mode) {
+  if (mode === 'print') { window.print(); return; }
+  showToast('Export CSV — bientôt disponible','info');
+}
+
+
+// ══════════════════════════════════════════════
+//   JOUR 6 — NOUVELLES FONCTIONNALITÉS
+// ══════════════════════════════════════════════
+
+// ── Variables globales J6 ──
+let ficheEtudiantCourant = null;
+let dashChartFilieres = null;
+let dashChartFinances = null;
+let ficheTabActive = 'infos';
+
+// ── Navigation J6 : Paramètres ──
+// Ajout de 'parametres' dans la map de showPage
+const _origShowPage = showPage;
+// Override showPage to handle parametres
+(function(){
+  const origLoaders_ref = {
+    parametres: chargerParametres,
+  };
+  const _origShowPage2 = showPage;
+  window.showPage = function(p) {
+    if (p === 'parametres') {
+      document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
+      document.querySelectorAll('nav a').forEach(x => x.classList.remove('on'));
+      const pageEl = document.getElementById('page-' + p);
+      const navEl  = document.getElementById('nav-' + p);
+      if (pageEl) pageEl.classList.add('active');
+      if (navEl)  navEl.classList.add('on');
+      chargerParametres();
+      return;
+    }
+    _origShowPage2(p);
+    if (p === 'dashboard') setTimeout(chargerDashboardCharts, 500);
+  };
+})();
+
+// ══ FICHE ÉTUDIANT  ★ JOUR 6 ══════════════════
+async function voirEtudiant(id) {
+  ficheEtudiantCourant = id;
+  ficheTabActive = 'infos';
+  document.getElementById('fiche-etudiant-overlay').classList.add('open');
+  document.getElementById('fiche-body').innerHTML = '<div class="loading">Chargement...</div>';
+  // Reset tabs
+  document.querySelectorAll('.fiche-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('ftab-infos').classList.add('active');
+
+  const etudiant = tousLesEtudiants.find(e => e.id === id);
+  if (!etudiant) {
+    // Fetch from DB
+    const { data } = await db.from('etudiants').select('*').eq('id', id).single();
+    if (data) { ficheEtudiantCourant = data; await afficherFicheInfos(data); return; }
+    document.getElementById('fiche-body').innerHTML = '<div class="empty-state"><div class="icon">❌</div><h3>Étudiant introuvable</h3></div>';
+    return;
+  }
+  ficheEtudiantCourant = etudiant;
+  // Header
+  const initiales = (etudiant.prenom?.[0]||'') + (etudiant.nom?.[0]||'');
+  document.getElementById('fiche-avatar').textContent = initiales.toUpperCase();
+  document.getElementById('fiche-nom-complet').textContent = etudiant.nom + ' ' + etudiant.prenom;
+  document.getElementById('fiche-meta').textContent = etudiant.filiere + ' · ' + etudiant.niveau + ' · ' + etudiant.matricule;
+  await afficherFicheInfos(etudiant);
+}
+
+function fermerFiche() {
+  document.getElementById('fiche-etudiant-overlay').classList.remove('open');
+  ficheEtudiantCourant = null;
+}
+
+document.getElementById('fiche-etudiant-overlay').addEventListener('click', function(e) {
+  if (e.target === this) fermerFiche();
+});
+
+async function showFicheTab(tab) {
+  ficheTabActive = tab;
+  document.querySelectorAll('.fiche-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('ftab-' + tab).classList.add('active');
+  document.getElementById('fiche-body').innerHTML = '<div class="loading">Chargement...</div>';
+  const id = typeof ficheEtudiantCourant === 'object' ? ficheEtudiantCourant.id : ficheEtudiantCourant;
+  const etudiant = typeof ficheEtudiantCourant === 'object' ? ficheEtudiantCourant : tousLesEtudiants.find(e=>e.id===id);
+  if (tab === 'infos') await afficherFicheInfos(etudiant);
+  else if (tab === 'notes') await afficherFicheNotes(id);
+  else if (tab === 'absences') await afficherFicheAbsences(id);
+  else if (tab === 'paiements') await afficherFichePaiements(id);
+}
+
+async function afficherFicheInfos(etudiant) {
+  if (!etudiant) return;
+  // Compter notes, absences, factures
+  const [{ count: nbNotes }, { count: nbAbs }, { count: nbFac }] = await Promise.all([
+    db.from('notes').select('*',{count:'exact',head:true}).eq('etudiant_id', etudiant.id),
+    db.from('absences').select('*',{count:'exact',head:true}).eq('etudiant_id', etudiant.id),
+    db.from('factures').select('*',{count:'exact',head:true}).eq('etudiant_id', etudiant.id),
+  ]);
+  document.getElementById('fiche-body').innerHTML = `
+    <div class="fiche-stat-row">
+      <div class="fiche-stat"><div class="fs-val" style="color:#1e3a5f">${nbNotes||0}</div><div class="fs-lbl">Notes saisies</div></div>
+      <div class="fiche-stat"><div class="fs-val" style="color:#dc2626">${nbAbs||0}</div><div class="fs-lbl">Absences</div></div>
+      <div class="fiche-stat"><div class="fs-val" style="color:#c97c1a">${nbFac||0}</div><div class="fs-lbl">Factures</div></div>
+    </div>
+    <div class="fiche-section">
+      <div class="fiche-section-title">Informations personnelles</div>
+      <div class="fiche-info-grid">
+        <div class="fiche-info-item"><label>Nom</label><span>${etudiant.nom}</span></div>
+        <div class="fiche-info-item"><label>Prénom</label><span>${etudiant.prenom}</span></div>
+        <div class="fiche-info-item"><label>Matricule</label><span><code style="background:#f3f4f6;padding:2px 6px;border-radius:4px;font-size:12px">${etudiant.matricule}</code></span></div>
+        <div class="fiche-info-item"><label>Sexe</label><span>${etudiant.sexe==='M'?'Masculin':'Féminin'}</span></div>
+        <div class="fiche-info-item"><label>Email</label><span>${etudiant.email||'—'}</span></div>
+        <div class="fiche-info-item"><label>Statut</label><span><span class="badge ${etudiant.statut==='actif'?'green':'amber'}">${etudiant.statut||'actif'}</span></span></div>
+      </div>
+    </div>
+    <div class="fiche-section">
+      <div class="fiche-section-title">Scolarité</div>
+      <div class="fiche-info-grid">
+        <div class="fiche-info-item"><label>Filière</label><span>${etudiant.filiere}</span></div>
+        <div class="fiche-info-item"><label>Niveau</label><span><span class="badge blue">${etudiant.niveau}</span></span></div>
+        <div class="fiche-info-item"><label>Date inscription</label><span>${fmtDate(etudiant.created_at)}</span></div>
+        <div class="fiche-info-item"><label>Établissement</label><span>${tousLesEcoles.find(e=>e.id===etudiant.ecole_id)?.nom||'—'}</span></div>
+      </div>
+    </div>
+    <div style="display:flex;gap:8px;margin-top:1rem">
+      <button class="btn-sm btn-blue" onclick="showFicheTab('notes')">📊 Voir les notes</button>
+      <button class="btn-sm" onclick="showFicheTab('absences')">🚫 Voir les absences</button>
+      <button class="btn-sm btn-green" onclick="showFicheTab('paiements')">💳 Voir les paiements</button>
+    </div>`;
+}
+
+async function afficherFicheNotes(id) {
+  const { data } = await db.from('notes').select('*').eq('etudiant_id', id).order('created_at',{ascending:false});
+  const notes = data || [];
+  if (!notes.length) {
+    document.getElementById('fiche-body').innerHTML = '<div class="empty-state"><div class="icon">📭</div><h3>Aucune note</h3><p>Aucune note enregistrée pour cet étudiant.</p></div>';
+    return;
+  }
+  // Calcul moyenne générale
+  const periodes = [...new Set(notes.map(n=>n.periode))];
+  let moyHTML = '<div class="fiche-stat-row">';
+  for (const p of periodes.slice(0,3)) {
+    const pNotes = notes.filter(n=>n.periode===p);
+    let pts=0, coeff=0;
+    pNotes.forEach(n=>{ pts+=n.note*(n.coefficient||1); coeff+=(n.coefficient||1); });
+    const moy = coeff>0?(pts/coeff):0;
+    const app = getApp(moy);
+    moyHTML += `<div class="fiche-stat"><div class="fs-val" style="color:${moy>=10?'#059669':'#dc2626'}">${moy.toFixed(2)}</div><div class="fs-lbl">Moy. ${p}</div></div>`;
+  }
+  moyHTML += '</div>';
+  const tableHTML = `<table>
+    <tr><th>Matière</th><th>Note</th><th>Coeff.</th><th>Période</th><th>Appréciation</th></tr>
+    ${notes.map(n=>{const a=getApp(n.note);return`<tr><td>${n.matiere}</td><td><span class="note-badge ${a.cls}">${n.note}/20</span></td><td>${n.coefficient||1}</td><td><span class="badge gray">${n.periode}</span></td><td><span class="badge ${a.cls}">${a.label}</span></td></tr>`;}).join('')}
+  </table>`;
+  document.getElementById('fiche-body').innerHTML = '<div class="fiche-section"><div class="fiche-section-title">Moyennes par période</div>' + moyHTML + '</div><div class="fiche-section"><div class="fiche-section-title">Toutes les notes</div>' + tableHTML + '</div>';
+}
+
+async function afficherFicheAbsences(id) {
+  const { data } = await db.from('absences').select('*').eq('etudiant_id', id).order('date_absence',{ascending:false});
+  const abs = data || [];
+  if (!abs.length) {
+    document.getElementById('fiche-body').innerHTML = '<div class="empty-state"><div class="icon">✅</div><h3>Aucune absence</h3><p>Assiduité parfaite !</p></div>';
+    return;
+  }
+  const nbAbs = abs.filter(a=>a.statut==='absent').length;
+  const nbRet = abs.filter(a=>a.statut==='retard').length;
+  const nbExc = abs.filter(a=>a.statut==='excuse').length;
+  const statsHTML = `<div class="fiche-stat-row">
+    <div class="fiche-stat"><div class="fs-val" style="color:#dc2626">${nbAbs}</div><div class="fs-lbl">Absences</div></div>
+    <div class="fiche-stat"><div class="fs-val" style="color:#d97706">${nbRet}</div><div class="fs-lbl">Retards</div></div>
+    <div class="fiche-stat"><div class="fs-val" style="color:#059669">${nbExc}</div><div class="fs-lbl">Excusées</div></div>
+  </div>`;
+  const tableHTML = `<table>
+    <tr><th>Date</th><th>Matière</th><th>Statut</th><th>Justification</th></tr>
+    ${abs.map(a=>`<tr><td>${fmtDate(a.date_absence)}</td><td>${a.matiere}</td><td><span class="badge ${a.statut==='absent'?'red':a.statut==='retard'?'amber':'blue'}">${a.statut}</span></td><td>${a.justification||'—'}</td></tr>`).join('')}
+  </table>`;
+  document.getElementById('fiche-body').innerHTML = '<div class="fiche-section"><div class="fiche-section-title">Récapitulatif</div>' + statsHTML + '</div><div class="fiche-section"><div class="fiche-section-title">Détail</div>' + tableHTML + '</div>';
+}
+
+async function afficherFichePaiements(id) {
+  const { data } = await db.from('factures').select('*').eq('etudiant_id', id).order('created_at',{ascending:false});
+  const facs = data || [];
+  if (!facs.length) {
+    document.getElementById('fiche-body').innerHTML = '<div class="empty-state"><div class="icon">💳</div><h3>Aucune facture</h3><p>Aucune facture pour cet étudiant.</p></div>';
+    return;
+  }
+  const totalDu  = facs.reduce((s,f)=>s+f.montant_total,0);
+  const totalPay = facs.reduce((s,f)=>s+(f.montant_paye||0),0);
+  const statsHTML = `<div class="fiche-stat-row">
+    <div class="fiche-stat"><div class="fs-val" style="color:#1e3a5f;font-size:16px">${fmtMontant(totalDu)}</div><div class="fs-lbl">Total facturé</div></div>
+    <div class="fiche-stat"><div class="fs-val" style="color:#059669;font-size:16px">${fmtMontant(totalPay)}</div><div class="fs-lbl">Payé</div></div>
+    <div class="fiche-stat"><div class="fs-val" style="color:#dc2626;font-size:16px">${fmtMontant(totalDu-totalPay)}</div><div class="fs-lbl">Reste à payer</div></div>
+  </div>`;
+  const tableHTML = `<table>
+    <tr><th>Réf.</th><th>Objet</th><th>Montant</th><th>Payé</th><th>Statut</th><th>Échéance</th></tr>
+    ${facs.map(f=>{
+      const sc=f.statut==='payée'?'green':f.statut==='retard'?'red':f.statut==='partiellement_payée'?'amber':'amber';
+      return `<tr><td><code style="font-size:10px">${f.reference||'—'}</code></td><td>${f.description||f.type_frais||'—'}</td><td><strong>${fmtMontant(f.montant_total)}</strong></td><td>${fmtMontant(f.montant_paye||0)}</td><td><span class="badge ${sc}">${f.statut}</span></td><td>${fmtDate(f.date_echeance)}</td></tr>`;
+    }).join('')}
+  </table>`;
+  document.getElementById('fiche-body').innerHTML = '<div class="fiche-section"><div class="fiche-section-title">Bilan</div>' + statsHTML + '</div><div class="fiche-section"><div class="fiche-section-title">Factures</div>' + tableHTML + '</div>';
+}
+
+function imprimerFiche() {
+  const nom = typeof ficheEtudiantCourant === 'object' ? ficheEtudiantCourant.nom + ' ' + ficheEtudiantCourant.prenom : 'Étudiant';
+  const body = document.getElementById('fiche-body').innerHTML;
+  const w = window.open('','_blank');
+  w.document.write(`<html><head><title>Fiche — ${nom}</title><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet"><style>*{font-family:'Poppins',sans-serif;margin:0;box-sizing:border-box}body{padding:2rem}h2{color:#1e3a5f;margin-bottom:1rem}table{width:100%;border-collapse:collapse;margin-top:.5rem}th,td{border:1px solid #e5e7eb;padding:7px 10px;font-size:12px}th{background:#f3f4f6;font-weight:700}.badge{padding:2px 7px;border-radius:20px;font-size:11px;font-weight:600;display:inline-block}.green{background:#dcfce7;color:#059669}.red{background:#fee2e2;color:#dc2626}.amber{background:#fef9c3;color:#d97706}.blue{background:#dbeafe;color:#1d4ed8}.gray{background:#f3f4f6;color:#6b7280}.fiche-stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-bottom:1rem}.fiche-stat{background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:.75rem;text-align:center}.fs-val{font-size:20px;font-weight:700}.fs-lbl{font-size:11px;color:#6b7280}.fiche-section{margin-bottom:1.2rem}.fiche-section-title{font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem;padding-bottom:.35rem;border-bottom:1px solid #e5e7eb}.fiche-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}.fiche-info-item label{font-size:10px;font-weight:700;color:#9ca3af;text-transform:uppercase;display:block;margin-bottom:1px}.fiche-info-item span{font-size:12px;color:#111827}.note-badge{font-size:12px;font-weight:700;padding:2px 8px;border-radius:6px;display:inline-block}</style></head><body><h2>Fiche étudiant — ${nom}</h2>${body}</body></html>`);
+  w.document.close(); w.print();
+}
+
+// ══ DASHBOARD CHARTS  ★ JOUR 6 ════════════════
+async function chargerDashboardCharts() {
+  // Chart 1: Répartition par filière
+  let q1 = db.from('etudiants').select('filiere');
+  if (currentEcoleId) q1 = q1.eq('ecole_id', currentEcoleId);
+  const { data: ets } = await q1;
+  const filieres = {};
+  (ets||[]).forEach(e => { filieres[e.filiere] = (filieres[e.filiere]||0)+1; });
+  const canvas1 = document.getElementById('dash-chart-filieres');
+  if (canvas1) {
+    if (dashChartFilieres) dashChartFilieres.destroy();
+    dashChartFilieres = new Chart(canvas1, {
+      type: 'doughnut',
+      data: {
+        labels: Object.keys(filieres),
+        datasets: [{ data: Object.values(filieres), backgroundColor:['#1e3a5f','#c97c1a','#059669','#dc2626','#7c3aed','#0d9488'], borderWidth:2, borderColor:'#fff' }]
+      },
+      options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'right', labels:{ font:{family:'Poppins',size:10}, boxWidth:12 } } } }
+    });
+  }
+  // Chart 2: Bilan financier
+  let q2 = db.from('factures').select('montant_total, montant_paye');
+  if (currentEcoleId) q2 = q2.eq('ecole_id', currentEcoleId);
+  const { data: facs } = await q2;
+  const totalDu  = (facs||[]).reduce((s,f)=>s+f.montant_total,0);
+  const totalPay = (facs||[]).reduce((s,f)=>s+(f.montant_paye||0),0);
+  const canvas2 = document.getElementById('dash-chart-finances');
+  if (canvas2) {
+    if (dashChartFinances) dashChartFinances.destroy();
+    dashChartFinances = new Chart(canvas2, {
+      type: 'bar',
+      data: {
+        labels: ['Total facturé','Payé','Reste à percevoir'],
+        datasets: [{
+          data: [totalDu, totalPay, totalDu - totalPay],
+          backgroundColor: ['#1e3a5f','#059669','#dc2626'],
+          borderRadius: 8,
+        }]
+      },
+      options: {
+        responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{ display:false } },
+        scales:{ y:{ beginAtZero:true, ticks:{ font:{family:'Poppins',size:10}, callback: v => (v/1000)+'k FCFA' } } }
+      }
+    });
+  }
+}
+
+// ══ EXPORT CSV  ★ JOUR 6 ══════════════════════
+function exporterRapport(mode) {
+  if (mode === 'print') { window.print(); return; }
+  if (mode === 'csv') {
+    const activeMenu = document.querySelector('.rapport-menu-item.active');
+    const type = activeMenu ? activeMenu.id.replace('rmenu-','') : 'effectifs';
+    exporterCSV(type);
+  }
+}
+
+async function exporterCSV(type) {
+  showToast('Préparation export CSV...', 'info');
+  let rows = [], headers = [], filename = 'export';
+
+  if (type === 'effectifs') {
+    let q = db.from('etudiants').select('matricule, nom, prenom, filiere, niveau, sexe, email, statut, created_at');
+    if (currentEcoleId) q = q.eq('ecole_id', currentEcoleId);
+    const { data } = await q;
+    headers = ['Matricule','Nom','Prénom','Filière','Niveau','Sexe','Email','Statut','Date inscription'];
+    rows = (data||[]).map(e => [e.matricule,e.nom,e.prenom,e.filiere,e.niveau,e.sexe,e.email||'',e.statut,fmtDate(e.created_at)]);
+    filename = 'edulink_etudiants';
+  } else if (type === 'absences') {
+    const { data } = await db.from('absences').select('*, etudiants(nom,prenom)').order('date_absence',{ascending:false});
+    headers = ['Étudiant','Matière','Date','Statut','Justification','Parent notifié'];
+    rows = (data||[]).map(a => [
+      a.etudiants?a.etudiants.nom+' '+a.etudiants.prenom:'N/A',
+      a.matiere, fmtDate(a.date_absence), a.statut, a.justification||'', a.parent_notifie?'Oui':'Non'
+    ]);
+    filename = 'edulink_absences';
+  } else if (type === 'moyennes') {
+    let q = db.from('notes').select('*, etudiants(nom,prenom,matricule,filiere,niveau)');
+    if (currentEcoleId) q = q.eq('ecole_id', currentEcoleId);
+    const { data } = await q;
+    headers = ['Matricule','Étudiant','Filière','Niveau','Matière','Note /20','Coefficient','Période','Appréciation'];
+    rows = (data||[]).map(n => {
+      const a = getApp(n.note);
+      return [n.etudiants?.matricule||'',n.etudiants?n.etudiants.nom+' '+n.etudiants.prenom:'N/A',n.etudiants?.filiere||'',n.etudiants?.niveau||'',n.matiere,n.note,n.coefficient||1,n.periode,a.label];
+    });
+    filename = 'edulink_notes';
+  } else if (type === 'paiements') {
+    let q = db.from('factures').select('*, etudiants(nom,prenom,matricule)');
+    if (currentEcoleId) q = q.eq('ecole_id', currentEcoleId);
+    const { data } = await q;
+    headers = ['Référence','Étudiant','Matricule','Type','Montant total','Montant payé','Reste','Statut','Échéance'];
+    rows = (data||[]).map(f => [
+      f.reference||'',f.etudiants?f.etudiants.nom+' '+f.etudiants.prenom:'N/A',f.etudiants?.matricule||'',
+      f.type_frais||'',f.montant_total,f.montant_paye||0,f.montant_total-(f.montant_paye||0),f.statut,fmtDate(f.date_echeance)
+    ]);
+    filename = 'edulink_paiements';
+  } else if (type === 'discipline') {
+    let q = db.from('incidents').select('*, etudiants(nom,prenom)');
+    if (currentEcoleId) q = q.eq('ecole_id', currentEcoleId);
+    const { data } = await q;
+    headers = ['Étudiant','Type','Sévérité','Date','Statut','Sanction','Description'];
+    rows = (data||[]).map(i => [
+      i.etudiants?i.etudiants.nom+' '+i.etudiants.prenom:'N/A',
+      i.type_incident,i.severite,fmtDate(i.date_incident),i.statut,i.sanction||'',i.description||''
+    ]);
+    filename = 'edulink_incidents';
+  }
+
+  // Génération CSV
+  const escape = v => '"' + String(v).replace(/"/g,'""') + '"';
+  const csvContent = [headers, ...rows].map(r => r.map(escape).join(',')).join('
+');
+  const blob = new Blob(['﻿' + csvContent], { type:'text/csv;charset=utf-8;' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = filename + '_' + new Date().toISOString().split('T')[0] + '.csv';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('Export CSV téléchargé !', 'success');
+}
+
+// ══ PARAMÈTRES ÉCOLE  ★ JOUR 6 ════════════════
+function chargerParametres() {
+  const prefix = 'edulink_param_' + (currentEcoleId || 'global');
+  const saved = JSON.parse(localStorage.getItem(prefix) || '{}');
+
+  // Infos générales depuis l'école courante
+  const ecole = tousLesEcoles.find(e => e.id === currentEcoleId);
+  if (ecole) {
+    document.getElementById('param-nom').value   = saved.nom   || ecole.nom   || '';
+    document.getElementById('param-type').value  = saved.type  || ecole.type  || 'université';
+  }
+  // Charger les autres champs depuis localStorage
+  const fields = ['ville','pays','email','tel','adresse','annee','periode','debut','fin',
+    'note-max','note-passage','mention-passable','mention-bien','mention-tb','coeff-def',
+    'devise','frais-scol','frais-inscr','delai-retard'];
+  fields.forEach(f => {
+    const el = document.getElementById('param-' + f);
+    if (el && saved[f] !== undefined) el.value = saved[f];
+  });
+  // Checkboxes
+  ['notif-absence','notif-retard','notif-paiement','notif-bulletin'].forEach(f => {
+    const el = document.getElementById('param-' + f);
+    if (el && saved[f] !== undefined) el.checked = saved[f];
+  });
+}
+
+async function sauvegarderParametres() {
+  const prefix = 'edulink_param_' + (currentEcoleId || 'global');
+  const data = {};
+  const fields = ['nom','type','ville','pays','email','tel','adresse','annee','periode','debut','fin',
+    'note-max','note-passage','mention-passable','mention-bien','mention-tb','coeff-def',
+    'devise','frais-scol','frais-inscr','delai-retard','filieres','niveaux'];
+  fields.forEach(f => {
+    const el = document.getElementById('param-' + f);
+    if (el) data[f] = el.value;
+  });
+  ['notif-absence','notif-retard','notif-paiement','notif-bulletin'].forEach(f => {
+    const el = document.getElementById('param-' + f);
+    if (el) data[f] = el.checked;
+  });
+  localStorage.setItem(prefix, JSON.stringify(data));
+
+  // Mettre à jour le nom de l'école dans Supabase si changé
+  if (currentEcoleId && data.nom) {
+    await db.from('ecoles').update({ nom: data.nom, type: data.type }).eq('id', currentEcoleId);
+    const ecole = tousLesEcoles.find(e=>e.id===currentEcoleId);
+    if (ecole) { ecole.nom = data.nom; ecole.type = data.type; }
+    mettreAJourBadgeEcole({ nom: data.nom, type: data.type });
+    // Mettre à jour le sélecteur
+    const sel = document.getElementById('ecole-selector');
+    const opt = sel ? [...sel.options].find(o=>o.value===currentEcoleId) : null;
+    if (opt) opt.textContent = data.nom;
+  }
+  showToast('Paramètres sauvegardés !', 'success');
+}
+
+// Charger les graphiques dashboard au démarrage
+window.addEventListener('DOMContentLoaded', function() {
+  setTimeout(function() {
+    if (document.getElementById('page-dashboard')?.classList.contains('active')) {
+      chargerDashboardCharts();
+    }
+  }, 1200);
+});
+
+// ══ IMPORT CSV ÉTUDIANTS  ★ JOUR 7 ════════════
+let csvDonnees = []; // données parsées et validées
+
+const CSV_COLONNES = ['matricule','nom','prenom','sexe','filiere','niveau','email'];
+const CSV_OBLIGATOIRES = ['matricule','nom','prenom','filiere','niveau'];
+
+function telechargerModeleCSV() {
+  const entetes = CSV_COLONNES.join(',');
+  const exemples = [
+    '2025-001,AGBODJAN,Kossi,M,Informatique,L1,kossi@etud.bj',
+    '2025-002,BONI,Fatou,F,Gestion,L2,fatou@etud.bj',
+    '2025-003,DOSSOU,Séraphin,M,Droit,L3,',
+  ].join('\n');
+  const csv = entetes + '\n' + exemples;
+  const blob = new Blob(['\uFEFF' + csv], { type:'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a'); a.href=url; a.download='modele_etudiants.csv'; a.click();
+  URL.revokeObjectURL(url);
+  showToast('Modèle CSV téléchargé !', 'success');
+}
+
+function traiterFichierCSV(file) {
+  if (!file) return;
+  if (!file.name.endsWith('.csv')) { showToast('Fichier .csv uniquement.', 'error'); return; }
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const text = e.target.result;
+    parseCSV(text);
+  };
+  reader.readAsText(file, 'UTF-8');
+}
+
+function parseCSV(text) {
+  // Nettoyage BOM et normalisation lignes
+  text = text.replace(/^\uFEFF/, '').replace(/\r\n/g,'\n').replace(/\r/g,'\n');
+  const lignes = text.split('\n').filter(l => l.trim());
+  if (lignes.length < 2) { showToast('Le fichier CSV est vide ou invalide.', 'error'); return; }
+
+  // Détecter séparateur (virgule ou point-virgule)
+  const separateur = lignes[0].includes(';') ? ';' : ',';
+  const entetes = lignes[0].split(separateur).map(h => h.trim().toLowerCase().replace(/['"]/g,''));
+
+  // Vérifier colonnes obligatoires
+  const manquantes = CSV_OBLIGATOIRES.filter(c => !entetes.includes(c));
+  if (manquantes.length) {
+    showToast('Colonnes manquantes : ' + manquantes.join(', '), 'error'); return;
+  }
+
+  const donnees = [];
+  const erreurs = [];
+
+  for (let i = 1; i < lignes.length; i++) {
+    const vals = lignes[i].split(separateur).map(v => v.trim().replace(/^["']|["']$/g,''));
+    const row = {};
+    entetes.forEach((h, idx) => { row[h] = vals[idx] || ''; });
+
+    // Validation ligne
+    const err = [];
+    if (!row.matricule) err.push('matricule manquant');
+    if (!row.nom) err.push('nom manquant');
+    if (!row.prenom) err.push('prénom manquant');
+    if (!row.filiere) err.push('filière manquante');
+    if (!row.niveau)  err.push('niveau manquant');
+    if (row.sexe && !['M','F','m','f'].includes(row.sexe)) err.push('sexe invalide (M/F)');
+
+    row._ligne   = i + 1;
+    row._valide  = err.length === 0;
+    row._erreurs = err;
+    donnees.push(row);
+    if (err.length) erreurs.push(`Ligne ${i+1} : ${err.join(', ')}`);
+  }
+
+  csvDonnees = donnees;
+  afficherPreviewCSV(donnees, erreurs, entetes);
+}
+
+function afficherPreviewCSV(donnees, erreurs, entetes) {
+  document.getElementById('csv-step-1').style.display = 'none';
+  document.getElementById('csv-step-2').style.display = 'block';
+
+  const valides   = donnees.filter(r => r._valide).length;
+  const invalides = donnees.length - valides;
+
+  // Résumé
+  document.getElementById('csv-resume').innerHTML = `
+    <div style="flex:1;background:#f0fdf4;border-radius:10px;padding:.75rem 1rem;text-align:center;border:1px solid #bbf7d0">
+      <div style="font-size:22px;font-weight:800;color:#059669">${valides}</div>
+      <div style="font-size:11px;color:#059669;font-weight:600">Lignes valides</div>
+    </div>
+    <div style="flex:1;background:${invalides>0?'#fff7f0':'#f9fafb'};border-radius:10px;padding:.75rem 1rem;text-align:center;border:1px solid ${invalides>0?'#fed7aa':'#e5e7eb'}">
+      <div style="font-size:22px;font-weight:800;color:${invalides>0?'#d97706':'#9ca3af'}">${invalides}</div>
+      <div style="font-size:11px;color:${invalides>0?'#d97706':'#9ca3af'};font-weight:600">Lignes invalides</div>
+    </div>
+    <div style="flex:1;background:#eff6ff;border-radius:10px;padding:.75rem 1rem;text-align:center;border:1px solid #bfdbfe">
+      <div style="font-size:22px;font-weight:800;color:#1d4ed8">${donnees.length}</div>
+      <div style="font-size:11px;color:#1d4ed8;font-weight:600">Total lignes</div>
+    </div>`;
+
+  document.getElementById('csv-nb-valides').textContent = valides;
+  document.getElementById('btn-confirmer-import').disabled = valides === 0;
+
+  // En-têtes table
+  const colsAfficher = CSV_COLONNES.filter(c => entetes.includes(c));
+  document.getElementById('csv-thead').innerHTML =
+    `<tr>${colsAfficher.map(c=>`<th>${c}</th>`).join('')}<th>Statut</th></tr>`;
+
+  // Lignes
+  document.getElementById('csv-tbody').innerHTML = donnees.map(row => {
+    const cls = row._valide ? '' : 'background:#fff7f0';
+    return `<tr style="${cls}">
+      ${colsAfficher.map(c => `<td style="font-size:12px">${row[c]||'<span style="color:#d1d5db">—</span>'}</td>`).join('')}
+      <td>${row._valide
+        ? '<span class="badge green">✓ OK</span>'
+        : `<span class="badge red" title="${row._erreurs.join(', ')}">⚠ Erreur</span>`}
+      </td>
+    </tr>`;
+  }).join('');
+
+  // Bloc erreurs
+  if (erreurs.length) {
+    const bloc = document.getElementById('csv-erreurs');
+    bloc.style.display = 'block';
+    bloc.innerHTML = `<strong>⚠️ ${erreurs.length} ligne(s) ignorée(s) :</strong><br>` + erreurs.join('<br>');
+  }
+}
+
+async function confirmerImportCSV() {
+  const valides = csvDonnees.filter(r => r._valide);
+  if (!valides.length) return;
+
+  const btn = document.getElementById('btn-confirmer-import');
+  btn.disabled = true; btn.textContent = '⏳ Import en cours...';
+
+  const inserts = valides.map(r => ({
+    ecole_id:  currentEcoleId,
+    matricule: r.matricule,
+    nom:       r.nom.toUpperCase(),
+    prenom:    r.prenom,
+    sexe:      (r.sexe||'M').toUpperCase(),
+    filiere:   r.filiere,
+    niveau:    r.niveau,
+    email:     r.email || null,
+    statut:    'actif',
+  }));
+
+  // Insertion par lots de 50
+  let succes = 0, echecs = 0;
+  const taille = 50;
+  for (let i = 0; i < inserts.length; i += taille) {
+    const lot = inserts.slice(i, i + taille);
+    const { error } = await db.from('etudiants').insert(lot);
+    if (error) {
+      // Si erreur de doublon (matricule unique), compter les échecs
+      echecs += lot.length;
+      console.error('Erreur import lot:', error.message);
+    } else {
+      succes += lot.length;
+    }
+  }
+
+  // Afficher résultat
+  document.getElementById('csv-step-2').style.display = 'none';
+  document.getElementById('csv-step-3').style.display = 'block';
+
+  if (succes > 0) {
+    document.getElementById('csv-result-ico').textContent = '🎉';
+    document.getElementById('csv-result-titre').textContent = succes + ' étudiant(s) importé(s) !';
+    document.getElementById('csv-result-detail').textContent =
+      echecs > 0
+        ? `${succes} succès · ${echecs} échec(s) (matricules en doublon ou données invalides)`
+        : `Tous les étudiants ont été ajoutés avec succès.`;
+    showToast(succes + ' étudiant(s) importé(s) !', 'success');
+  } else {
+    document.getElementById('csv-result-ico').textContent = '❌';
+    document.getElementById('csv-result-titre').textContent = 'Import échoué';
+    document.getElementById('csv-result-detail').textContent = 'Vérifiez que les matricules ne sont pas déjà utilisés.';
+    showToast('Import échoué — matricules en doublon ?', 'error');
+  }
+  chargerDashboard();
+}
+
+function resetCSVImport() {
+  csvDonnees = [];
+  document.getElementById('csv-file-input').value = '';
+  document.getElementById('csv-step-1').style.display = 'block';
+  document.getElementById('csv-step-2').style.display = 'none';
+  document.getElementById('csv-step-3').style.display = 'none';
+  document.getElementById('csv-erreurs').style.display = 'none';
+  document.getElementById('csv-resume').innerHTML = '';
+}
+
+// PWA Service Worker
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', function() {
+    navigator.serviceWorker.register('./service-worker.js')
+      .then(function(r) { console.log('[SW] OK'); })
+      .catch(function(e) { console.warn('[SW]', e.message); });
+  });
+}
+
+var pwaPrompt = null;
+window.addEventListener('beforeinstallprompt', function(e) {
+  e.preventDefault(); pwaPrompt = e;
+  setTimeout(function() {
+    var app = document.getElementById('app-main');
+    if (app && app.style.display !== 'none') {
+      var b = document.getElementById('pwa-banner');
+      if (b) b.classList.add('show');
+    }
+  }, 3000);
+});
+(function() {
+  var btn = document.getElementById('pwa-install-btn');
+  if (!btn) return;
+  btn.addEventListener('click', function() {
+    if (!pwaPrompt) return;
+    pwaPrompt.prompt();
+    pwaPrompt.userChoice.then(function(r) {
+      var b = document.getElementById('pwa-banner');
+      if (b) b.classList.remove('show');
+      pwaPrompt = null;
+      if (r.outcome === 'accepted') showToast('EduLink installe ! 📱','success');
+    });
+  });
+})();
+window.addEventListener('appinstalled', function() {
+  var b = document.getElementById('pwa-banner');
+  if (b) b.classList.remove('show');
+  showToast('EduLink installe sur votre appareil !','success');
+});
+
+</script>
+</body>
+</html>
