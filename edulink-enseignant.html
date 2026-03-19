@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>EduLink — Espace Enseignant</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+* { margin:0; box-sizing:border-box; }
+:root {
+  --navy:#1e3a5f; --green:#059669; --gold:#c97c1a;
+  --red:#dc2626; --amber:#d97706; --bg:#f3f4f6;
+  --border:#e5e7eb; --radius:12px;
+}
+body { font-family:'Poppins',sans-serif; background:var(--bg); min-height:100vh; color:#111827; }
+
+/* ── LOGIN ── */
+#login-screen {
+  position:fixed; top:0; left:0; width:100%; height:100%;
+  background:linear-gradient(135deg,#1e3a5f 0%,#0f2040 100%);
+  display:flex; align-items:center; justify-content:center; z-index:2000; padding:1rem;
+}
+.login-card { background:#fff; border-radius:20px; padding:2.2rem 2rem; width:100%; max-width:400px; box-shadow:0 30px 80px rgba(0,0,0,.3); }
+.login-brand { text-align:center; margin-bottom:1.8rem; }
+.login-brand .brand-ico { width:64px; height:64px; border-radius:18px; background:#1e3a5f; display:flex; align-items:center; justify-content:center; font-size:28px; margin:0 auto .75rem; }
+.login-brand h1 { font-size:22px; font-weight:700; color:#1e3a5f; }
+.login-brand p { font-size:12px; color:#6b7280; }
+.login-tag { display:inline-flex; align-items:center; gap:5px; background:#dbeafe; color:#1d4ed8; font-size:11px; font-weight:700; padding:4px 10px; border-radius:20px; margin-top:6px; }
+.form-group { margin-bottom:1rem; }
+.form-group label { display:block; font-size:12px; font-weight:600; color:#374151; margin-bottom:4px; }
+.form-group input { width:100%; padding:10px 12px; border:1.5px solid #e5e7eb; border-radius:9px; font-size:13px; font-family:'Poppins',sans-serif; outline:none; transition:border-color .15s; }
+.form-group input:focus { border-color:#1e3a5f; box-shadow:0 0 0 3px rgba(30,58,95,.08); }
+.login-btn { width:100%; padding:12px; background:#1e3a5f; color:#fff; border:none; border-radius:10px; font-size:14px; font-weight:700; font-family:'Poppins',sans-serif; cursor:pointer; transition:all .2s; margin-top:.4rem; }
+.login-btn:hover { background:#152c4a; transform:translateY(-1px); }
+.login-btn:disabled { opacity:.6; transform:none; cursor:default; }
+.login-error { color:#dc2626; font-size:12px; text-align:center; margin-top:.75rem; display:none; background:#fee2e2; padding:8px 12px; border-radius:8px; }
+.login-back { text-align:center; margin-top:1rem; font-size:12px; color:#6b7280; }
+.login-back a { color:#1e3a5f; font-weight:600; text-decoration:none; }
+
+/* ── APP ── */
+#app-enseignant { display:none; }
+
+/* ── NAV ── */
+nav { width:220px; background:#1e3a5f; min-height:100vh; padding:1rem; flex-shrink:0; display:flex; flex-direction:column; position:fixed; left:0; top:0; }
+nav .logo { color:#fff; font-size:15px; font-weight:700; margin-bottom:.3rem; }
+nav .logo-tag { font-size:10px; color:rgba(255,255,255,.5); font-weight:400; margin-bottom:1.2rem; background:rgba(255,255,255,.1); padding:2px 8px; border-radius:10px; display:inline-block; }
+nav .nav-section { font-size:9px; font-weight:600; color:rgba(255,255,255,.4); text-transform:uppercase; letter-spacing:.08em; padding:6px 12px 2px; margin-top:4px; }
+nav a { display:flex; align-items:center; gap:8px; color:rgba(255,255,255,.7); padding:8px 12px; border-radius:6px; text-decoration:none; font-size:12.5px; margin-bottom:2px; cursor:pointer; transition:all .15s; }
+nav a:hover, nav a.on { background:rgba(255,255,255,.15); color:#fff; }
+nav a .ico { font-size:14px; width:18px; text-align:center; }
+nav .nav-bottom { margin-top:auto; padding-top:1rem; border-top:1px solid rgba(255,255,255,.1); }
+.nav-user { display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:10px; background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.1); margin-bottom:.4rem; }
+.nav-user .u-avatar { width:32px; height:32px; border-radius:50%; background:#059669; display:flex; align-items:center; justify-content:center; color:#fff; font-weight:700; font-size:12px; flex-shrink:0; }
+.nav-user .u-name { font-size:12px; font-weight:600; color:#fff; line-height:1.2; }
+.nav-user .u-role { font-size:10px; color:rgba(255,255,255,.55); }
+.nav-logout { display:flex; align-items:center; gap:6px; color:rgba(255,255,255,.45); padding:6px 10px; border-radius:6px; font-size:11px; cursor:pointer; transition:all .15s; }
+.nav-logout:hover { background:rgba(255,255,255,.08); color:rgba(255,255,255,.75); }
+
+/* ── MAIN ── */
+main { margin-left:220px; padding:1.5rem; min-height:100vh; }
+.page { display:none; }
+.page.active { display:block; animation:fadeIn .2s ease; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+.top { display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap:wrap; gap:10px; }
+.top h2 { font-size:20px; font-weight:700; color:#111827; }
+.page-subtitle { font-size:13px; color:#6b7280; margin-top:-1rem; margin-bottom:1.2rem; }
+
+/* ── CARDS ── */
+.cards { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:1.5rem; }
+.card { background:#fff; border-radius:14px; padding:1.1rem; border:1px solid var(--border); }
+.card .n { font-size:24px; font-weight:700; margin:6px 0 2px; }
+.card .l { font-size:11px; color:#6b7280; font-weight:500; }
+.card .i { font-size:18px; }
+
+/* ── TABS ── */
+.tabs { display:flex; gap:4px; margin-bottom:1.2rem; background:#f3f4f6; border-radius:10px; padding:4px; width:fit-content; }
+.tab { padding:6px 16px; border-radius:7px; font-size:12.5px; font-weight:600; cursor:pointer; color:#6b7280; transition:all .15s; border:none; background:transparent; font-family:'Poppins',sans-serif; }
+.tab.active { background:#fff; color:#1e3a5f; box-shadow:0 1px 4px rgba(0,0,0,.1); }
+
+/* ── TABLES ── */
+table { width:100%; background:#fff; border-radius:12px; border-collapse:collapse; border:1px solid var(--border); overflow:hidden; }
+th { background:#f9fafb; padding:10px 14px; text-align:left; font-size:10.5px; font-weight:600; color:#6b7280; border-bottom:1px solid var(--border); text-transform:uppercase; letter-spacing:.04em; }
+td { padding:10px 14px; font-size:13px; border-bottom:1px solid #f3f4f6; color:#374151; }
+tr:last-child td { border-bottom:none; }
+tr:hover td { background:#fafafa; }
+
+/* ── BADGES ── */
+.badge { font-size:10.5px; padding:2px 8px; border-radius:20px; font-weight:600; white-space:nowrap; }
+.red    { background:#fee2e2; color:#dc2626; }
+.green  { background:#dcfce7; color:#059669; }
+.amber  { background:#fef9c3; color:#d97706; }
+.blue   { background:#dbeafe; color:#1d4ed8; }
+.gray   { background:#f3f4f6; color:#6b7280; }
+
+/* ── BUTTONS ── */
+button { background:#1e3a5f; color:#fff; border:none; padding:8px 16px; border-radius:8px; cursor:pointer; font-size:13px; font-weight:600; font-family:'Poppins',sans-serif; transition:all .15s; }
+button:hover { background:#152c4a; transform:translateY(-1px); }
+.btn-sm { padding:4px 10px; font-size:11px; border-radius:6px; }
+.btn-green { background:#059669; }
+.btn-green:hover { background:#047857; }
+.btn-red { background:#dc2626; }
+.btn-red:hover { background:#b91c1c; }
+.btn-amber { background:#d97706; }
+.btn-secondary { background:#f3f4f6; color:#374151; }
+.btn-secondary:hover { background:#e5e7eb; transform:none; }
+.btn-outline { background:transparent; border:1px solid var(--border); color:#374151; }
+
+/* ── FILTERS ── */
+.filters { display:flex; gap:8px; margin-bottom:1rem; flex-wrap:wrap; align-items:center; }
+.filters select, .filters input { padding:7px 10px; border:1px solid var(--border); border-radius:8px; font-size:12px; font-family:'Poppins',sans-serif; outline:none; background:#fff; }
+.filter-label { font-size:12px; color:#6b7280; font-weight:500; }
+.search-bar { display:flex; gap:8px; margin-bottom:1rem; }
+.search-bar input { flex:1; padding:8px 12px; border:1px solid var(--border); border-radius:8px; font-size:13px; font-family:'Poppins',sans-serif; outline:none; }
+.search-bar input:focus { border-color:#1e3a5f; }
+
+/* ── MODAL ── */
+.modal-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.5); z-index:100; align-items:center; justify-content:center; }
+.modal-overlay.open { display:flex; }
+.modal { background:#fff; border-radius:16px; padding:1.5rem; width:540px; max-width:94%; max-height:92vh; overflow-y:auto; }
+.modal h3 { font-size:16px; font-weight:700; margin-bottom:1.5rem; color:#111827; }
+.form-group-m { margin-bottom:1rem; }
+.form-group-m label { display:block; font-size:12px; font-weight:600; margin-bottom:4px; color:#374151; text-transform:uppercase; letter-spacing:.03em; }
+.form-group-m input, .form-group-m select, .form-group-m textarea { width:100%; padding:8px 12px; border:1px solid var(--border); border-radius:8px; font-size:13px; font-family:'Poppins',sans-serif; outline:none; }
+.form-group-m input:focus, .form-group-m select:focus { border-color:#1e3a5f; }
+.form-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+.modal-footer { display:flex; gap:8px; justify-content:flex-end; margin-top:1.5rem; padding-top:1rem; border-top:1px solid #f3f4f6; }
+
+/* ── NOTES ── */
+.note-badge { font-size:13px; font-weight:700; padding:3px 10px; border-radius:8px; }
+.note-big { font-size:18px; font-weight:700; }
+.note-big.good { color:#059669; }
+.note-big.avg  { color:#d97706; }
+.note-big.bad  { color:#dc2626; }
+
+/* ── PRESENCE GRID ── */
+.presence-grid { background:#fff; border-radius:12px; border:1px solid var(--border); overflow:hidden; }
+.presence-row { display:grid; grid-template-columns:200px 1fr; border-bottom:1px solid #f3f4f6; }
+.presence-row:last-child { border-bottom:none; }
+.presence-row:hover { background:#fafafa; }
+.presence-nom { padding:10px 14px; font-size:13px; font-weight:500; color:#111827; display:flex; align-items:center; gap:8px; }
+.presence-statuts { padding:8px 14px; display:flex; gap:6px; align-items:center; }
+.presence-btn { padding:5px 12px; border-radius:6px; font-size:11.5px; font-weight:600; cursor:pointer; border:1.5px solid transparent; transition:all .15s; font-family:'Poppins',sans-serif; }
+.presence-btn.present  { background:#dcfce7; color:#059669; border-color:#059669; }
+.presence-btn.absent   { background:#fee2e2; color:#dc2626; border-color:#dc2626; }
+.presence-btn.retard   { background:#fef9c3; color:#d97706; border-color:#d97706; }
+.presence-btn.inactive { background:#f3f4f6; color:#9ca3af; border-color:#e5e7eb; }
+.presence-btn.inactive:hover { border-color:#9ca3af; }
+
+/* ── STAT BLOCK ── */
+.stat-block { background:#f9fafb; border-radius:10px; padding:1rem; border:1px solid var(--border); text-align:center; }
+.stat-block .sb-val { font-size:24px; font-weight:700; }
+.stat-block .sb-lbl { font-size:11px; color:#6b7280; font-weight:500; margin-top:2px; }
+
+/* ── LOADING/EMPTY ── */
+.loading { text-align:center; padding:2rem; color:#6b7280; font-size:13px; }
+.empty-state { text-align:center; padding:3rem; color:#9ca3af; }
+.empty-state .icon { font-size:44px; margin-bottom:.75rem; }
+.empty-state h3 { font-size:15px; font-weight:600; margin-bottom:.4rem; color:#374151; }
+
+/* ── TOAST ── */
+.toast { position:fixed; bottom:1.5rem; right:1.5rem; background:#1e3a5f; color:#fff; padding:12px 20px; border-radius:10px; font-size:13px; z-index:999; display:none; animation:fadeIn .3s; box-shadow:0 8px 24px rgba(0,0,0,.2); }
+.toast.show { display:block; }
+.toast.success { background:#059669; }
+.toast.error   { background:#dc2626; }
+.toast.info    { background:#1d4ed8; }
+
+/* ── MOBILE ── */
+@media (max-width: 768px) {
+  nav { width:100%; min-height:auto; position:relative; flex-direction:row; flex-wrap:wrap; padding:.75rem; }
+  main { margin-left:0; padding:1rem; }
+  .cards { grid-template-columns:repeat(2,1fr); }
+}
+</style>
+</head>
+<body>
+
+<!-- ══ LOGIN ══ -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-brand">
+      <div class="brand-ico">👨‍🏫</div>
+      <h1>EduLink</h1>
+      <p>Interface Enseignant</p>
+      <div class="login-tag">🎓 Espace professeurs</div>
+    </div>
+    <div class="form-group">
+      <label>Adresse e-mail</label>
+      <input type="email" id="login-email" placeholder="prof@ecole.bj" onkeypress="if(event.key==='Enter')seConnecter()">
+    </div>
+    <div class="form-group">
+      <label>Mot de passe</label>
+      <input type="password" id="login-pwd" placeholder="••••••••" onkeypress="if(event.key==='Enter')seConnecter()">
+    </div>
+    <button class="login-btn" id="login-btn" onclick="seConnecter()">Se connecter →</button>
+    <div class="login-error" id="login-error"></div>
+    <p class="login-back">Administration ? <a href="index.html">Back-office</a></p>
+  </div>
+</div>
+
+<!-- ══ APP ══ -->
+<div id="app-enseignant" style="display:flex">
+
+  <!-- Navigation -->
+  <nav>
+    <div class="logo">🎓 EduLink</div>
+    <div class="logo-tag">Espace Enseignant</div>
+
+    <div class="nav-section">Mes cours</div>
+    <a onclick="showPage('dashboard')" id="nav-dashboard" class="on"><span class="ico">⊞</span> Tableau de bord</a>
+    <a onclick="showPage('notes')"     id="nav-notes"><span class="ico">📊</span> Saisie des notes</a>
+    <a onclick="showPage('presences')" id="nav-presences"><span class="ico">✅</span> Appel du jour</a>
+    <a onclick="showPage('etudiants')" id="nav-etudiants"><span class="ico">👥</span> Mes étudiants</a>
+
+    <div class="nav-section">Statistiques</div>
+    <a onclick="showPage('stats')" id="nav-stats"><span class="ico">📈</span> Mes statistiques</a>
+
+    <div class="nav-bottom">
+      <div class="nav-user">
+        <div class="u-avatar" id="nav-avatar">?</div>
+        <div>
+          <div class="u-name" id="nav-nom">—</div>
+          <div class="u-role">Enseignant</div>
+        </div>
+      </div>
+      <div class="nav-logout" onclick="seDeconnecter()">🚪 Déconnexion</div>
+    </div>
+  </nav>
+
+  <main>
+
+    <!-- ══ DASHBOARD ══ -->
+    <div class="page active" id="page-dashboard">
+      <div class="top"><div><h2>Tableau de bord</h2><p class="page-subtitle" id="dash-subtitle">Bienvenue dans votre espace enseignant</p></div>
+        <button class="btn-green" onclick="showPage('presences')">✅ Faire l'appel</button>
+      </div>
+      <div class="cards">
+        <div class="card"><div class="i">👥</div><div class="n" style="color:#1e3a5f" id="d-etudiants">—</div><div class="l">Étudiants</div></div>
+        <div class="card"><div class="i">📊</div><div class="n" style="color:#059669" id="d-notes">—</div><div class="l">Notes saisies</div></div>
+        <div class="card"><div class="i">🚫</div><div class="n" style="color:#dc2626" id="d-absences">—</div><div class="l">Absences enregistrées</div></div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+        <div style="background:#fff;border-radius:14px;border:1px solid var(--border);padding:1.2rem">
+          <div style="font-size:13px;font-weight:700;color:#374151;margin-bottom:1rem">📊 Dernières notes saisies</div>
+          <table><tr><th>Étudiant</th><th>Matière</th><th>Note</th></tr>
+          <tbody id="dash-notes"><tr><td colspan="3" class="loading">Chargement...</td></tr></tbody></table>
+        </div>
+        <div style="background:#fff;border-radius:14px;border:1px solid var(--border);padding:1.2rem">
+          <div style="font-size:13px;font-weight:700;color:#374151;margin-bottom:1rem">🚫 Absences récentes</div>
+          <table><tr><th>Étudiant</th><th>Matière</th><th>Date</th><th>Statut</th></tr>
+          <tbody id="dash-absences"><tr><td colspan="4" class="loading">Chargement...</td></tr></tbody></table>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ NOTES ══ -->
+    <div class="page" id="page-notes">
+      <div class="top">
+        <div><h2>📊 Saisie des notes</h2></div>
+        <button onclick="ouvrirModal('modal-note')">+ Nouvelle note</button>
+      </div>
+      <div class="filters">
+        <span class="filter-label">Période :</span>
+        <select id="filter-periode" onchange="chargerNotes()">
+          <option value="">Toutes</option>
+          <option value="S1">Semestre 1</option><option value="S2">Semestre 2</option>
+          <option value="T1">Trimestre 1</option><option value="T2">Trimestre 2</option><option value="T3">Trimestre 3</option>
+        </select>
+        <select id="filter-matiere-notes" onchange="chargerNotes()"><option value="">Toutes les matières</option></select>
+      </div>
+      <table>
+        <tr><th>Étudiant</th><th>Matière</th><th>Note /20</th><th>Coefficient</th><th>Période</th><th>Appréciation</th><th>Actions</th></tr>
+        <tbody id="tbody-notes"><tr><td colspan="7" class="loading">Chargement...</td></tr></tbody>
+      </table>
+    </div>
+
+    <!-- ══ PRÉSENCES ══ -->
+    <div class="page" id="page-presences">
+      <div class="top">
+        <div><h2>✅ Appel du jour</h2><p class="page-subtitle" id="presence-date-title">—</p></div>
+        <div style="display:flex;gap:8px">
+          <button class="btn-secondary btn-outline" onclick="enregistrerTousPresents()">✅ Tous présents</button>
+          <button class="btn-green" onclick="sauvegarderAppel()">💾 Enregistrer l'appel</button>
+        </div>
+      </div>
+      <div class="filters">
+        <span class="filter-label">Matière :</span>
+        <input type="text" id="presence-matiere" placeholder="Ex: Algorithmique" style="padding:7px 12px;border:1px solid var(--border);border-radius:8px;font-size:12.5px;font-family:'Poppins',sans-serif;outline:none;min-width:200px">
+        <span class="filter-label">Date :</span>
+        <input type="date" id="presence-date" style="padding:7px 10px;border:1px solid var(--border);border-radius:8px;font-size:12px;font-family:'Poppins',sans-serif;outline:none">
+      </div>
+      <!-- Légende -->
+      <div style="display:flex;gap:8px;margin-bottom:1rem;font-size:12px;align-items:center">
+        <span style="color:#6b7280;font-weight:500">Légende :</span>
+        <span style="background:#dcfce7;color:#059669;padding:3px 10px;border-radius:6px;font-weight:600;font-size:11.5px">✓ Présent</span>
+        <span style="background:#fee2e2;color:#dc2626;padding:3px 10px;border-radius:6px;font-weight:600;font-size:11.5px">✗ Absent</span>
+        <span style="background:#fef9c3;color:#d97706;padding:3px 10px;border-radius:6px;font-weight:600;font-size:11.5px">⏰ Retard</span>
+      </div>
+      <div class="presence-grid" id="presence-list">
+        <div class="loading">Chargement des étudiants...</div>
+      </div>
+    </div>
+
+    <!-- ══ ÉTUDIANTS ══ -->
+    <div class="page" id="page-etudiants">
+      <div class="top"><h2>👥 Mes étudiants</h2></div>
+      <div class="search-bar">
+        <input type="text" id="search-etudiants" placeholder="Rechercher par nom, prénom, matricule..." oninput="filtrerEtudiants()">
+      </div>
+      <div class="filters">
+        <span class="filter-label">Filière :</span>
+        <select id="filter-filiere" onchange="filtrerEtudiants()"><option value="">Toutes</option></select>
+        <select id="filter-niveau" onchange="filtrerEtudiants()"><option value="">Tous niveaux</option></select>
+      </div>
+      <table>
+        <tr><th>Matricule</th><th>Nom complet</th><th>Filière</th><th>Niveau</th><th>Statut</th><th>Notes</th></tr>
+        <tbody id="tbody-etudiants"><tr><td colspan="6" class="loading">Chargement...</td></tr></tbody>
+      </table>
+    </div>
+
+    <!-- ══ STATS ══ -->
+    <div class="page" id="page-stats">
+      <div class="top"><h2>📈 Mes statistiques</h2></div>
+      <div id="stats-container"><div class="loading">Chargement des statistiques...</div></div>
+    </div>
+
+  </main>
+</div>
+
+<!-- MODALS -->
+<!-- Note -->
+<div class="modal-overlay" id="modal-note">
+  <div class="modal">
+    <h3>📊 Saisir une note</h3>
+    <div class="form-group-m"><label>Étudiant *</label><select id="input-note-etudiant"></select></div>
+    <div class="form-grid">
+      <div class="form-group-m"><label>Matière *</label><input type="text" id="input-note-matiere" placeholder="Ex: Algorithmique"></div>
+      <div class="form-group-m"><label>Période *</label>
+        <select id="input-note-periode">
+          <option value="S1">Semestre 1</option><option value="S2">Semestre 2</option>
+          <option value="T1">Trimestre 1</option><option value="T2">Trimestre 2</option><option value="T3">Trimestre 3</option>
+        </select>
+      </div>
+      <div class="form-group-m"><label>Note /20 *</label><input type="number" id="input-note-valeur" min="0" max="20" step="0.25" placeholder="Ex: 14.5"></div>
+      <div class="form-group-m"><label>Coefficient</label><input type="number" id="input-note-coeff" min="1" max="10" value="2"></div>
+    </div>
+    <div class="form-group-m"><label>Commentaire</label><textarea rows="2" id="input-note-commentaire" placeholder="Appréciation..."></textarea></div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="fermerModal('modal-note')">Annuler</button>
+      <button class="btn-green" onclick="enregistrerNote()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══ SUPABASE ══
+const SUPABASE_URL = 'https://wpexhfngdbagmgodgzzt.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_8e4xKWS3YpfwGFAQlZ7lgQ_9hDx8ljQ';
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ══ ÉTAT ══
+let currentUser = null;
+let currentProfile = null;
+let currentEcoleId = null;
+let tousLesEtudiants = [];
+let toutesLesNotes = [];
+let appelState = {}; // { etudiantId: 'present'|'absent'|'retard' }
+
+// ══ UTILS ══
+function showToast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast show ' + type;
+  setTimeout(() => t.className = 'toast', 3500);
+}
+function getApp(note) {
+  if (note >= 16) return { label:'Très bien', cls:'green' };
+  if (note >= 14) return { label:'Bien', cls:'green' };
+  if (note >= 12) return { label:'Assez bien', cls:'blue' };
+  if (note >= 10) return { label:'Passable', cls:'amber' };
+  return { label:'Insuffisant', cls:'red' };
+}
+function getNoteClass(n) { return n>=14?'good':n>=10?'avg':'bad'; }
+function fmtDate(d) { return d ? new Date(d).toLocaleDateString('fr-FR') : '—'; }
+function ouvrirModal(id) { document.getElementById(id)?.classList.add('open'); if(id==='modal-note') remplirSelectNote(); }
+function fermerModal(id) { document.getElementById(id)?.classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(o => o.addEventListener('click', e => { if(e.target===o) o.classList.remove('open'); }));
+
+// ══ AUTH ══
+async function seConnecter() {
+  const email = document.getElementById('login-email').value.trim();
+  const pwd   = document.getElementById('login-pwd').value;
+  const btn   = document.getElementById('login-btn');
+  const err   = document.getElementById('login-error');
+  if (!email || !pwd) { err.style.display='block'; err.textContent='Remplissez tous les champs.'; return; }
+  btn.disabled = true; btn.textContent = 'Connexion...'; err.style.display = 'none';
+  const { data, error } = await db.auth.signInWithPassword({ email, password: pwd });
+  if (error) {
+    err.style.display='block';
+    err.textContent = error.message.includes('Invalid') ? 'Email ou mot de passe incorrect.' : error.message;
+    btn.disabled=false; btn.textContent='Se connecter →'; return;
+  }
+  currentUser = data.user;
+  await chargerProfil();
+}
+
+async function chargerProfil() {
+  const { data: profile } = await db.from('profiles').select('*').eq('id', currentUser.id).single();
+  currentProfile = profile;
+  if (!profile || !['enseignant','admin'].includes(profile.role)) {
+    await db.auth.signOut();
+    const err = document.getElementById('login-error');
+    err.style.display='block';
+    err.textContent='Accès réservé aux enseignants.';
+    document.getElementById('login-btn').disabled=false;
+    document.getElementById('login-btn').textContent='Se connecter →';
+    return;
+  }
+  lancerApp();
+}
+
+function lancerApp() {
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app-enseignant').style.display='flex';
+  const nom = currentProfile ? currentProfile.prenom + ' ' + currentProfile.nom : '—';
+  document.getElementById('nav-nom').textContent = nom;
+  const initiales = currentProfile ? (currentProfile.prenom?.[0]||'')+(currentProfile.nom?.[0]||'') : '?';
+  document.getElementById('nav-avatar').textContent = initiales.toUpperCase();
+  chargerDonnees();
+}
+
+async function seDeconnecter() {
+  await db.auth.signOut(); location.reload();
+}
+
+// ══ DATA ══
+async function chargerDonnees() {
+  // Charger l'école
+  const { data: ecoles } = await db.from('ecoles').select('*').limit(1);
+  if (ecoles?.length) currentEcoleId = ecoles[0].id;
+  await chargerEtudiants();
+  chargerDashboard();
+}
+
+async function chargerEtudiants() {
+  let q = db.from('etudiants').select('*').order('nom');
+  if (currentEcoleId) q = q.eq('ecole_id', currentEcoleId);
+  const { data } = await q;
+  tousLesEtudiants = data || [];
+}
+
+// ══ NAVIGATION ══
+function showPage(p) {
+  document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
+  document.querySelectorAll('nav a').forEach(x => x.classList.remove('on'));
+  document.getElementById('page-'+p)?.classList.add('active');
+  document.getElementById('nav-'+p)?.classList.add('on');
+  const loaders = {
+    dashboard: chargerDashboard,
+    notes:     chargerNotes,
+    presences: chargerPresences,
+    etudiants: afficherEtudiants,
+    stats:     chargerStats,
+  };
+  if (loaders[p]) loaders[p]();
+}
+
+// ══ DASHBOARD ══
+async function chargerDashboard() {
+  const prenom = currentProfile?.prenom || 'Enseignant';
+  document.getElementById('dash-subtitle').textContent = 'Bonjour ' + prenom + ' ! Voici votre récapitulatif.';
+  document.getElementById('d-etudiants').textContent = tousLesEtudiants.length;
+
+  let qN = db.from('notes').select('*, etudiants(nom,prenom)').order('created_at',{ascending:false}).limit(5);
+  if (currentEcoleId) qN = qN.eq('ecole_id', currentEcoleId);
+  const { data: notes } = await qN;
+  toutesLesNotes = notes || [];
+  document.getElementById('d-notes').textContent = toutesLesNotes.length;
+
+  let qA = db.from('absences').select('*, etudiants(nom,prenom)').order('created_at',{ascending:false}).limit(5);
+  const { data: abs } = await qA;
+  document.getElementById('d-absences').textContent = abs?.length || 0;
+
+  // Table notes
+  document.getElementById('dash-notes').innerHTML = toutesLesNotes.length
+    ? toutesLesNotes.map(n => {
+        const a = getApp(n.note);
+        return `<tr><td>${n.etudiants?n.etudiants.nom+' '+n.etudiants.prenom:'—'}</td><td>${n.matiere}</td><td><span class="badge ${a.cls}">${n.note}/20</span></td></tr>`;
+      }).join('')
+    : '<tr><td colspan="3" class="loading">Aucune note.</td></tr>';
+
+  // Table absences
+  document.getElementById('dash-absences').innerHTML = (abs||[]).length
+    ? abs.map(a => `<tr><td>${a.etudiants?a.etudiants.nom+' '+a.etudiants.prenom:'—'}</td><td>${a.matiere}</td><td>${fmtDate(a.date_absence)}</td><td><span class="badge ${a.statut==='absent'?'red':a.statut==='retard'?'amber':'blue'}">${a.statut}</span></td></tr>`).join('')
+    : '<tr><td colspan="4" class="loading">Aucune absence.</td></tr>';
+}
+
+// ══ NOTES ══
+async function chargerNotes() {
+  document.getElementById('tbody-notes').innerHTML = '<tr><td colspan="7" class="loading">Chargement...</td></tr>';
+  let q = db.from('notes').select('*, etudiants(nom,prenom)').order('created_at',{ascending:false});
+  if (currentEcoleId) q = q.eq('ecole_id', currentEcoleId);
+  const fp = document.getElementById('filter-periode')?.value;
+  const fm = document.getElementById('filter-matiere-notes')?.value;
+  if (fp) q = q.eq('periode', fp);
+  if (fm) q = q.eq('matiere', fm);
+  const { data } = await q;
+  toutesLesNotes = data || [];
+  // Mettre à jour filtre matières
+  const matieres = [...new Set(toutesLesNotes.map(n=>n.matiere))].sort();
+  const filtMat = document.getElementById('filter-matiere-notes');
+  const cur = filtMat.value;
+  filtMat.innerHTML = '<option value="">Toutes les matières</option>' + matieres.map(m=>`<option value="${m}" ${cur===m?'selected':''}>${m}</option>`).join('');
+  document.getElementById('tbody-notes').innerHTML = toutesLesNotes.length
+    ? toutesLesNotes.map(n => {
+        const a = getApp(n.note);
+        return `<tr>
+          <td><strong>${n.etudiants?n.etudiants.nom+' '+n.etudiants.prenom:'—'}</strong></td>
+          <td>${n.matiere}</td>
+          <td><span class="note-big ${getNoteClass(n.note)}">${n.note}/20</span></td>
+          <td>${n.coefficient||1}</td>
+          <td><span class="badge gray">${n.periode}</span></td>
+          <td><span class="badge ${a.cls}">${a.label}</span></td>
+          <td><button class="btn-sm btn-red" onclick="supprimerNote('${n.id}')">✕</button></td>
+        </tr>`;
+      }).join('')
+    : '<tr><td colspan="7" class="loading">Aucune note trouvée.</td></tr>';
+}
+
+function remplirSelectNote() {
+  const sel = document.getElementById('input-note-etudiant');
+  sel.innerHTML = tousLesEtudiants.map(e=>`<option value="${e.id}">${e.nom} ${e.prenom}</option>`).join('');
+}
+
+async function enregistrerNote() {
+  const matiere = document.getElementById('input-note-matiere').value.trim();
+  const note    = parseFloat(document.getElementById('input-note-valeur').value);
+  if (!matiere||isNaN(note)) { showToast('Remplissez matière et note.','error'); return; }
+  if (note<0||note>20) { showToast('Note entre 0 et 20.','error'); return; }
+  const { error } = await db.from('notes').insert([{
+    ecole_id: currentEcoleId,
+    etudiant_id: document.getElementById('input-note-etudiant').value,
+    matiere, note,
+    coefficient: parseInt(document.getElementById('input-note-coeff').value)||2,
+    periode: document.getElementById('input-note-periode').value,
+    commentaire: document.getElementById('input-note-commentaire').value.trim()
+  }]);
+  if (error) { showToast('Erreur : '+error.message,'error'); return; }
+  fermerModal('modal-note');
+  ['input-note-matiere','input-note-valeur','input-note-commentaire'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('input-note-coeff').value='2';
+  showToast('Note enregistrée !','success');
+  chargerNotes(); chargerDashboard();
+}
+
+async function supprimerNote(id) {
+  if (!confirm('Supprimer cette note ?')) return;
+  await db.from('notes').delete().eq('id',id);
+  showToast('Note supprimée.','success'); chargerNotes();
+}
+
+// ══ PRÉSENCES ══
+function chargerPresences() {
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('presence-date').value = today;
+  document.getElementById('presence-date-title').textContent = 'Appel du ' + new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  // Initialiser l'état à "present" pour tous
+  appelState = {};
+  tousLesEtudiants.forEach(e => { appelState[e.id] = 'present'; });
+  renderPresenceGrid();
+}
+
+function renderPresenceGrid() {
+  const list = document.getElementById('presence-list');
+  if (!tousLesEtudiants.length) {
+    list.innerHTML = '<div class="loading">Aucun étudiant trouvé.</div>'; return;
+  }
+  list.innerHTML = `
+    <div style="background:#f9fafb;border-bottom:1px solid var(--border);padding:8px 14px;display:grid;grid-template-columns:200px 1fr;font-size:10.5px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.04em">
+      <div>Étudiant</div><div>Statut</div>
+    </div>
+    ${tousLesEtudiants.map(e => {
+      const statut = appelState[e.id] || 'present';
+      return `<div class="presence-row">
+        <div class="presence-nom">
+          <div style="width:28px;height:28px;border-radius:50%;background:#1e3a5f;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center">${(e.prenom?.[0]||'')+(e.nom?.[0]||'')}</div>
+          <div><div style="font-weight:600">${e.nom} ${e.prenom}</div><div style="font-size:11px;color:#9ca3af">${e.matricule}</div></div>
+        </div>
+        <div class="presence-statuts">
+          <button class="presence-btn ${statut==='present'?'present':'inactive'}" onclick="setStatut('${e.id}','present',this)">✓ Présent</button>
+          <button class="presence-btn ${statut==='absent'?'absent':'inactive'}" onclick="setStatut('${e.id}','absent',this)">✗ Absent</button>
+          <button class="presence-btn ${statut==='retard'?'retard':'inactive'}" onclick="setStatut('${e.id}','retard',this)">⏰ Retard</button>
+        </div>
+      </div>`;
+    }).join('')}`;
+}
+
+function setStatut(etudiantId, statut, btn) {
+  appelState[etudiantId] = statut;
+  const row = btn.closest('.presence-statuts');
+  row.querySelectorAll('.presence-btn').forEach(b => b.className = 'presence-btn inactive');
+  btn.className = 'presence-btn ' + statut;
+}
+
+function enregistrerTousPresents() {
+  tousLesEtudiants.forEach(e => { appelState[e.id] = 'present'; });
+  renderPresenceGrid();
+  showToast('Tous marqués comme présents.','info');
+}
+
+async function sauvegarderAppel() {
+  const matiere = document.getElementById('presence-matiere').value.trim();
+  const date    = document.getElementById('presence-date').value;
+  if (!matiere) { showToast('Entrez le nom de la matière.','error'); return; }
+  if (!date)    { showToast('Sélectionnez une date.','error'); return; }
+  // Enregistrer uniquement les absents et retardataires
+  const absences = Object.entries(appelState).filter(([id, s]) => s !== 'present');
+  let nb = 0;
+  for (const [etudiantId, statut] of absences) {
+    const { error } = await db.from('absences').insert([{
+      etudiant_id: etudiantId, matiere, date_absence: date,
+      statut, parent_notifie: false
+    }]);
+    if (!error) nb++;
+  }
+  const nbPresents = tousLesEtudiants.length - absences.length;
+  showToast(`✅ Appel enregistré — ${nbPresents} présent(s), ${absences.length} absent(s)/retard(s).`, 'success');
+}
+
+// ══ ÉTUDIANTS ══
+function afficherEtudiants() {
+  const filieres = [...new Set(tousLesEtudiants.map(e=>e.filiere))].sort();
+  const niveaux  = [...new Set(tousLesEtudiants.map(e=>e.niveau))].sort();
+  const selF = document.getElementById('filter-filiere');
+  const selN = document.getElementById('filter-niveau');
+  if (selF.options.length <= 1) {
+    filieres.forEach(f => { const o=document.createElement('option'); o.value=f; o.textContent=f; selF.appendChild(o); });
+    niveaux.forEach(n  => { const o=document.createElement('option'); o.value=n; o.textContent=n; selN.appendChild(o); });
+  }
+  filtrerEtudiants();
+}
+
+function filtrerEtudiants() {
+  const q  = document.getElementById('search-etudiants').value.toLowerCase();
+  const f  = document.getElementById('filter-filiere').value;
+  const n  = document.getElementById('filter-niveau').value;
+  const liste = tousLesEtudiants.filter(e =>
+    (!q || e.nom.toLowerCase().includes(q) || e.prenom.toLowerCase().includes(q) || e.matricule.toLowerCase().includes(q)) &&
+    (!f || e.filiere === f) &&
+    (!n || e.niveau === n)
+  );
+  document.getElementById('tbody-etudiants').innerHTML = liste.length
+    ? liste.map(e => `<tr>
+        <td><code style="background:#f3f4f6;padding:2px 6px;border-radius:4px;font-size:11px">${e.matricule}</code></td>
+        <td><strong>${e.nom} ${e.prenom}</strong></td>
+        <td>${e.filiere}</td>
+        <td><span class="badge gray">${e.niveau}</span></td>
+        <td><span class="badge ${e.statut==='actif'?'green':'amber'}">${e.statut||'actif'}</span></td>
+        <td><button class="btn-sm btn-outline" onclick="voirNotesEtudiant('${e.id}','${e.nom} ${e.prenom}')">📊 Notes</button></td>
+      </tr>`).join('')
+    : '<tr><td colspan="6" class="loading">Aucun étudiant.</td></tr>';
+}
+
+async function voirNotesEtudiant(id, nom) {
+  const { data } = await db.from('notes').select('*').eq('etudiant_id', id).order('created_at',{ascending:false});
+  const notes = data || [];
+  let moy = 0, pts=0, coeff=0;
+  notes.forEach(n => { pts+=n.note*(n.coefficient||1); coeff+=(n.coefficient||1); });
+  if (coeff>0) moy = pts/coeff;
+  const a = getApp(moy);
+  alert(`📊 Notes de ${nom}\n\nMoyenne générale : ${moy.toFixed(2)}/20 (${a.label})\nNombre de notes : ${notes.length}\n\n${notes.map(n=>`• ${n.matiere} : ${n.note}/20 (${n.periode})`).join('\n')}`);
+}
+
+// ══ STATS ══
+async function chargerStats() {
+  const container = document.getElementById('stats-container');
+  container.innerHTML = '<div class="loading">Calcul des statistiques...</div>';
+  let qN = db.from('notes').select('matiere, note, coefficient, etudiants(nom,prenom)');
+  if (currentEcoleId) qN = qN.eq('ecole_id', currentEcoleId);
+  const { data: notes } = await qN;
+  const all = notes || [];
+  // Moyennes par matière
+  const parMat = {};
+  all.forEach(n => {
+    if (!parMat[n.matiere]) parMat[n.matiere] = {pts:0,coeff:0,count:0};
+    parMat[n.matiere].pts   += n.note*(n.coefficient||1);
+    parMat[n.matiere].coeff += (n.coefficient||1);
+    parMat[n.matiere].count++;
+  });
+  const matSorted = Object.entries(parMat).map(([m,v])=>({m, moy:v.coeff>0?v.pts/v.coeff:0, count:v.count})).sort((a,b)=>b.moy-a.moy);
+  // Moyennes par étudiant
+  const parEt = {};
+  all.forEach(n => {
+    const nom = n.etudiants ? n.etudiants.nom+' '+n.etudiants.prenom : 'N/A';
+    if (!parEt[nom]) parEt[nom] = {pts:0,coeff:0};
+    parEt[nom].pts   += n.note*(n.coefficient||1);
+    parEt[nom].coeff += (n.coefficient||1);
+  });
+  const etSorted = Object.entries(parEt).map(([nom,v])=>({nom, moy:v.coeff>0?v.pts/v.coeff:0})).sort((a,b)=>b.moy-a.moy);
+  const moyGlobale = all.length ? all.reduce((s,n)=>s+n.note,0)/all.length : 0;
+
+  container.innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.5rem">
+      <div class="stat-block"><div class="sb-val" style="color:#1e3a5f">${moyGlobale.toFixed(2)}/20</div><div class="sb-lbl">Moyenne globale</div></div>
+      <div class="stat-block"><div class="sb-val" style="color:#059669">${all.length}</div><div class="sb-lbl">Notes saisies</div></div>
+      <div class="stat-block"><div class="sb-val" style="color:#c97c1a">${matSorted.length}</div><div class="sb-lbl">Matières évaluées</div></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+      <div>
+        <div style="font-size:13px;font-weight:700;color:#374151;margin-bottom:.75rem">📚 Moyennes par matière</div>
+        <table><tr><th>Matière</th><th>Moyenne</th><th>Notes</th><th>Mention</th></tr>
+        ${matSorted.map(m=>{const a=getApp(m.moy);return`<tr><td>${m.m}</td><td><strong style="color:${m.moy>=10?'#059669':'#dc2626'}">${m.moy.toFixed(2)}/20</strong></td><td style="color:#6b7280">${m.count}</td><td><span class="badge ${a.cls}">${a.label}</span></td></tr>`;}).join('')||'<tr><td colspan="4" class="loading">Aucune note.</td></tr>'}
+        </table>
+      </div>
+      <div>
+        <div style="font-size:13px;font-weight:700;color:#374151;margin-bottom:.75rem">🏆 Classement étudiants</div>
+        <table><tr><th>Rang</th><th>Étudiant</th><th>Moyenne</th></tr>
+        ${etSorted.map((e,i)=>{const a=getApp(e.moy);return`<tr><td style="font-weight:700;color:${i===0?'#c97c1a':i===1?'#6b7280':i===2?'#c97c1a':'#374151'}">${i===0?'🥇':i===1?'🥈':i===2?'🥉':i+1}</td><td>${e.nom}</td><td><strong style="color:${e.moy>=10?'#059669':'#dc2626'}">${e.moy.toFixed(2)}/20</strong></td></tr>`;}).join('')||'<tr><td colspan="3" class="loading">Aucune donnée.</td></tr>'}
+        </table>
+      </div>
+    </div>`;
+}
+
+// ══ INIT ══
+(async function() {
+  document.getElementById('app-enseignant').style.display = 'none';
+  const { data: { session } } = await db.auth.getSession();
+  if (session) { currentUser = session.user; await chargerProfil(); }
+  else { document.getElementById('login-screen').style.display = 'flex'; }
+})();
+</script>
+</body>
+</html>

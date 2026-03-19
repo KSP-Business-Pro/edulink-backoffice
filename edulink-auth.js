@@ -198,11 +198,19 @@ function chargerUtilisateurs() {
   var rL = { admin:'Administrateur', enseignant:'Enseignant', comptable:'Comptable', parent:'Parent', etudiant:'Etudiant' };
 
   if (typeof db !== 'undefined') {
-    db.from('profiles').select('*').order('nom')
+    // Charger profiles + etudiants liés en une seule requête
+    db.from('profiles').select('*, etudiants(nom, prenom)').order('nom')
       .then(function(res) {
         if (res.data && res.data.length > 0) {
           tousLesUtilisateurs = res.data.map(function(p) {
-            return { id:p.id, email:'—', prenom:p.prenom, nom:p.nom, role:p.role, avatar:p.avatar||((p.prenom||'?')[0]+(p.nom||'?')[0]), actif:p.actif, lastLogin:null, source:'supabase' };
+            var etNom = p.etudiants ? p.etudiants.nom + ' ' + p.etudiants.prenom : null;
+            return {
+              id: p.id, email: '—', prenom: p.prenom, nom: p.nom,
+              role: p.role, avatar: p.avatar || ((p.prenom||'?')[0]+(p.nom||'?')[0]),
+              actif: p.actif, lastLogin: null, source: 'supabase',
+              etudiant_id: p.etudiant_id || null,
+              etudiant_nom: etNom
+            };
           });
         } else {
           tousLesUtilisateurs = DEMO_USERS.slice();
@@ -244,14 +252,20 @@ function afficherUtilisateurs(liste) {
   if (!liste.length) { tbody.innerHTML = '<tr><td colspan="6" class="loading">Aucun utilisateur.</td></tr>'; return; }
   tbody.innerHTML = liste.map(function(u) {
     var isMe = currentUser && u.id === currentUser.id;
+    var peutLier = (u.role === 'parent' || u.role === 'etudiant') && !isMe;
+    var lienBtn = peutLier
+      ? '<button class="btn-sm btn-blue" onclick="ouvrirLienEtudiant(\''+u.id+'\',\''+u.prenom+' '+u.nom+'\')" title="Lier à un étudiant">🔗 Lier</button> '
+      : '';
     return '<tr><td><div style="display:flex;align-items:center;gap:10px">' +
       '<div style="width:34px;height:34px;border-radius:50%;background:#c97c1a;color:#fff;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center">'+(u.avatar||'?')+'</div>' +
-      '<div><strong>'+u.prenom+' '+u.nom+'</strong></div></div></td>' +
+      '<div><strong>'+u.prenom+' '+u.nom+'</strong>' +
+      (u.etudiant_nom ? '<div style="font-size:11px;color:#059669;margin-top:1px">🔗 '+u.etudiant_nom+'</div>' : '') +
+      '</div></div></td>' +
       '<td style="font-size:12px;color:#6b7280">'+u.email+'</td>' +
       '<td><span class="badge '+(rC[u.role]||'gray')+'">'+(rL[u.role]||u.role)+'</span></td>' +
       '<td><span class="badge '+(u.actif?'green':'red')+'">'+(u.actif?'Actif':'Inactif')+'</span></td>' +
       '<td style="font-size:12px;color:#6b7280">'+(u.lastLogin?u.lastLogin:'Jamais')+'</td>' +
-      '<td>'+(isMe?'<span style="font-size:11px;color:#6b7280">Vous</span>':'<button class="btn-sm '+(u.actif?'btn-red':'btn-green')+'" onclick="toggleUserActif(\''+u.id+'\')">'+(u.actif?'Desactiver':'Activer')+'</button>')+'</td>' +
+      '<td style="display:flex;gap:4px;flex-wrap:wrap">'+lienBtn+(isMe?'<span style="font-size:11px;color:#6b7280">Vous</span>':'<button class="btn-sm '+(u.actif?'btn-red':'btn-green')+'" onclick="toggleUserActif(\''+u.id+'\')">'+(u.actif?'Désactiver':'Activer')+'</button>')+'</td>' +
     '</tr>';
   }).join('');
 }
@@ -294,6 +308,68 @@ function toggleUserActif(id) {
     db.from('profiles').update({ actif: u.actif }).eq('id', id);
   }
   if(typeof showToast==='function') showToast((u.actif?u.prenom+' reactivé.':u.prenom+' desactivé.'), u.actif?'success':'info');
+  chargerUtilisateurs();
+}
+
+// ━━━━━━ LIAISON PARENT ↔ ÉTUDIANT  ★ JOUR 7 ━━━━━━
+function ouvrirLienEtudiant(profileId, profileNom) {
+  var modal = document.getElementById('modal-lier-etudiant');
+  if (!modal) return;
+  document.getElementById('lien-profile-id').value   = profileId;
+  document.getElementById('lien-profile-nom').textContent = profileNom;
+  // Remplir le select étudiants
+  var sel = document.getElementById('lien-etudiant-select');
+  sel.innerHTML = '<option value="">— Sélectionner un étudiant —</option>';
+  var liste = typeof tousLesEtudiants !== 'undefined' ? tousLesEtudiants : [];
+  if (liste.length > 0) {
+    liste.forEach(function(e) {
+      var opt = document.createElement('option');
+      opt.value = e.id;
+      opt.textContent = e.nom + ' ' + e.prenom + ' — ' + e.filiere + ' ' + e.niveau + ' (' + e.matricule + ')';
+      sel.appendChild(opt);
+    });
+  } else if (typeof db !== 'undefined') {
+    // Charger depuis Supabase si le cache est vide
+    db.from('etudiants').select('id, nom, prenom, matricule, filiere, niveau').order('nom')
+      .then(function(res) {
+        (res.data||[]).forEach(function(e) {
+          var opt = document.createElement('option');
+          opt.value = e.id;
+          opt.textContent = e.nom + ' ' + e.prenom + ' — ' + e.filiere + ' ' + e.niveau + ' (' + e.matricule + ')';
+          sel.appendChild(opt);
+        });
+      });
+  }
+  // Pré-sélectionner si déjà lié
+  var user = tousLesUtilisateurs.find(function(u){ return u.id === profileId; });
+  if (user && user.etudiant_id) sel.value = user.etudiant_id;
+  modal.classList.add('open');
+}
+
+async function sauvegarderLienEtudiant() {
+  var profileId  = document.getElementById('lien-profile-id').value;
+  var etudiantId = document.getElementById('lien-etudiant-select').value;
+  if (!profileId) return;
+  if (typeof db === 'undefined') { if(typeof showToast==='function') showToast('Supabase non disponible.','error'); return; }
+  var updates = { etudiant_id: etudiantId || null };
+  var res = await db.from('profiles').update(updates).eq('id', profileId);
+  if (res.error) {
+    if(typeof showToast==='function') showToast('Erreur : ' + res.error.message, 'error');
+    return;
+  }
+  // Mettre à jour le cache local
+  var user = tousLesUtilisateurs.find(function(u){ return u.id === profileId; });
+  if (user) {
+    user.etudiant_id = etudiantId || null;
+    if (etudiantId) {
+      var et = (typeof tousLesEtudiants !== 'undefined' ? tousLesEtudiants : []).find(function(e){ return e.id === etudiantId; });
+      user.etudiant_nom = et ? et.nom + ' ' + et.prenom : null;
+    } else {
+      user.etudiant_nom = null;
+    }
+  }
+  fermerModal('modal-lier-etudiant');
+  if(typeof showToast==='function') showToast(etudiantId ? '🔗 Liaison enregistrée !' : 'Liaison supprimée.', 'success');
   chargerUtilisateurs();
 }
 
