@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>EduLink — Portail Famille</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#0f6e56">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="EduLink Famille">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+/* ══ BASE ══ */
+*{margin:0;box-sizing:border-box}
+:root{
+  --navy:#1e3a5f;
+  --teal:#0f6e56;
+  --teal-light:#e1f5ee;
+  --gold:#c97c1a;
+  --red:#dc2626;
+  --amber:#d97706;
+  --green:#059669;
+  --bg:#f0f7f4;
+  --white:#ffffff;
+  --text:#111827;
+  --muted:#6b7280;
+  --border:#e5e7eb;
+  --card:#ffffff;
+  --radius:16px;
+}
+body{font-family:'Poppins',sans-serif;background:var(--bg);min-height:100vh;color:var(--text)}
+
+/* ══ LOGIN ══ */
+#login-screen{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  background:linear-gradient(160deg,#0f6e56 0%,#1e3a5f 60%,#0f2040 100%);
+  display:flex;align-items:center;justify-content:center;z-index:2000;
+  padding:1rem;
+}
+.login-card{
+  background:#fff;border-radius:24px;padding:2rem 1.8rem;width:100%;max-width:400px;
+  box-shadow:0 30px 80px rgba(0,0,0,.3);
+}
+.login-brand{text-align:center;margin-bottom:2rem}
+.login-brand .brand-ico{
+  width:70px;height:70px;border-radius:20px;
+  background:linear-gradient(135deg,#0f6e56,#1e3a5f);
+  display:flex;align-items:center;justify-content:center;
+  font-size:32px;margin:0 auto .75rem;box-shadow:0 8px 20px rgba(15,110,86,.3);
+}
+.login-brand h1{font-family:'Nunito',sans-serif;font-size:24px;font-weight:800;color:#1e3a5f;margin-bottom:2px}
+.login-brand p{font-size:12.5px;color:#6b7280}
+.login-tag{
+  display:inline-flex;align-items:center;gap:5px;
+  background:#e1f5ee;color:#0f6e56;font-size:11px;font-weight:700;
+  padding:4px 10px;border-radius:20px;margin-top:6px;
+}
+.form-group{margin-bottom:1rem}
+.form-group label{display:block;font-size:12px;font-weight:600;color:#374151;margin-bottom:5px}
+.form-group input{
+  width:100%;padding:11px 14px;border:1.5px solid #e5e7eb;border-radius:10px;
+  font-size:14px;font-family:'Poppins',sans-serif;outline:none;transition:border-color .15s;
+}
+.form-group input:focus{border-color:#0f6e56;box-shadow:0 0 0 3px rgba(15,110,86,.1)}
+.login-btn{
+  width:100%;padding:13px;background:linear-gradient(135deg,#0f6e56,#1e3a5f);
+  color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:700;
+  font-family:'Poppins',sans-serif;cursor:pointer;transition:all .2s;margin-top:.5rem;
+  letter-spacing:.02em;
+}
+.login-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(15,110,86,.35)}
+.login-btn:disabled{opacity:.6;transform:none;cursor:default}
+.login-error{color:#dc2626;font-size:12px;text-align:center;margin-top:.75rem;display:none;background:#fee2e2;padding:8px 12px;border-radius:8px}
+.login-back{text-align:center;margin-top:1.2rem;font-size:12px;color:#6b7280}
+.login-back a{color:#0f6e56;font-weight:600;text-decoration:none}
+
+/* ══ APP ══ */
+#app-portail{display:none;max-width:500px;margin:0 auto;min-height:100vh;padding-bottom:80px}
+
+/* ══ HEADER ══ */
+.portail-header{
+  background:linear-gradient(135deg,#0f6e56,#1e3a5f);
+  padding:1.2rem 1.2rem .8rem;position:sticky;top:0;z-index:100;
+}
+.header-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem}
+.header-logo{font-family:'Nunito',sans-serif;font-size:18px;font-weight:800;color:#fff;display:flex;align-items:center;gap:6px}
+.header-actions{display:flex;gap:8px;align-items:center}
+.notif-btn{
+  width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.15);
+  border:none;color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  position:relative;
+}
+.notif-badge{
+  position:absolute;top:-2px;right:-2px;width:16px;height:16px;
+  background:#dc2626;border-radius:50%;font-size:9px;font-weight:700;
+  color:#fff;display:none;align-items:center;justify-content:center;border:2px solid #0f6e56;
+}
+.header-greeting{color:rgba(255,255,255,.85);font-size:12.5px}
+.header-greeting strong{color:#fff;font-size:14px;display:block;font-weight:700}
+.student-pill{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);
+  border-radius:20px;padding:4px 12px;font-size:11.5px;color:#fff;font-weight:600;margin-top:4px;
+}
+
+/* ══ NAV BAS ══ */
+.bottom-nav{
+  position:fixed;bottom:0;left:50%;transform:translateX(-50%);
+  width:100%;max-width:500px;
+  background:#fff;border-top:1px solid #e5e7eb;
+  display:flex;z-index:100;
+  box-shadow:0 -4px 20px rgba(0,0,0,.08);
+}
+.nav-item{
+  flex:1;display:flex;flex-direction:column;align-items:center;
+  padding:10px 4px 8px;cursor:pointer;color:#9ca3af;transition:color .15s;
+  border:none;background:transparent;font-family:'Poppins',sans-serif;
+}
+.nav-item.active{color:#0f6e56}
+.nav-item .nav-ico{font-size:20px;margin-bottom:2px;line-height:1}
+.nav-item .nav-lbl{font-size:9.5px;font-weight:600}
+.nav-badge{
+  position:absolute;top:6px;right:50%;transform:translateX(50%);
+  width:16px;height:16px;background:#dc2626;border-radius:50%;
+  font-size:9px;font-weight:700;color:#fff;display:none;align-items:center;justify-content:center;
+}
+.nav-item{position:relative}
+
+/* ══ PAGES ══ */
+.page{display:none;padding:1rem 1rem 0;animation:fadeUp .2s ease}
+.page.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* ══ CARDS ══ */
+.card{background:#fff;border-radius:var(--radius);border:1px solid #e5e7eb;margin-bottom:1rem;overflow:hidden}
+.card-header{padding:.9rem 1rem .6rem;border-bottom:1px solid #f3f4f6;display:flex;align-items:center;justify-content:space-between}
+.card-title{font-size:13px;font-weight:700;color:#374151;display:flex;align-items:center;gap:6px}
+.card-body{padding:1rem}
+.card-link{font-size:11.5px;color:#0f6e56;font-weight:600;text-decoration:none;cursor:pointer}
+
+/* ══ STATS ACCUEIL ══ */
+.stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1rem}
+.stat-card{
+  background:#fff;border-radius:14px;border:1px solid #e5e7eb;
+  padding:.9rem;display:flex;align-items:center;gap:.75rem;
+}
+.stat-ico{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.stat-ico.teal{background:#e1f5ee}
+.stat-ico.red{background:#fee2e2}
+.stat-ico.amber{background:#fef9c3}
+.stat-ico.blue{background:#dbeafe}
+.stat-val{font-size:22px;font-weight:800;font-family:'Nunito',sans-serif;line-height:1}
+.stat-lbl{font-size:10.5px;color:#6b7280;font-weight:500}
+
+/* ══ BADGES ══ */
+.badge{font-size:10.5px;padding:2px 8px;border-radius:20px;font-weight:700;white-space:nowrap;display:inline-block}
+.badge.green{background:#dcfce7;color:#059669}
+.badge.red{background:#fee2e2;color:#dc2626}
+.badge.amber{background:#fef9c3;color:#d97706}
+.badge.blue{background:#dbeafe;color:#1d4ed8}
+.badge.gray{background:#f3f4f6;color:#6b7280}
+.badge.teal{background:#e1f5ee;color:#0f6e56}
+
+/* ══ LISTES ══ */
+.list-item{
+  padding:.85rem 1rem;border-bottom:1px solid #f3f4f6;
+  display:flex;align-items:flex-start;gap:.75rem;
+}
+.list-item:last-child{border-bottom:none}
+.li-ico{width:36px;height:36px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0}
+.li-body{flex:1;min-width:0}
+.li-title{font-size:13px;font-weight:600;color:#111827;margin-bottom:2px}
+.li-sub{font-size:11.5px;color:#6b7280}
+.li-right{text-align:right;flex-shrink:0}
+
+/* ══ NOTES ══ */
+.note-big{font-size:28px;font-weight:800;font-family:'Nunito',sans-serif}
+.note-big.good{color:#059669}
+.note-big.avg{color:#d97706}
+.note-big.bad{color:#dc2626}
+.moy-bar{height:8px;background:#e5e7eb;border-radius:4px;margin:8px 0 4px;overflow:hidden}
+.moy-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,#0f6e56,#1d9e75);transition:width .8s ease}
+
+/* ══ BULLETIN ══ */
+.bulletin-card{background:#fff;border-radius:14px;overflow:hidden;border:1px solid #e5e7eb;margin-bottom:1rem}
+.bulletin-top{background:linear-gradient(135deg,#1e3a5f,#0f6e56);padding:1rem 1.2rem;color:#fff}
+.bulletin-top h3{font-size:15px;font-weight:700;margin-bottom:2px}
+.bulletin-top p{font-size:11.5px;opacity:.75}
+.bulletin-moy{font-size:32px;font-weight:800;font-family:'Nunito',sans-serif;margin:.5rem 0}
+.bulletin-table{width:100%;border-collapse:collapse}
+.bulletin-table th{font-size:10px;font-weight:700;color:#6b7280;padding:8px 12px;text-align:left;border-bottom:1px solid #e5e7eb;text-transform:uppercase;background:#f9fafb}
+.bulletin-table td{font-size:12.5px;padding:9px 12px;border-bottom:1px solid #f3f4f6;color:#374151}
+.bulletin-table tr:last-child td{border-bottom:none}
+.periode-sel{display:flex;gap:6px;margin-bottom:1rem;flex-wrap:wrap}
+.periode-btn{
+  padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;
+  border:1.5px solid #e5e7eb;background:#fff;color:#6b7280;cursor:pointer;
+  font-family:'Poppins',sans-serif;transition:all .15s;
+}
+.periode-btn.active{background:#0f6e56;border-color:#0f6e56;color:#fff}
+.print-btn{
+  width:100%;padding:11px;background:#1e3a5f;color:#fff;border:none;
+  border-radius:10px;font-size:13px;font-weight:600;font-family:'Poppins',sans-serif;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;margin-top:1rem;
+}
+
+/* ══ MESSAGES ══ */
+.msg-composer{margin-bottom:1rem}
+.msg-composer textarea{
+  width:100%;padding:10px 12px;border:1.5px solid #e5e7eb;border-radius:10px;
+  font-size:13px;font-family:'Poppins',sans-serif;outline:none;resize:none;
+  transition:border-color .15s;
+}
+.msg-composer textarea:focus{border-color:#0f6e56}
+.msg-send-btn{
+  margin-top:6px;padding:9px 18px;background:#0f6e56;color:#fff;border:none;
+  border-radius:8px;font-size:12.5px;font-weight:600;font-family:'Poppins',sans-serif;cursor:pointer;
+}
+.msg-bubble{
+  background:#f0f7f4;border-radius:12px 12px 12px 4px;
+  padding:.75rem 1rem;margin-bottom:.75rem;border-left:3px solid #0f6e56;
+}
+.msg-bubble.sent{background:#e1f5ee;border-left-color:#1d9e75;border-radius:12px 12px 4px 12px}
+.msg-bubble .mb-from{font-size:11px;font-weight:700;color:#0f6e56;margin-bottom:3px}
+.msg-bubble .mb-text{font-size:13px;color:#374151;line-height:1.6}
+.msg-bubble .mb-date{font-size:10.5px;color:#9ca3af;margin-top:4px;text-align:right}
+
+/* ══ PAIEMENTS ══ */
+.pay-progress{margin:1rem 0}
+.pay-bar{height:10px;background:#e5e7eb;border-radius:5px;overflow:hidden;margin-top:6px}
+.pay-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,#059669,#1d9e75);transition:width .8s}
+.pay-amounts{display:flex;justify-content:space-between;font-size:11px;color:#6b7280;margin-top:4px}
+
+/* ══ EMPTY STATES ══ */
+.empty{text-align:center;padding:2.5rem 1rem;color:#9ca3af}
+.empty .e-ico{font-size:40px;margin-bottom:.75rem}
+.empty p{font-size:13px}
+
+/* ══ TOAST ══ */
+.toast{
+  position:fixed;bottom:90px;left:50%;transform:translateX(-50%);
+  background:#1e3a5f;color:#fff;padding:11px 20px;border-radius:10px;
+  font-size:13px;z-index:999;display:none;white-space:nowrap;
+  box-shadow:0 8px 24px rgba(0,0,0,.2);
+}
+.toast.show{display:block;animation:fadeUp .3s ease}
+.toast.success{background:#059669}
+.toast.error{background:#dc2626}
+.toast.info{background:#1e3a5f}
+
+/* ══ SECTION TITLE ══ */
+.section-title{font-size:15px;font-weight:700;color:#111827;margin-bottom:.75rem;display:flex;align-items:center;gap:6px}
+.page-pad{padding:1rem}
+</style>
+</head>
+<body>
+
+<!-- ══ ÉCRAN CONNEXION ══ -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-brand">
+      <div class="brand-ico">🎓</div>
+      <h1>EduLink</h1>
+      <p>Portail Famille</p>
+      <div class="login-tag">👨‍👩‍👧 Espace parents & étudiants</div>
+    </div>
+    <div class="form-group">
+      <label>Adresse e-mail</label>
+      <input type="email" id="login-email" placeholder="votre@email.com" onkeypress="if(event.key==='Enter')seConnecter()">
+    </div>
+    <div class="form-group">
+      <label>Mot de passe</label>
+      <input type="password" id="login-pwd" placeholder="••••••••" onkeypress="if(event.key==='Enter')seConnecter()">
+    </div>
+    <button class="login-btn" id="login-btn" onclick="seConnecter()">Se connecter →</button>
+    <div class="login-error" id="login-error"></div>
+    <p class="login-back">Espace administration ? <a href="index.html">Back-office</a></p>
+  </div>
+</div>
+
+<!-- ══ APPLICATION ══ -->
+<div id="app-portail">
+
+  <!-- Header -->
+  <div class="portail-header">
+    <div class="header-top">
+      <div class="header-logo">🎓 EduLink</div>
+      <div class="header-actions">
+        <button class="notif-btn" onclick="showPage('messages')" title="Messages">
+          ✉️<span class="notif-badge" id="msg-badge"></span>
+        </button>
+        <button class="notif-btn" onclick="seDeconnecter()" title="Déconnexion" style="font-size:14px">🚪</button>
+      </div>
+    </div>
+    <div class="header-greeting">
+      <strong id="greeting-nom">Chargement...</strong>
+      <span id="greeting-role">Bienvenue sur votre portail</span>
+    </div>
+    <div id="student-pill-wrap"></div>
+  </div>
+
+  <!-- Pages -->
+  <div class="page active" id="page-accueil"></div>
+  <div class="page" id="page-notes"></div>
+  <div class="page" id="page-absences"></div>
+  <div class="page" id="page-paiements"></div>
+  <div class="page" id="page-messages"></div>
+
+  <!-- Navigation bas -->
+  <nav class="bottom-nav">
+    <button class="nav-item active" id="nav-accueil" onclick="showPage('accueil')">
+      <span class="nav-ico">🏠</span>
+      <span class="nav-lbl">Accueil</span>
+    </button>
+    <button class="nav-item" id="nav-notes" onclick="showPage('notes')">
+      <span class="nav-ico">📊</span>
+      <span class="nav-lbl">Notes</span>
+    </button>
+    <button class="nav-item" id="nav-absences" onclick="showPage('absences')">
+      <span class="nav-ico">✅</span>
+      <span class="nav-lbl">Présences</span>
+    </button>
+    <button class="nav-item" id="nav-paiements" onclick="showPage('paiements')">
+      <span class="nav-ico">💳</span>
+      <span class="nav-lbl">Paiements</span>
+    </button>
+    <button class="nav-item" id="nav-messages" onclick="showPage('messages')">
+      <span class="nav-ico">✉️</span>
+      <span class="nav-lbl">Messages</span>
+      <span class="nav-badge" id="nav-msg-badge"></span>
+    </button>
+  </nav>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══ SUPABASE ══
+const SUPABASE_URL = 'https://wpexhfngdbagmgodgzzt.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_8e4xKWS3YpfwGFAQlZ7lgQ_9hDx8ljQ';
+const { createClient } = supabase;
+const db = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ══ ÉTAT ══
+let currentUser = null;
+let currentProfile = null;
+let currentEtudiant = null;
+let currentEcoleId = null;
+let toutesNotes = [];
+let toutesAbsences = [];
+let toutesFactures = [];
+let tousMessages = [];
+
+// ══ UTILS ══
+function showToast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'toast show ' + type;
+  setTimeout(() => t.className = 'toast', 3500);
+}
+function fmtDate(d) { return d ? new Date(d).toLocaleDateString('fr-FR') : '—'; }
+function fmtMontant(n) { return new Intl.NumberFormat('fr-FR').format(n||0) + ' FCFA'; }
+function getApp(note) {
+  if (note >= 16) return { label:'Très bien', cls:'green' };
+  if (note >= 14) return { label:'Bien', cls:'green' };
+  if (note >= 12) return { label:'Assez bien', cls:'blue' };
+  if (note >= 10) return { label:'Passable', cls:'amber' };
+  return { label:'Insuffisant', cls:'red' };
+}
+function getNoteClass(note) {
+  if (note >= 14) return 'good';
+  if (note >= 10) return 'avg';
+  return 'bad';
+}
+
+// ══ AUTH ══
+async function seConnecter() {
+  const email = document.getElementById('login-email').value.trim();
+  const pwd   = document.getElementById('login-pwd').value;
+  const btn   = document.getElementById('login-btn');
+  const err   = document.getElementById('login-error');
+  if (!email || !pwd) { err.style.display='block'; err.textContent='Remplissez tous les champs.'; return; }
+  btn.disabled = true; btn.textContent = 'Connexion...'; err.style.display = 'none';
+  const { data, error } = await db.auth.signInWithPassword({ email, password: pwd });
+  if (error) {
+    err.style.display = 'block';
+    err.textContent = error.message.includes('Invalid') ? 'Email ou mot de passe incorrect.' : error.message;
+    btn.disabled = false; btn.textContent = 'Se connecter →'; return;
+  }
+  currentUser = data.user;
+  await chargerProfil();
+}
+
+async function chargerProfil() {
+  const { data: profile } = await db.from('profiles').select('*').eq('id', currentUser.id).single();
+  currentProfile = profile;
+  if (!profile || !['parent','etudiant'].includes(profile.role)) {
+    await db.auth.signOut();
+    const err = document.getElementById('login-error');
+    err.style.display = 'block';
+    err.textContent = 'Accès réservé aux parents et étudiants. Utilisez le back-office.';
+    document.getElementById('login-btn').disabled = false;
+    document.getElementById('login-btn').textContent = 'Se connecter →';
+    return;
+  }
+  await chargerEtudiantLie();
+  lancerApp();
+}
+
+async function chargerEtudiantLie() {
+  // Si étudiant → chercher son profil dans la table étudiants via email
+  // Si parent → chercher via etudiant_id du profil
+  let etudiant = null;
+  if (currentProfile.role === 'etudiant') {
+    const { data } = await db.from('etudiants').select('*').eq('email', currentUser.email).single();
+    etudiant = data;
+  } else if (currentProfile.etudiant_id) {
+    const { data } = await db.from('etudiants').select('*').eq('id', currentProfile.etudiant_id).single();
+    etudiant = data;
+  } else {
+    // Fallback : chercher par email de l'user
+    const { data } = await db.from('etudiants').select('*').eq('email', currentUser.email).maybeSingle();
+    etudiant = data;
+  }
+  currentEtudiant = etudiant;
+  if (etudiant) currentEcoleId = etudiant.ecole_id;
+}
+
+function lancerApp() {
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app-portail').style.display = 'block';
+  // Header
+  const nom = currentProfile ? currentProfile.prenom + ' ' + currentProfile.nom : currentUser.email;
+  document.getElementById('greeting-nom').textContent = nom;
+  document.getElementById('greeting-role').textContent = currentProfile?.role === 'parent' ? 'Espace parent' : 'Espace étudiant';
+  if (currentEtudiant) {
+    document.getElementById('student-pill-wrap').innerHTML =
+      `<div class="student-pill">👨‍🎓 ${currentEtudiant.nom} ${currentEtudiant.prenom} · ${currentEtudiant.filiere} ${currentEtudiant.niveau}</div>`;
+  }
+  chargerTout();
+}
+
+async function chargerTout() {
+  await Promise.all([chargerNotes(), chargerAbsences(), chargerFactures(), chargerMessages()]);
+  afficherAccueil();
+}
+
+async function seDeconnecter() {
+  await db.auth.signOut();
+  location.reload();
+}
+
+// ══ DATA ══
+async function chargerNotes() {
+  if (!currentEtudiant) { toutesNotes = []; return; }
+  const { data } = await db.from('notes').select('*').eq('etudiant_id', currentEtudiant.id).order('created_at',{ascending:false});
+  toutesNotes = data || [];
+}
+async function chargerAbsences() {
+  if (!currentEtudiant) { toutesAbsences = []; return; }
+  const { data } = await db.from('absences').select('*').eq('etudiant_id', currentEtudiant.id).order('date_absence',{ascending:false});
+  toutesAbsences = data || [];
+}
+async function chargerFactures() {
+  if (!currentEtudiant) { toutesFactures = []; return; }
+  const { data } = await db.from('factures').select('*').eq('etudiant_id', currentEtudiant.id).order('created_at',{ascending:false});
+  toutesFactures = data || [];
+}
+async function chargerMessages() {
+  let q = db.from('messages').select('*').order('created_at',{ascending:false}).limit(20);
+  if (currentEcoleId) q = q.eq('ecole_id', currentEcoleId);
+  const { data } = await q;
+  tousMessages = data || [];
+  const nonLus = tousMessages.filter(m => !m.lu).length;
+  const b1 = document.getElementById('msg-badge');
+  const b2 = document.getElementById('nav-msg-badge');
+  if (nonLus > 0) {
+    b1.style.display = 'flex'; b1.textContent = nonLus;
+    b2.style.display = 'flex'; b2.textContent = nonLus;
+  }
+}
+
+// ══ NAVIGATION ══
+function showPage(p) {
+  document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active'));
+  document.getElementById('page-' + p)?.classList.add('active');
+  document.getElementById('nav-' + p)?.classList.add('active');
+  const renderers = {
+    accueil: afficherAccueil,
+    notes: afficherNotes,
+    absences: afficherAbsences,
+    paiements: afficherPaiements,
+    messages: afficherMessages,
+  };
+  if (renderers[p]) renderers[p]();
+}
+
+// ══ ACCUEIL ══
+function afficherAccueil() {
+  const page = document.getElementById('page-accueil');
+  // Calcul stats
+  const nbAbsences = toutesAbsences.filter(a => a.statut === 'absent').length;
+  let moy = 0;
+  if (toutesNotes.length) {
+    let pts = 0, coeff = 0;
+    toutesNotes.forEach(n => { pts += n.note*(n.coefficient||1); coeff += (n.coefficient||1); });
+    moy = coeff > 0 ? pts/coeff : 0;
+  }
+  const totalDu = toutesFactures.reduce((s,f) => s+f.montant_total, 0);
+  const totalPaye = toutesFactures.reduce((s,f) => s+(f.montant_paye||0), 0);
+  const restant = totalDu - totalPaye;
+  const nonLusMsgs = tousMessages.filter(m => !m.lu).length;
+
+  page.innerHTML = `
+    <div style="padding:1rem 1rem 0">
+      <!-- Stat cards -->
+      <div class="stat-grid">
+        <div class="stat-card" onclick="showPage('notes')">
+          <div class="stat-ico teal">📊</div>
+          <div>
+            <div class="stat-val" style="color:${moy>=10?'#059669':'#dc2626'}">${toutesNotes.length?moy.toFixed(1)+'/20':'—'}</div>
+            <div class="stat-lbl">Moyenne générale</div>
+          </div>
+        </div>
+        <div class="stat-card" onclick="showPage('absences')">
+          <div class="stat-ico red">🚫</div>
+          <div>
+            <div class="stat-val" style="color:#dc2626">${nbAbsences}</div>
+            <div class="stat-lbl">Absences</div>
+          </div>
+        </div>
+        <div class="stat-card" onclick="showPage('paiements')">
+          <div class="stat-ico amber">💳</div>
+          <div>
+            <div class="stat-val" style="color:${restant>0?'#d97706':'#059669'};font-size:16px">${restant>0?'Impayé':'À jour'}</div>
+            <div class="stat-lbl">${restant>0?fmtMontant(restant):'Paiements'}</div>
+          </div>
+        </div>
+        <div class="stat-card" onclick="showPage('messages')">
+          <div class="stat-ico blue">✉️</div>
+          <div>
+            <div class="stat-val" style="color:#1d4ed8">${nonLusMsgs || tousMessages.length}</div>
+            <div class="stat-lbl">${nonLusMsgs>0?'Non lus':'Messages'}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dernières notes -->
+      ${toutesNotes.length ? `
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📊 Dernières notes</div>
+          <span class="card-link" onclick="showPage('notes')">Tout voir</span>
+        </div>
+        ${toutesNotes.slice(0,3).map(n => {
+          const a = getApp(n.note);
+          return `<div class="list-item">
+            <div class="li-ico" style="background:${n.note>=10?'#e1f5ee':'#fee2e2'}">${n.note>=10?'✅':'⚠️'}</div>
+            <div class="li-body">
+              <div class="li-title">${n.matiere}</div>
+              <div class="li-sub">${n.periode} · Coeff. ${n.coefficient||1}</div>
+            </div>
+            <div class="li-right">
+              <div class="note-big ${getNoteClass(n.note)}" style="font-size:20px">${n.note}/20</div>
+              <div><span class="badge ${a.cls}">${a.label}</span></div>
+            </div>
+          </div>`;
+        }).join('')}
+      </div>` : ''}
+
+      <!-- Absences récentes -->
+      ${toutesAbsences.length ? `
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🚫 Absences récentes</div>
+          <span class="card-link" onclick="showPage('absences')">Tout voir</span>
+        </div>
+        ${toutesAbsences.slice(0,3).map(a => `
+          <div class="list-item">
+            <div class="li-ico" style="background:${a.statut==='absent'?'#fee2e2':a.statut==='retard'?'#fef9c3':'#dbeafe'}">
+              ${a.statut==='absent'?'🔴':a.statut==='retard'?'🟡':'🟢'}
+            </div>
+            <div class="li-body">
+              <div class="li-title">${a.matiere}</div>
+              <div class="li-sub">${fmtDate(a.date_absence)}</div>
+            </div>
+            <span class="badge ${a.statut==='absent'?'red':a.statut==='retard'?'amber':'blue'}">${a.statut}</span>
+          </div>`).join('')}
+      </div>` : ''}
+
+      <!-- Factures en attente -->
+      ${toutesFactures.filter(f=>f.statut!=='payée').length ? `
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">💳 Paiements en attente</div>
+          <span class="card-link" onclick="showPage('paiements')">Détails</span>
+        </div>
+        ${toutesFactures.filter(f=>f.statut!=='payée').slice(0,2).map(f => `
+          <div class="list-item">
+            <div class="li-ico" style="background:#fef9c3">💰</div>
+            <div class="li-body">
+              <div class="li-title">${f.description||f.type_frais||'Facture'}</div>
+              <div class="li-sub">Échéance : ${fmtDate(f.date_echeance)}</div>
+            </div>
+            <div class="li-right">
+              <div style="font-size:13px;font-weight:700;color:#d97706">${fmtMontant(f.montant_total-(f.montant_paye||0))}</div>
+              <span class="badge amber">À payer</span>
+            </div>
+          </div>`).join('')}
+      </div>` : ''}
+
+      ${!currentEtudiant ? `<div class="empty"><div class="e-ico">👤</div><p>Votre compte n'est pas encore lié à un étudiant.<br>Contactez l'administration.</p></div>` : ''}
+    </div>`;
+}
+
+// ══ NOTES ══
+function afficherNotes() {
+  const page = document.getElementById('page-notes');
+  if (!currentEtudiant) { page.innerHTML = '<div class="empty"><div class="e-ico">📊</div><p>Aucun étudiant lié à ce compte.</p></div>'; return; }
+
+  const periodes = [...new Set(toutesNotes.map(n => n.periode))].sort();
+  let periodeActive = periodes[0] || 'S1';
+
+  function renderNotes(periode) {
+    const notes = periode ? toutesNotes.filter(n => n.periode === periode) : toutesNotes;
+    let moy = 0, totalPts = 0, totalCoeff = 0;
+    notes.forEach(n => { totalPts += n.note*(n.coefficient||1); totalCoeff += (n.coefficient||1); });
+    moy = totalCoeff > 0 ? totalPts/totalCoeff : 0;
+    const app = getApp(moy);
+
+    return `
+      ${notes.length ? `
+      <div class="bulletin-card">
+        <div class="bulletin-top">
+          <h3>${currentEtudiant.nom} ${currentEtudiant.prenom}</h3>
+          <p>${currentEtudiant.filiere} · ${currentEtudiant.niveau} · ${periode||'Toutes périodes'}</p>
+          <div class="bulletin-moy">${moy.toFixed(2)}/20</div>
+          <span class="badge ${app.cls}">${app.label}</span>
+          <div style="margin-top:8px">
+            <div class="moy-bar"><div class="moy-fill" style="width:${Math.min(100,moy/20*100)}%"></div></div>
+          </div>
+        </div>
+        <table class="bulletin-table">
+          <tr><th>Matière</th><th>Note</th><th>Coeff</th><th>Mention</th></tr>
+          ${notes.map(n => { const a=getApp(n.note); return `
+            <tr>
+              <td>${n.matiere}</td>
+              <td><strong class="${getNoteClass(n.note)==='good'?'':''}"; style="color:${n.note>=10?'#059669':'#dc2626'}">${n.note}/20</strong></td>
+              <td>${n.coefficient||1}</td>
+              <td><span class="badge ${a.cls}">${a.label}</span></td>
+            </tr>`}).join('')}
+          <tr style="background:#f9fafb;font-weight:700">
+            <td>Moyenne générale</td>
+            <td style="color:${moy>=10?'#059669':'#dc2626'};font-weight:800">${moy.toFixed(2)}/20</td>
+            <td>${totalCoeff}</td>
+            <td><span class="badge ${app.cls}">${app.label}</span></td>
+          </tr>
+        </table>
+        <div style="padding:1rem">
+          <button class="print-btn" onclick="imprimerBulletin('${periode}')">🖨️ Imprimer / Télécharger</button>
+        </div>
+      </div>` : '<div class="empty"><div class="e-ico">📭</div><p>Aucune note pour cette période.</p></div>'}`;
+  }
+
+  page.innerHTML = `<div class="page-pad">
+    <div class="section-title">📊 Notes & Bulletins</div>
+    ${periodes.length > 1 ? `<div class="periode-sel" id="periode-sel">
+      ${periodes.map(p => `<button class="periode-btn ${p===periodeActive?'active':''}" onclick="changerPeriode('${p}')">${p}</button>`).join('')}
+    </div>` : ''}
+    <div id="notes-container">${renderNotes(periodeActive)}</div>
+  </div>`;
+
+  window.changerPeriode = function(p) {
+    periodeActive = p;
+    document.querySelectorAll('.periode-btn').forEach(b => b.classList.toggle('active', b.textContent===p));
+    document.getElementById('notes-container').innerHTML = renderNotes(p);
+  };
+}
+
+function imprimerBulletin(periode) {
+  const notes = periode ? toutesNotes.filter(n => n.periode === periode) : toutesNotes;
+  if (!notes.length) { showToast('Aucune note à imprimer.', 'error'); return; }
+  let totalPts = 0, totalCoeff = 0;
+  notes.forEach(n => { totalPts += n.note*(n.coefficient||1); totalCoeff += (n.coefficient||1); });
+  const moy = totalCoeff > 0 ? totalPts/totalCoeff : 0;
+  const app = moy>=14?'Bien':moy>=12?'Assez bien':moy>=10?'Passable':'Insuffisant';
+  const w = window.open('','_blank');
+  w.document.write(`<html><head><title>Bulletin — ${currentEtudiant.nom}</title>
+  <style>*{font-family:Arial,sans-serif;margin:0;box-sizing:border-box}body{padding:2rem}
+  .header{background:#1e3a5f;color:#fff;padding:1.2rem;border-radius:8px;margin-bottom:1.5rem}
+  h1{font-size:18px;margin-bottom:4px}p{font-size:12px;opacity:.8}
+  .moy{font-size:32px;font-weight:800;margin:.5rem 0}
+  table{width:100%;border-collapse:collapse;margin-top:1rem}
+  th,td{border:1px solid #e5e7eb;padding:8px 12px;font-size:12px;text-align:left}
+  th{background:#f3f4f6;font-weight:700}
+  .good{color:#059669}.bad{color:#dc2626}
+  </style></head><body>
+  <div class="header"><h1>Bulletin de Notes — ${currentEtudiant.nom} ${currentEtudiant.prenom}</h1>
+  <p>${currentEtudiant.filiere} · ${currentEtudiant.niveau} · ${periode}</p>
+  <div class="moy">${moy.toFixed(2)}/20</div><span>${app}</span></div>
+  <table><tr><th>Matière</th><th>Note /20</th><th>Coefficient</th><th>Points</th></tr>
+  ${notes.map(n=>`<tr><td>${n.matiere}</td><td class="${n.note>=10?'good':'bad'}">${n.note}/20</td><td>${n.coefficient||1}</td><td>${(n.note*(n.coefficient||1)).toFixed(2)}</td></tr>`).join('')}
+  <tr style="background:#f9fafb;font-weight:700"><td>MOYENNE</td><td class="${moy>=10?'good':'bad'}">${moy.toFixed(2)}/20</td><td>${totalCoeff}</td><td>${totalPts.toFixed(2)}</td></tr>
+  </table></body></html>`);
+  w.document.close(); w.print();
+}
+
+// ══ ABSENCES ══
+function afficherAbsences() {
+  const page = document.getElementById('page-absences');
+  if (!currentEtudiant || !toutesAbsences.length) {
+    page.innerHTML = '<div class="empty"><div class="e-ico">✅</div><p>Aucune absence enregistrée. Excellent !</p></div>'; return;
+  }
+  const nbAbs = toutesAbsences.filter(a=>a.statut==='absent').length;
+  const nbRet = toutesAbsences.filter(a=>a.statut==='retard').length;
+  const nbExc = toutesAbsences.filter(a=>a.statut==='excuse').length;
+
+  page.innerHTML = `<div class="page-pad">
+    <div class="section-title">🚫 Présences & Absences</div>
+    <div class="stat-grid" style="margin-bottom:1rem">
+      <div class="stat-card"><div class="stat-ico red">🔴</div><div><div class="stat-val" style="color:#dc2626">${nbAbs}</div><div class="stat-lbl">Absences</div></div></div>
+      <div class="stat-card"><div class="stat-ico amber">🟡</div><div><div class="stat-val" style="color:#d97706">${nbRet}</div><div class="stat-lbl">Retards</div></div></div>
+    </div>
+    <div class="card">
+      ${toutesAbsences.map(a => `
+        <div class="list-item">
+          <div class="li-ico" style="background:${a.statut==='absent'?'#fee2e2':a.statut==='retard'?'#fef9c3':'#dbeafe'}">
+            ${a.statut==='absent'?'🔴':a.statut==='retard'?'🟡':'🟢'}
+          </div>
+          <div class="li-body">
+            <div class="li-title">${a.matiere}</div>
+            <div class="li-sub">${fmtDate(a.date_absence)}${a.justification?' · '+a.justification:''}</div>
+          </div>
+          <div class="li-right">
+            <span class="badge ${a.statut==='absent'?'red':a.statut==='retard'?'amber':'blue'}">${a.statut}</span>
+            <div style="font-size:10px;color:#9ca3af;margin-top:3px">${a.parent_notifie?'✓ Notifié':''}</div>
+          </div>
+        </div>`).join('')}
+    </div>
+  </div>`;
+}
+
+// ══ PAIEMENTS ══
+function afficherPaiements() {
+  const page = document.getElementById('page-paiements');
+  if (!currentEtudiant || !toutesFactures.length) {
+    page.innerHTML = '<div class="empty"><div class="e-ico">💳</div><p>Aucune facture enregistrée.</p></div>'; return;
+  }
+  const totalDu = toutesFactures.reduce((s,f) => s+f.montant_total, 0);
+  const totalPaye = toutesFactures.reduce((s,f) => s+(f.montant_paye||0), 0);
+  const restant = totalDu - totalPaye;
+  const pct = totalDu > 0 ? Math.round(totalPaye/totalDu*100) : 100;
+
+  page.innerHTML = `<div class="page-pad">
+    <div class="section-title">💳 Mes Paiements</div>
+    <div class="card">
+      <div class="card-body">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:.5rem">
+          <div>
+            <div style="font-size:11px;color:#6b7280;font-weight:600;text-transform:uppercase">Total facturé</div>
+            <div style="font-size:20px;font-weight:800;font-family:'Nunito',sans-serif;color:#1e3a5f">${fmtMontant(totalDu)}</div>
+          </div>
+          <div style="font-size:26px;font-weight:800;font-family:'Nunito',sans-serif;color:${restant>0?'#dc2626':'#059669'}">${pct}%</div>
+        </div>
+        <div class="pay-bar"><div class="pay-fill" style="width:${pct}%"></div></div>
+        <div class="pay-amounts">
+          <span>Payé : ${fmtMontant(totalPaye)}</span>
+          <span>Restant : <strong style="color:${restant>0?'#dc2626':'#059669'}">${fmtMontant(restant)}</strong></span>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      ${toutesFactures.map(f => {
+        const pct2 = f.montant_total > 0 ? Math.round((f.montant_paye||0)/f.montant_total*100) : 0;
+        const sClass = f.statut==='payée'?'green':f.statut==='retard'?'red':'amber';
+        return `<div class="list-item">
+          <div class="li-ico" style="background:${f.statut==='payée'?'#dcfce7':'#fef9c3'}">
+            ${f.statut==='payée'?'✅':'💰'}
+          </div>
+          <div class="li-body">
+            <div class="li-title">${f.description||f.type_frais||'Facture'}</div>
+            <div class="li-sub">Réf: ${f.reference||'—'} · Échéance: ${fmtDate(f.date_echeance)}</div>
+            <div class="pay-bar" style="margin-top:6px;height:6px"><div class="pay-fill" style="width:${pct2}%"></div></div>
+            <div class="pay-amounts"><span>${fmtMontant(f.montant_paye||0)} payé</span><span>${pct2}%</span></div>
+          </div>
+          <div class="li-right" style="margin-left:.5rem">
+            <span class="badge ${sClass}">${f.statut}</span>
+            <div style="font-size:12px;font-weight:700;margin-top:4px;color:#1e3a5f">${fmtMontant(f.montant_total)}</div>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+    <div style="background:#e1f5ee;border-radius:12px;padding:1rem;font-size:12.5px;color:#0f6e56;margin-bottom:1rem">
+      💡 Pour tout paiement, rapprochez-vous de l'administration de l'établissement.
+    </div>
+  </div>`;
+}
+
+// ══ MESSAGES ══
+function afficherMessages() {
+  const page = document.getElementById('page-messages');
+  page.innerHTML = `<div class="page-pad">
+    <div class="section-title">✉️ Messages</div>
+    <div class="card" style="margin-bottom:1rem">
+      <div class="card-header"><div class="card-title">📝 Nouveau message à l'administration</div></div>
+      <div class="card-body">
+        <div class="msg-composer">
+          <div class="form-group" style="margin-bottom:.6rem">
+            <input type="text" id="msg-objet" placeholder="Objet du message" style="width:100%;padding:9px 12px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:13px;font-family:'Poppins',sans-serif;outline:none">
+          </div>
+          <textarea id="msg-contenu" rows="3" placeholder="Votre message..."></textarea>
+          <button class="msg-send-btn" onclick="envoyerMessage()">✉️ Envoyer</button>
+        </div>
+      </div>
+    </div>
+    ${tousMessages.length ? `
+    <div class="section-title" style="font-size:13px">Messages reçus</div>
+    ${tousMessages.map(m => `
+      <div class="msg-bubble ${m.expediteur_role==='admin'||m.expediteur_role==='enseignant'?'':'sent'}">
+        <div class="mb-from">${m.expediteur_nom||'Administration'} <span class="badge blue" style="font-size:9px">${m.expediteur_role||''}</span></div>
+        <div class="mb-text">${m.objet ? '<strong>'+m.objet+'</strong><br>' : ''}${m.contenu||''}</div>
+        <div class="mb-date">${fmtDate(m.created_at)}</div>
+      </div>`).join('')}` :
+    '<div class="empty"><div class="e-ico">📭</div><p>Aucun message.</p></div>'}
+  </div>`;
+}
+
+async function envoyerMessage() {
+  const objet   = document.getElementById('msg-objet')?.value.trim();
+  const contenu = document.getElementById('msg-contenu')?.value.trim();
+  if (!contenu) { showToast('Écrivez un message.', 'error'); return; }
+  const nom = currentProfile ? currentProfile.prenom + ' ' + currentProfile.nom : currentUser.email;
+  const { error } = await db.from('messages').insert([{
+    ecole_id: currentEcoleId,
+    expediteur_nom: nom,
+    expediteur_role: currentProfile?.role || 'parent',
+    destinataire_nom: 'Administration',
+    destinataire_role: 'admin',
+    objet: objet || 'Message depuis le portail famille',
+    contenu, lu: false
+  }]);
+  if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
+  showToast('Message envoyé !', 'success');
+  document.getElementById('msg-objet').value = '';
+  document.getElementById('msg-contenu').value = '';
+  await chargerMessages();
+  afficherMessages();
+}
+
+// ══ INIT ══
+(async function() {
+  const { data: { session } } = await db.auth.getSession();
+  if (session) {
+    currentUser = session.user;
+    await chargerProfil();
+  }
+})();
+</script>
+</body>
+</html>
