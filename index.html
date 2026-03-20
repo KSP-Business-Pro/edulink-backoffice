@@ -139,7 +139,20 @@ button:hover { background:#a86615; transform:translateY(-1px); }
 .tab { padding:6px 16px; border-radius:7px; font-size:12.5px; font-weight:600; cursor:pointer; color:#6b7280; transition:all .15s; border:none; background:transparent; }
 .tab.active { background:#fff; color:#1e3a5f; box-shadow:0 1px 4px rgba(0,0,0,.1); }
 
-/* ── Section label ── */
+/* ── Fiche étudiant ── */
+.fiche-header{background:#1e3a5f;color:#fff;padding:1.2rem 1.5rem;margin:-1.5rem -1.5rem 1.2rem;border-radius:16px 16px 0 0;display:flex;align-items:center;gap:1rem}
+.fiche-avatar{width:48px;height:48px;border-radius:50%;background:#c97c1a;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;flex-shrink:0}
+.fiche-nom h3{font-size:17px;font-weight:700;margin-bottom:2px}
+.fiche-nom p{font-size:12px;opacity:.7}
+.fiche-stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-bottom:1.2rem}
+.fiche-stat{background:#f9fafb;border-radius:10px;padding:.75rem;text-align:center;border:1px solid #f3f4f6}
+.fiche-stat .fs-val{font-size:22px;font-weight:700}
+.fiche-stat .fs-lbl{font-size:11px;color:#6b7280;font-weight:500}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.info-item{background:#f9fafb;border-radius:10px;padding:.75rem 1rem;border:1px solid #f3f4f6}
+.info-item .ii-label{font-size:10.5px;font-weight:600;color:#9ca3af;text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px}
+.info-item .ii-val{font-size:13px;font-weight:600;color:#111827}
+
 .section-label { font-size:12px; font-weight:600; color:#374151; margin-bottom:.7rem; margin-top:1.2rem; }
 
 /* ══════════════════════════════════════════════
@@ -1167,6 +1180,22 @@ button:hover { background:#a86615; transform:translateY(-1px); }
   </div>
 </div>
 
+<!-- ═══════════════════ MODAL FICHE ÉTUDIANT ══════════════════ -->
+<div class="modal-overlay" id="modal-fiche-etudiant">
+  <div class="modal modal-lg">
+    <div class="fiche-header">
+      <div class="fiche-avatar" id="fiche-avatar">?</div>
+      <div class="fiche-nom">
+        <h3 id="fiche-nom-complet">—</h3>
+        <p id="fiche-meta">—</p>
+      </div>
+      <button onclick="fermerModal('modal-fiche-etudiant')" style="margin-left:auto;background:rgba(255,255,255,.15);color:#fff;font-size:16px;padding:4px 10px;border-radius:6px">✕</button>
+    </div>
+    <div class="fiche-stat-row" id="fiche-stats"></div>
+    <div id="fiche-infos"></div>
+  </div>
+</div>
+
 <!-- ═══════════════════ PWA INSTALL BANNER ══════════════════ -->
 <div id="pwa-banner">
   <span style="font-size:22px">📱</span>
@@ -1377,7 +1406,35 @@ function filtrerEtudiants() {
   const q = document.getElementById('search-etudiants').value.toLowerCase();
   afficherEtudiants(tousLesEtudiants.filter(e => e.nom.toLowerCase().includes(q) || e.prenom.toLowerCase().includes(q) || e.matricule.toLowerCase().includes(q)));
 }
-function voirEtudiant(id) { showToast('Fiche détaillée — bientôt disponible', 'info'); }
+async function voirEtudiant(id) {
+  const etudiant = tousLesEtudiants.find(e => e.id === id);
+  if (!etudiant) return;
+  // Remplir le header
+  const initiales = (etudiant.prenom?.[0]||'') + (etudiant.nom?.[0]||'');
+  document.getElementById('fiche-avatar').textContent = initiales.toUpperCase();
+  document.getElementById('fiche-nom-complet').textContent = etudiant.nom + ' ' + etudiant.prenom;
+  document.getElementById('fiche-meta').textContent = etudiant.filiere + ' · ' + etudiant.niveau + ' · ' + etudiant.matricule;
+  // Charger les stats
+  const [{ count: nbN }, { count: nbA }, { count: nbF }] = await Promise.all([
+    db.from('notes').select('*',{count:'exact',head:true}).eq('etudiant_id', id),
+    db.from('absences').select('*',{count:'exact',head:true}).eq('etudiant_id', id),
+    db.from('factures').select('*',{count:'exact',head:true}).eq('etudiant_id', id),
+  ]);
+  document.getElementById('fiche-stats').innerHTML = `
+    <div class="fiche-stat"><div class="fs-val" style="color:#1e3a5f">${nbN||0}</div><div class="fs-lbl">Notes</div></div>
+    <div class="fiche-stat"><div class="fs-val" style="color:#dc2626">${nbA||0}</div><div class="fs-lbl">Absences</div></div>
+    <div class="fiche-stat"><div class="fs-val" style="color:#c97c1a">${nbF||0}</div><div class="fs-lbl">Factures</div></div>`;
+  document.getElementById('fiche-infos').innerHTML = `
+    <div class="info-grid">
+      <div class="info-item"><div class="ii-label">Matricule</div><div class="ii-val">${etudiant.matricule||'—'}</div></div>
+      <div class="info-item"><div class="ii-label">Sexe</div><div class="ii-val">${etudiant.sexe==='M'?'Masculin':'Féminin'}</div></div>
+      <div class="info-item"><div class="ii-label">Filière</div><div class="ii-val">${etudiant.filiere||'—'}</div></div>
+      <div class="info-item"><div class="ii-label">Niveau</div><div class="ii-val">${etudiant.niveau||'—'}</div></div>
+      <div class="info-item"><div class="ii-label">Email</div><div class="ii-val">${etudiant.email||'—'}</div></div>
+      <div class="info-item"><div class="ii-label">Statut</div><div class="ii-val"><span class="badge ${etudiant.statut==='actif'?'green':'amber'}">${etudiant.statut}</span></div></div>
+    </div>`;
+  document.getElementById('modal-fiche-etudiant').classList.add('open');
+}
 async function ajouterEtudiant() {
   const nom=document.getElementById('input-nom').value.trim(), prenom=document.getElementById('input-prenom').value.trim(), matricule=document.getElementById('input-matricule').value.trim();
   if (!nom||!prenom||!matricule) { showToast('Remplissez les champs obligatoires', 'error'); return; }
