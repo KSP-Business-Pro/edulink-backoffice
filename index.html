@@ -192,6 +192,13 @@ button:hover { background:#a86615; transform:translateY(-1px); }
 .msg-reply { padding:1rem 1.5rem; border-top:1px solid #e5e7eb; display:flex; gap:8px; }
 .msg-reply input { flex:1; padding:8px 12px; border:1px solid #e5e7eb; border-radius:8px; font-size:13px; font-family:'Poppins',sans-serif; outline:none; }
 .msg-reply input:focus { border-color:#1e3a5f; }
+/* Accusé de lecture */
+.msg-read-receipt { font-size:11px; color:#059669; font-weight:600; display:flex; align-items:center; gap:4px; padding:6px 1.5rem; border-top:1px solid #f3f4f6; background:#f9fafb; }
+.msg-read-receipt.unread { color:#9ca3af; }
+.msg-item-meta { display:flex; justify-content:space-between; align-items:center; margin-bottom:2px; }
+.msg-lu-badge { font-size:9.5px; font-weight:700; padding:1px 6px; border-radius:10px; }
+.msg-lu-badge.lu { background:#dcfce7; color:#059669; }
+.msg-lu-badge.nonlu { background:#fee2e2; color:#dc2626; }
 
 /* ══════════════════════════════════════════════
    EMPLOI DU TEMPS (repris du Jour 2)
@@ -1848,7 +1855,22 @@ async function chargerMessages() {
   tousLesMessages = data || [];
   document.getElementById('count-msgs').textContent = tousLesMessages.length + ' message(s)';
   document.getElementById('msg-list-body').innerHTML = tousLesMessages.length
-    ? tousLesMessages.map(m=>`<div class="msg-item ${m.lu?'':'unread'} ${m.id===selectedMsgId?'selected':''}" onclick="lireMessage('${m.id}')"><span class="msg-date">${fmtDate(m.created_at)}</span><div class="msg-sender">${m.expediteur_nom||'Inconnu'}</div><div class="msg-subject">${m.objet}</div><div class="msg-preview">${(m.contenu||'').substring(0,60)}…</div></div>`).join('')
+    ? tousLesMessages.map(m => `
+      <div class="msg-item ${m.lu?'':'unread'} ${m.id===selectedMsgId?'selected':''}" onclick="lireMessage('${m.id}')">
+        <div class="msg-item-meta">
+          <div class="msg-sender">${m.expediteur_nom||'Inconnu'}</div>
+          <div style="display:flex;align-items:center;gap:4px">
+            ${m.lu
+              ? `<span class="msg-lu-badge lu">✓✓ Lu</span>`
+              : `<span class="msg-lu-badge nonlu">Non lu</span>`
+            }
+            <span class="msg-date" style="float:none">${fmtDate(m.created_at)}</span>
+          </div>
+        </div>
+        <div class="msg-subject">${m.objet}</div>
+        <div class="msg-preview">${(m.contenu||'').substring(0,60)}…</div>
+        ${m.lu && m.lu_at ? `<div style="font-size:10px;color:#059669;margin-top:2px">✓ Lu le ${fmtDateTime(m.lu_at)}</div>` : ''}
+      </div>`).join('')
     : '<div class="empty-state" style="padding:2rem"><div class="icon">📭</div><p style="font-size:12px">Aucun message</p></div>';
   const nonLus = tousLesMessages.filter(m=>!m.lu).length;
   const b = document.getElementById('badge-msg');
@@ -1858,7 +1880,13 @@ async function lireMessage(id) {
   selectedMsgId = id;
   const msg = tousLesMessages.find(m=>m.id===id);
   if (!msg) return;
-  if (!msg.lu) { await db.from('messages').update({lu:true}).eq('id',id); msg.lu=true; chargerMessages(); }
+  // Marquer lu + enregistrer lu_at
+  if (!msg.lu) {
+    const now = new Date().toISOString();
+    await db.from('messages').update({ lu:true, lu_at:now }).eq('id',id);
+    msg.lu = true; msg.lu_at = now;
+    chargerMessages();
+  }
   document.getElementById('msg-detail-empty').style.display='none';
   const d = document.getElementById('msg-detail-content');
   d.style.display='flex';
@@ -1867,6 +1895,16 @@ async function lireMessage(id) {
   document.getElementById('msg-detail-role').innerHTML = `<span class="badge blue">${msg.expediteur_role||'—'}</span>`;
   document.getElementById('msg-detail-date').textContent = fmtDateTime(msg.created_at);
   document.getElementById('msg-detail-body').textContent = msg.contenu||'';
+  // Accusé de lecture dans le panneau détail
+  const existingReceipt = document.getElementById('msg-receipt');
+  if (existingReceipt) existingReceipt.remove();
+  const receipt = document.createElement('div');
+  receipt.id = 'msg-receipt';
+  receipt.className = 'msg-read-receipt ' + (msg.lu ? '' : 'unread');
+  receipt.innerHTML = msg.lu
+    ? `✓✓ Message lu${msg.lu_at ? ' le ' + fmtDateTime(msg.lu_at) : ''}`
+    : '○ Non lu';
+  document.getElementById('msg-detail-content').appendChild(receipt);
 }
 async function envoyerMessage() {
   const destinataire=document.getElementById('input-msg-destinataire').value.trim(), objet=document.getElementById('input-msg-objet').value.trim(), contenu=document.getElementById('input-msg-contenu').value.trim();
