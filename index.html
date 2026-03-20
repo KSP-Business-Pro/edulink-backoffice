@@ -450,6 +450,7 @@ button:hover { background:#a86615; transform:translateY(-1px); }
   <a onclick="showPage('rapports')"  id="nav-rapports"><span class="ico">📈</span> Rapports</a>
   <a onclick="showPage('utilisateurs')" id="nav-utilisateurs" style="display:none"><span class="ico">👥</span> Utilisateurs</a>
   <a onclick="ouvrirConfigNotif()" id="nav-notifs" style="display:none"><span class="ico">📧</span> Notifications</a>
+  <a onclick="showPage('parametres')" id="nav-parametres"><span class="ico">⚙️</span> Paramètres</a>
 
   <div class="nav-bottom">
     <div class="nav-actions">
@@ -857,6 +858,90 @@ button:hover { background:#a86615; transform:translateY(-1px); }
     <tr><th>Utilisateur</th><th>E-mail</th><th>Rôle</th><th>Statut</th><th>Dernière connexion</th><th>Actions</th></tr>
     <tbody id="tbody-utilisateurs"><tr><td colspan="6" class="loading">Chargement...</td></tr></tbody>
   </table>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PARAMÈTRES  ★ JOUR 6
+═══════════════════════════════════════ -->
+<div class="page" id="page-parametres">
+  <div class="top">
+    <div><h2>⚙️ Paramètres</h2><p class="page-subtitle">Configuration de l'établissement</p></div>
+    <button onclick="sauvegarderParametres()">💾 Enregistrer</button>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem">
+
+    <!-- Informations école -->
+    <div style="background:#fff;border-radius:14px;border:1px solid #e5e7eb;padding:1.2rem">
+      <div style="font-size:13px;font-weight:700;color:#374151;margin-bottom:1rem;padding-bottom:.6rem;border-bottom:1px solid #f3f4f6">🏫 Informations de l'établissement</div>
+      <div class="form-group"><label>Nom *</label><input type="text" id="param-nom" placeholder="Ex: Collège Saint Joseph"></div>
+      <div class="form-group"><label>Type</label>
+        <select id="param-type">
+          <option value="collège">Collège</option><option value="lycée">Lycée</option>
+          <option value="université">Université</option><option value="école_primaire">École primaire</option>
+          <option value="institut">Institut</option><option value="centre_formation">Centre de formation</option>
+        </select>
+      </div>
+      <div class="form-grid">
+        <div class="form-group"><label>Ville</label><input type="text" id="param-ville" placeholder="Ex: Cotonou"></div>
+        <div class="form-group"><label>Pays</label><input type="text" id="param-pays" value="Bénin"></div>
+      </div>
+      <div class="form-group"><label>Téléphone</label><input type="text" id="param-tel" placeholder="+229 97 00 00 00"></div>
+      <div class="form-group"><label>Email</label><input type="email" id="param-email" placeholder="contact@ecole.bj"></div>
+    </div>
+
+    <!-- Année scolaire -->
+    <div style="background:#fff;border-radius:14px;border:1px solid #e5e7eb;padding:1.2rem">
+      <div style="font-size:13px;font-weight:700;color:#374151;margin-bottom:1rem;padding-bottom:.6rem;border-bottom:1px solid #f3f4f6">📅 Année scolaire & Notation</div>
+      <div class="form-group"><label>Année scolaire</label><input type="text" id="param-annee" placeholder="Ex: 2025-2026"></div>
+      <div class="form-group"><label>Système de notation</label>
+        <select id="param-notation">
+          <option value="semestres">Semestres (S1, S2)</option>
+          <option value="trimestres">Trimestres (T1, T2, T3)</option>
+        </select>
+      </div>
+      <div class="form-grid">
+        <div class="form-group"><label>Date début</label><input type="date" id="param-debut"></div>
+        <div class="form-group"><label>Date fin</label><input type="date" id="param-fin"></div>
+      </div>
+      <div class="form-group"><label>Devise</label>
+        <select id="param-devise">
+          <option value="FCFA">FCFA</option><option value="EUR">EUR</option><option value="USD">USD</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Portail famille -->
+    <div style="background:#fff;border-radius:14px;border:1px solid #e5e7eb;padding:1.2rem">
+      <div style="font-size:13px;font-weight:700;color:#374151;margin-bottom:1rem;padding-bottom:.6rem;border-bottom:1px solid #f3f4f6">🌐 Portail Famille</div>
+      <div style="background:#f0fdf4;border-radius:10px;padding:.9rem;font-size:12.5px;color:#374151;margin-bottom:1rem">
+        <div style="font-weight:700;color:#059669;margin-bottom:.4rem">✅ Portail actif</div>
+        <div style="background:#fff;padding:7px 10px;border-radius:7px;border:1px solid #e5e7eb;font-size:12px;font-weight:600;color:#1e3a5f;display:flex;align-items:center;justify-content:space-between">
+          <span id="portail-url">—</span>
+          <button class="btn-sm btn-blue" onclick="copierLienPortail()" style="padding:3px 10px;font-size:11px">Copier</button>
+        </div>
+      </div>
+      <a href="edulink-portail.html" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:6px;background:#1e3a5f;color:#fff;padding:9px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:600">🌐 Ouvrir le portail</a>
+    </div>
+
+    <!-- Notifications -->
+    <div style="background:#fff;border-radius:14px;border:1px solid #e5e7eb;padding:1.2rem">
+      <div style="font-size:13px;font-weight:700;color:#374151;margin-bottom:1rem;padding-bottom:.6rem;border-bottom:1px solid #f3f4f6">📧 Notifications Email</div>
+      <div id="brevo-status" style="background:#f9fafb;border-radius:10px;padding:.9rem;margin-bottom:1rem;font-size:12.5px;color:#374151">Chargement...</div>
+      <button onclick="ouvrirConfigNotif()" style="width:100%;background:#f3f4f6;color:#374151;border:1px solid #e5e7eb;padding:9px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif">⚙️ Configurer Brevo</button>
+    </div>
+
+  </div>
+
+  <!-- Stats système -->
+  <div style="background:#fff;border-radius:14px;border:1px solid #e5e7eb;padding:1.2rem;margin-top:1.2rem">
+    <div style="font-size:13px;font-weight:700;color:#374151;margin-bottom:1rem">ℹ️ Informations système</div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem">
+      <div style="text-align:center;background:#f9fafb;border-radius:10px;padding:.9rem;border:1px solid #f3f4f6"><div style="font-size:22px;font-weight:700;color:#1e3a5f" id="sys-ecoles">—</div><div style="font-size:11px;color:#6b7280">Établissements</div></div>
+      <div style="text-align:center;background:#f9fafb;border-radius:10px;padding:.9rem;border:1px solid #f3f4f6"><div style="font-size:22px;font-weight:700;color:#059669" id="sys-etudiants">—</div><div style="font-size:11px;color:#6b7280">Étudiants</div></div>
+      <div style="text-align:center;background:#f9fafb;border-radius:10px;padding:.9rem;border:1px solid #f3f4f6"><div style="font-size:22px;font-weight:700;color:#c97c1a" id="sys-users">—</div><div style="font-size:11px;color:#6b7280">Utilisateurs</div></div>
+      <div style="text-align:center;background:#f9fafb;border-radius:10px;padding:.9rem;border:1px solid #f3f4f6"><div style="font-size:13px;font-weight:700;color:#1e3a5f">Jour 6</div><div style="font-size:11px;color:#6b7280">Version EduLink</div></div>
+    </div>
+  </div>
 </div>
 
 </main>
@@ -1293,6 +1378,7 @@ function showPage(p) {
     documents:    chargerDocuments,
     rapports:     () => afficherRapport('effectifs'),
     utilisateurs: () => { if (typeof chargerUtilisateurs === 'function') chargerUtilisateurs(); },
+    parametres:   chargerParametres,
   };
   if (loaders[p]) loaders[p]();
 }
@@ -2139,6 +2225,75 @@ async function chargerDashboardCharts() {
       options:{ responsive:true, scales:{ y:{ beginAtZero:true, ticks:{ font:{family:'Poppins',size:11} } } }, plugins:{ legend:{ display:false } } }
     });
   }
+}
+
+// ══ PARAMÈTRES  ★ JOUR 6 ══════════════════════
+function chargerParametres() {
+  const prefix = 'edulink_param_' + (currentEcoleId || 'global');
+  const saved  = JSON.parse(localStorage.getItem(prefix) || '{}');
+  const ecole  = tousLesEcoles.find(e => e.id === currentEcoleId);
+  const f = (id, val) => { const el = document.getElementById(id); if (el && val) el.value = val; };
+  f('param-nom',      saved.nom      || ecole?.nom  || '');
+  f('param-type',     saved.type     || ecole?.type || '');
+  f('param-ville',    saved.ville    || '');
+  f('param-pays',     saved.pays     || 'Bénin');
+  f('param-tel',      saved.tel      || '');
+  f('param-email',    saved.email    || '');
+  f('param-annee',    saved.annee    || '');
+  f('param-notation', saved.notation || '');
+  f('param-debut',    saved.debut    || '');
+  f('param-fin',      saved.fin      || '');
+  f('param-devise',   saved.devise   || 'FCFA');
+  // URL portail
+  const el = document.getElementById('portail-url');
+  if (el) el.textContent = window.location.origin + '/edulink-portail.html';
+  // Statut Brevo
+  const brevo = document.getElementById('brevo-status');
+  if (brevo) {
+    const actif = typeof NOTIF_CONFIG !== 'undefined' && NOTIF_CONFIG.actif;
+    brevo.innerHTML = actif
+      ? '<span style="color:#059669;font-weight:700">✅ Brevo configuré</span><br><span style="font-size:11px;color:#6b7280">Emails automatiques actifs</span>'
+      : '<span style="color:#d97706;font-weight:700">⚠️ Brevo non configuré</span><br><span style="font-size:11px;color:#6b7280">Configurez votre clé API pour activer les emails.</span>';
+  }
+  // Stats système
+  Promise.all([
+    db.from('ecoles').select('*',{count:'exact',head:true}),
+    db.from('etudiants').select('*',{count:'exact',head:true}),
+    db.from('profiles').select('*',{count:'exact',head:true}),
+  ]).then(([r1,r2,r3]) => {
+    const s = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val ?? '—'; };
+    s('sys-ecoles',    r1.count);
+    s('sys-etudiants', r2.count);
+    s('sys-users',     r3.count);
+  });
+}
+
+async function sauvegarderParametres() {
+  const nom = document.getElementById('param-nom')?.value.trim();
+  if (!nom) { showToast('Le nom est obligatoire.', 'error'); return; }
+  const data = {};
+  ['nom','type','ville','pays','tel','email','annee','notation','debut','fin','devise'].forEach(f => {
+    const el = document.getElementById('param-' + f);
+    if (el) data[f] = el.value;
+  });
+  const prefix = 'edulink_param_' + (currentEcoleId || 'global');
+  localStorage.setItem(prefix, JSON.stringify(data));
+  if (currentEcoleId) {
+    await db.from('ecoles').update({ nom: data.nom, type: data.type }).eq('id', currentEcoleId);
+    const ecole = tousLesEcoles.find(e => e.id === currentEcoleId);
+    if (ecole) { ecole.nom = data.nom; ecole.type = data.type; }
+    mettreAJourBadgeEcole({ nom: data.nom, type: data.type });
+    const opt = [...document.getElementById('ecole-selector').options].find(o => o.value === currentEcoleId);
+    if (opt) opt.textContent = data.nom;
+  }
+  showToast('Paramètres enregistrés !', 'success');
+}
+
+function copierLienPortail() {
+  const url = window.location.origin + '/edulink-portail.html';
+  navigator.clipboard.writeText(url)
+    .then(() => showToast('Lien copié !', 'success'))
+    .catch(() => showToast('URL : ' + url, 'info'));
 }
 
 // PWA Service Worker
