@@ -252,6 +252,32 @@ body{font-family:'Poppins',sans-serif;background:var(--bg);min-height:100vh;colo
 /* ══ SECTION TITLE ══ */
 .section-title{font-size:15px;font-weight:700;color:#111827;margin-bottom:.75rem;display:flex;align-items:center;gap:6px}
 .page-pad{padding:1rem}
+
+/* ══ JOUR 8 — JUSTIFICATION ABSENCE ══ */
+.btn-justifier{
+  margin-top:6px;padding:5px 12px;background:#fff;border:1.5px solid #0f6e56;
+  color:#0f6e56;border-radius:20px;font-size:11px;font-weight:700;
+  font-family:'Poppins',sans-serif;cursor:pointer;transition:all .15s;display:inline-block;
+}
+.btn-justifier:hover{background:#0f6e56;color:#fff}
+.justif-form{
+  background:#f0fdf4;border-radius:10px;padding:.85rem;margin-top:.5rem;
+  border:1.5px solid #bbf7d0;
+}
+.justif-form textarea{
+  width:100%;padding:8px 10px;border:1.5px solid #d1fae5;border-radius:8px;
+  font-size:12.5px;font-family:'Poppins',sans-serif;outline:none;resize:none;background:#fff;
+}
+.justif-form textarea:focus{border-color:#0f6e56}
+.justif-actions{display:flex;gap:6px;margin-top:6px}
+.btn-send-justif{
+  flex:1;padding:8px;background:#0f6e56;color:#fff;border:none;border-radius:8px;
+  font-size:12px;font-weight:700;font-family:'Poppins',sans-serif;cursor:pointer;
+}
+.btn-cancel-justif{
+  padding:8px 14px;background:#f3f4f6;color:#374151;border:none;border-radius:8px;
+  font-size:12px;font-weight:600;font-family:'Poppins',sans-serif;cursor:pointer;
+}
 </style>
 </head>
 <body>
@@ -409,17 +435,23 @@ async function chargerProfil() {
 }
 
 async function chargerEtudiantLie() {
-  // Si étudiant → chercher son profil dans la table étudiants via email
-  // Si parent → chercher via etudiant_id du profil
   let etudiant = null;
   if (currentProfile.role === 'etudiant') {
-    const { data } = await db.from('etudiants').select('*').eq('email', currentUser.email).single();
+    // Chercher via email étudiant
+    const { data } = await db.from('etudiants').select('*').eq('email', currentUser.email).maybeSingle();
     etudiant = data;
-  } else if (currentProfile.etudiant_id) {
-    const { data } = await db.from('etudiants').select('*').eq('id', currentProfile.etudiant_id).single();
+  } else if (currentProfile.role === 'parent') {
+    // JOUR 7 : chercher via parent_email dans la table etudiants
+    const { data } = await db.from('etudiants').select('*').eq('parent_email', currentUser.email).maybeSingle();
     etudiant = data;
-  } else {
-    // Fallback : chercher par email de l'user
+    // Fallback : via etudiant_id du profil
+    if (!etudiant && currentProfile.etudiant_id) {
+      const { data: d2 } = await db.from('etudiants').select('*').eq('id', currentProfile.etudiant_id).maybeSingle();
+      etudiant = d2;
+    }
+  }
+  // Dernier fallback
+  if (!etudiant) {
     const { data } = await db.from('etudiants').select('*').eq('email', currentUser.email).maybeSingle();
     etudiant = data;
   }
@@ -716,6 +748,7 @@ function afficherAbsences() {
   const nbAbs = toutesAbsences.filter(a=>a.statut==='absent').length;
   const nbRet = toutesAbsences.filter(a=>a.statut==='retard').length;
   const nbExc = toutesAbsences.filter(a=>a.statut==='excuse').length;
+  const nbJustif = toutesAbsences.filter(a=>a.statut==='absent'||a.statut==='retard').length;
 
   page.innerHTML = `<div class="page-pad">
     <div class="section-title">🚫 Présences & Absences</div>
@@ -723,15 +756,33 @@ function afficherAbsences() {
       <div class="stat-card"><div class="stat-ico red">🔴</div><div><div class="stat-val" style="color:#dc2626">${nbAbs}</div><div class="stat-lbl">Absences</div></div></div>
       <div class="stat-card"><div class="stat-ico amber">🟡</div><div><div class="stat-val" style="color:#d97706">${nbRet}</div><div class="stat-lbl">Retards</div></div></div>
     </div>
+    ${nbJustif > 0 ? `<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:10px;padding:.75rem 1rem;font-size:12.5px;color:#d97706;margin-bottom:1rem;display:flex;align-items:center;gap:8px">
+      <span style="font-size:18px">⚠️</span>
+      <div><strong>${nbJustif} absence(s)/retard(s)</strong> à justifier · Appuyez sur <em>"Justifier"</em> pour envoyer un motif</div>
+    </div>` : ''}
     <div class="card">
       ${toutesAbsences.map(a => `
-        <div class="list-item">
+        <div class="list-item" id="abs-item-${a.id}">
           <div class="li-ico" style="background:${a.statut==='absent'?'#fee2e2':a.statut==='retard'?'#fef9c3':'#dbeafe'}">
             ${a.statut==='absent'?'🔴':a.statut==='retard'?'🟡':'🟢'}
           </div>
           <div class="li-body">
             <div class="li-title">${a.matiere}</div>
-            <div class="li-sub">${fmtDate(a.date_absence)}${a.justification?' · '+a.justification:''}</div>
+            <div class="li-sub">${fmtDate(a.date_absence)}</div>
+            ${a.justification
+              ? `<div style="margin-top:5px;font-size:11.5px;color:#059669;font-weight:600">✅ Justifié : <span style="color:#374151;font-weight:400">${a.justification}</span></div>`
+              : (a.statut==='absent'||a.statut==='retard')
+                ? `<button class="btn-justifier" onclick="ouvrirFormJustif('${a.id}')">📝 Justifier cette absence</button>
+                   <div class="justif-form" id="form-justif-${a.id}" style="display:none">
+                     <div style="font-size:12px;font-weight:700;color:#0f6e56;margin-bottom:.5rem">Motif de l'absence</div>
+                     <textarea id="txt-justif-${a.id}" rows="3" placeholder="Ex: Maladie, rendez-vous médical, deuil familial..."></textarea>
+                     <div class="justif-actions">
+                       <button class="btn-cancel-justif" onclick="fermerFormJustif('${a.id}')">Annuler</button>
+                       <button class="btn-send-justif" onclick="soumettreJustification('${a.id}')">✅ Envoyer la justification</button>
+                     </div>
+                   </div>`
+                : ''
+            }
           </div>
           <div class="li-right">
             <span class="badge ${a.statut==='absent'?'red':a.statut==='retard'?'amber':'blue'}">${a.statut}</span>
@@ -739,7 +790,41 @@ function afficherAbsences() {
           </div>
         </div>`).join('')}
     </div>
+    ${nbExc > 0 ? `<div style="background:#e1f5ee;border-radius:10px;padding:.75rem 1rem;font-size:12px;color:#0f6e56;display:flex;align-items:center;gap:6px">
+      <span>✅</span> <strong>${nbExc} absence(s) excusée(s)</strong> — dossier pris en compte par l'administration.
+    </div>` : ''}
   </div>`;
+}
+
+function ouvrirFormJustif(id) {
+  // Fermer les autres formulaires ouverts
+  document.querySelectorAll('.justif-form').forEach(f => f.style.display = 'none');
+  const form = document.getElementById('form-justif-' + id);
+  if (form) { form.style.display = 'block'; form.querySelector('textarea').focus(); }
+}
+
+function fermerFormJustif(id) {
+  const form = document.getElementById('form-justif-' + id);
+  if (form) form.style.display = 'none';
+}
+
+async function soumettreJustification(id) {
+  const txt = document.getElementById('txt-justif-' + id)?.value.trim();
+  if (!txt) { showToast('Saisissez un motif de justification.', 'error'); return; }
+  const btn = document.querySelector(`#form-justif-${id} .btn-send-justif`);
+  if (btn) { btn.disabled = true; btn.textContent = 'Envoi...'; }
+  const { error } = await db.from('absences').update({
+    justification: txt,
+    statut: 'excuse'
+  }).eq('id', id);
+  if (error) {
+    showToast('Erreur : ' + error.message, 'error');
+    if (btn) { btn.disabled = false; btn.textContent = '✅ Envoyer la justification'; }
+    return;
+  }
+  showToast('✅ Justification envoyée !', 'success');
+  await chargerAbsences();
+  afficherAbsences();
 }
 
 // ══ PAIEMENTS ══
