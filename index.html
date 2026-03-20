@@ -1895,16 +1895,18 @@ async function lireMessage(id) {
   document.getElementById('msg-detail-role').innerHTML = `<span class="badge blue">${msg.expediteur_role||'—'}</span>`;
   document.getElementById('msg-detail-date').textContent = fmtDateTime(msg.created_at);
   document.getElementById('msg-detail-body').textContent = msg.contenu||'';
-  // Accusé de lecture dans le panneau détail
+  // Accusé de lecture — insérer AVANT la barre de réponse
   const existingReceipt = document.getElementById('msg-receipt');
   if (existingReceipt) existingReceipt.remove();
   const receipt = document.createElement('div');
   receipt.id = 'msg-receipt';
   receipt.className = 'msg-read-receipt ' + (msg.lu ? '' : 'unread');
   receipt.innerHTML = msg.lu
-    ? `✓✓ Message lu${msg.lu_at ? ' le ' + fmtDateTime(msg.lu_at) : ''}`
-    : '○ Non lu';
-  document.getElementById('msg-detail-content').appendChild(receipt);
+    ? `✓✓ Message lu${msg.lu_at ? ' le ' + fmtDateTime(msg.lu_at) : ' (date non enregistrée)'}`
+    : '○ Non encore lu par le destinataire';
+  const replyBar = document.querySelector('.msg-reply');
+  if (replyBar) replyBar.before(receipt);
+  else document.getElementById('msg-detail-content').appendChild(receipt);
 }
 async function envoyerMessage() {
   const destinataire=document.getElementById('input-msg-destinataire').value.trim(), objet=document.getElementById('input-msg-objet').value.trim(), contenu=document.getElementById('input-msg-contenu').value.trim();
