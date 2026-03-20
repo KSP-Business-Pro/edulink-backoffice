@@ -2050,7 +2050,62 @@ async function afficherRapport(type) {
 }
 function exporterRapport(mode) {
   if (mode === 'print') { window.print(); return; }
-  showToast('Export CSV — bientôt disponible','info');
+  // Détecter le rapport actif
+  const actif = document.querySelector('.rapport-menu-item.active');
+  const type  = actif ? actif.id.replace('rmenu-','') : 'effectifs';
+  exporterCSV(type);
+}
+
+async function exporterCSV(type) {
+  showToast('Préparation export CSV...', 'info');
+  let headers = [], rows = [], filename = 'export';
+  const esc = v => '"' + String(v==null?'':v).replace(/"/g,'""') + '"';
+
+  if (type === 'effectifs') {
+    let q = db.from('etudiants').select('matricule,nom,prenom,filiere,niveau,sexe,email,statut,created_at');
+    if (currentEcoleId) q = q.eq('ecole_id', currentEcoleId);
+    const { data } = await q;
+    headers = ['Matricule','Nom','Prénom','Filière','Niveau','Sexe','Email','Statut','Date inscription'];
+    rows = (data||[]).map(e => [e.matricule,e.nom,e.prenom,e.filiere,e.niveau,e.sexe,e.email||'',e.statut,fmtDate(e.created_at)]);
+    filename = 'edulink_etudiants';
+  } else if (type === 'absences') {
+    const { data } = await db.from('absences').select('*, etudiants(nom,prenom)').order('date_absence',{ascending:false});
+    headers = ['Étudiant','Matière','Date','Statut','Justification','Parent notifié'];
+    rows = (data||[]).map(a => [a.etudiants?a.etudiants.nom+' '+a.etudiants.prenom:'N/A',a.matiere,fmtDate(a.date_absence),a.statut,a.justification||'',a.parent_notifie?'Oui':'Non']);
+    filename = 'edulink_absences';
+  } else if (type === 'moyennes') {
+    let q = db.from('notes').select('*, etudiants(nom,prenom,matricule,filiere,niveau)');
+    if (currentEcoleId) q = q.eq('ecole_id', currentEcoleId);
+    const { data } = await q;
+    headers = ['Matricule','Étudiant','Filière','Niveau','Matière','Note /20','Coefficient','Période'];
+    rows = (data||[]).map(n => [n.etudiants?.matricule||'',n.etudiants?n.etudiants.nom+' '+n.etudiants.prenom:'N/A',n.etudiants?.filiere||'',n.etudiants?.niveau||'',n.matiere,n.note,n.coefficient||1,n.periode]);
+    filename = 'edulink_notes';
+  } else if (type === 'paiements') {
+    let q = db.from('factures').select('*, etudiants(nom,prenom,matricule)');
+    if (currentEcoleId) q = q.eq('ecole_id', currentEcoleId);
+    const { data } = await q;
+    headers = ['Référence','Étudiant','Matricule','Type','Montant total','Montant payé','Reste','Statut','Échéance'];
+    rows = (data||[]).map(f => [f.reference||'',f.etudiants?f.etudiants.nom+' '+f.etudiants.prenom:'N/A',f.etudiants?.matricule||'',f.type_frais||'',f.montant_total,f.montant_paye||0,f.montant_total-(f.montant_paye||0),f.statut,fmtDate(f.date_echeance)]);
+    filename = 'edulink_paiements';
+  } else if (type === 'discipline') {
+    let q = db.from('incidents').select('*, etudiants(nom,prenom)');
+    if (currentEcoleId) q = q.eq('ecole_id', currentEcoleId);
+    const { data } = await q;
+    headers = ['Étudiant','Type','Sévérité','Date','Statut','Sanction'];
+    rows = (data||[]).map(i => [i.etudiants?i.etudiants.nom+' '+i.etudiants.prenom:'N/A',i.type_incident,i.severite,fmtDate(i.date_incident),i.statut,i.sanction||'']);
+    filename = 'edulink_incidents';
+  } else {
+    showToast('Sélectionnez un rapport pour exporter.', 'info'); return;
+  }
+
+  const csv = [headers, ...rows].map(r => r.map(esc).join(',')).join('\n');
+  const blob = new Blob(['\uFEFF' + csv], { type:'text/csv;charset=utf-8;' });
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href = url; a.download = filename + '_' + new Date().toISOString().split('T')[0] + '.csv';
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('Export CSV téléchargé !', 'success');
 }
 
 // ══ DASHBOARD CHARTS ══════════════════════════
