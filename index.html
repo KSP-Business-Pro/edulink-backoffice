@@ -356,11 +356,72 @@ button:hover { background:#a86615; transform:translateY(-1px); }
 #pwa-banner .pb-btn { background:#c97c1a; color:#fff; border:none; padding:7px 14px; border-radius:8px; cursor:pointer; font-size:12px; font-weight:600; font-family:'Poppins',sans-serif; }
 #pwa-banner .pb-close { cursor:pointer; opacity:.6; font-size:18px; margin-left:4px; }
 #auth-source-badge { font-size:10px; padding:2px 8px; border-radius:20px; font-weight:600; margin-top:3px; display:none; }
+
+/* ══════════════════════════════════════════════
+   JOUR 7 — RESPONSIVE MOBILE
+══════════════════════════════════════════════ */
+#hamburger { display:none; position:fixed; top:12px; left:12px; z-index:900; background:#1e3a5f; color:#fff; border:none; border-radius:10px; padding:8px 11px; font-size:18px; cursor:pointer; box-shadow:0 4px 14px rgba(0,0,0,.25); }
+#nav-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.45); z-index:799; }
+#nav-overlay.open { display:block; }
+/* Import CSV */
+.csv-drop { border:2px dashed #d1d5db; border-radius:12px; padding:2.5rem; text-align:center; color:#9ca3af; font-size:13px; cursor:pointer; transition:all .2s; background:#fafafa; }
+.csv-drop:hover, .csv-drop.dragover { border-color:#1e3a5f; color:#1e3a5f; background:#f0f4ff; }
+.csv-drop .cd-ico { font-size:32px; margin-bottom:.5rem; }
+.csv-preview { max-height:280px; overflow-y:auto; margin-top:1rem; border-radius:10px; border:1px solid #e5e7eb; }
+.csv-preview table { border-radius:0; border:none; }
+.csv-row-valid td:first-child { color:#059669; font-weight:700; }
+.csv-row-error td:first-child { color:#dc2626; font-weight:700; }
+.csv-row-error { background:#fff5f5; }
+.import-progress { height:6px; background:#e5e7eb; border-radius:3px; overflow:hidden; margin-top:.5rem; }
+.import-progress-fill { height:100%; background:#1e3a5f; border-radius:3px; transition:width .3s; }
+/* Parent liaison badge */
+.parent-badge { display:flex; align-items:center; gap:6px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px; padding:7px 10px; font-size:12px; }
+.parent-badge .pb-email { font-weight:600; color:#059669; }
+
+@media (max-width: 768px) {
+  body { flex-direction:column; }
+  #hamburger { display:block; }
+  nav {
+    position:fixed; top:0; left:-260px; width:240px; height:100%; z-index:800;
+    transition:left .28s cubic-bezier(.4,0,.2,1); box-shadow:4px 0 20px rgba(0,0,0,.2);
+  }
+  nav.mobile-open { left:0; }
+  main { padding:1rem; padding-top:3.5rem; min-height:100vh; }
+  .cards { grid-template-columns:1fr 1fr; gap:8px; }
+  .pay-stat-bar { grid-template-columns:1fr 1fr; gap:8px; }
+  .form-grid { grid-template-columns:1fr; }
+  .form-grid-3 { grid-template-columns:1fr; }
+  .dash-grid { grid-template-columns:1fr; }
+  .rapport-layout { grid-template-columns:1fr; }
+  .msg-layout { grid-template-columns:1fr; height:auto; }
+  .msg-detail { min-height:300px; }
+  table { font-size:11.5px; }
+  th, td { padding:7px 8px; }
+  .modal { padding:1rem; border-radius:12px; }
+  .modal-lg { width:98%; }
+  .top { flex-direction:column; align-items:flex-start; gap:6px; }
+  .top h2 { font-size:17px; }
+  .top-actions { flex-wrap:wrap; }
+  .tabs { flex-wrap:wrap; }
+  .info-grid { grid-template-columns:1fr; }
+  .fiche-stat-row { grid-template-columns:repeat(3,1fr); }
+  .bulletin-stats { grid-template-columns:repeat(3,1fr); }
+  .discipline-stats { grid-template-columns:1fr 1fr 1fr; }
+  .edt-wrap { overflow-x:auto; }
+  .rapport-grid { grid-template-columns:1fr; }
+}
+@media (max-width:480px) {
+  .cards { grid-template-columns:1fr; }
+  .pay-stat-bar { grid-template-columns:1fr; }
+  .discipline-stats { grid-template-columns:1fr; }
+}
 </style>
 </head>
 <body>
 
 <!-- ═══════════════════════ ÉCRAN DE CONNEXION ═══════════════════════ -->
+<button id="hamburger" onclick="toggleMobileNav()">☰</button>
+<div id="nav-overlay" onclick="fermerMobileNav()"></div>
 <div id="login-screen">
   <div class="login-card">
     <div class="login-logo">
@@ -524,7 +585,12 @@ button:hover { background:#a86615; transform:translateY(-1px); }
      ÉTUDIANTS
 ═══════════════════════════════════════ -->
 <div class="page" id="page-etudiants">
-  <div class="top"><h2>Étudiants</h2><button onclick="ouvrirModal('modal-etudiant')">+ Ajouter étudiant</button></div>
+  <div class="top"><h2>Étudiants</h2>
+    <div class="top-actions">
+      <button class="btn-secondary" onclick="ouvrirModal('modal-import-csv')" title="Importer via fichier CSV">📥 Import CSV</button>
+      <button onclick="ouvrirModal('modal-etudiant')">+ Ajouter étudiant</button>
+    </div>
+  </div>
   <div class="search-bar"><input type="text" id="search-etudiants" placeholder="Rechercher par nom, prénom, matricule..." oninput="filtrerEtudiants()"></div>
   <table>
     <tr><th>Matricule</th><th>Nom complet</th><th>Filière</th><th>Niveau</th><th>Statut</th><th>Actions</th></tr>
@@ -939,7 +1005,7 @@ button:hover { background:#a86615; transform:translateY(-1px); }
       <div style="text-align:center;background:#f9fafb;border-radius:10px;padding:.9rem;border:1px solid #f3f4f6"><div style="font-size:22px;font-weight:700;color:#1e3a5f" id="sys-ecoles">—</div><div style="font-size:11px;color:#6b7280">Établissements</div></div>
       <div style="text-align:center;background:#f9fafb;border-radius:10px;padding:.9rem;border:1px solid #f3f4f6"><div style="font-size:22px;font-weight:700;color:#059669" id="sys-etudiants">—</div><div style="font-size:11px;color:#6b7280">Étudiants</div></div>
       <div style="text-align:center;background:#f9fafb;border-radius:10px;padding:.9rem;border:1px solid #f3f4f6"><div style="font-size:22px;font-weight:700;color:#c97c1a" id="sys-users">—</div><div style="font-size:11px;color:#6b7280">Utilisateurs</div></div>
-      <div style="text-align:center;background:#f9fafb;border-radius:10px;padding:.9rem;border:1px solid #f3f4f6"><div style="font-size:13px;font-weight:700;color:#1e3a5f">Jour 6</div><div style="font-size:11px;color:#6b7280">Version EduLink</div></div>
+      <div style="text-align:center;background:#f9fafb;border-radius:10px;padding:.9rem;border:1px solid #f3f4f6"><div style="font-size:13px;font-weight:700;color:#1e3a5f">Jour 7</div><div style="font-size:11px;color:#6b7280">Version EduLink</div></div>
     </div>
   </div>
 </div>
@@ -950,6 +1016,50 @@ button:hover { background:#a86615; transform:translateY(-1px); }
 <!-- ═══════════════════════════════════════════
      MODALS
 ═══════════════════════════════════════════ -->
+
+<!-- ★ JOUR 7 — Modal Import CSV ★ -->
+<div class="modal-overlay" id="modal-import-csv">
+  <div class="modal modal-lg">
+    <h3>📥 Import CSV — Étudiants en masse</h3>
+    <div style="background:#eff6ff;border-radius:10px;padding:.85rem;font-size:12px;color:#1d4ed8;margin-bottom:1rem">
+      <strong>Format attendu des colonnes :</strong><br>
+      <code style="font-size:11px">nom, prenom, matricule, sexe (M/F), filiere, niveau, email, parent_email, parent_tel</code><br>
+      <a id="csv-template-link" href="#" onclick="telechargerTemplateCSV()" style="font-weight:700;color:#1d4ed8;text-decoration:underline;cursor:pointer">⬇️ Télécharger le modèle CSV</a>
+    </div>
+    <div class="csv-drop" id="csv-drop-zone" onclick="document.getElementById('csv-file-input').click()"
+         ondragover="event.preventDefault();this.classList.add('dragover')"
+         ondragleave="this.classList.remove('dragover')"
+         ondrop="gererDropCSV(event)">
+      <div class="cd-ico">📂</div>
+      <div style="font-size:14px;font-weight:600">Cliquez ou glissez votre fichier CSV ici</div>
+      <div style="font-size:12px;margin-top:4px">Formats acceptés : .csv · .txt (séparateur virgule ou point-virgule)</div>
+      <input type="file" id="csv-file-input" accept=".csv,.txt" style="display:none" onchange="lireCSV(this.files[0])">
+    </div>
+    <div id="csv-preview-wrap" style="display:none">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:1rem;margin-bottom:.5rem">
+        <div style="font-size:13px;font-weight:600;color:#374151">
+          Aperçu : <span id="csv-count-valid" style="color:#059669">0</span> valides ·
+          <span id="csv-count-error" style="color:#dc2626">0</span> erreurs
+        </div>
+        <button class="btn-sm btn-secondary" onclick="reinitialiserCSV()">🔄 Réinitialiser</button>
+      </div>
+      <div class="csv-preview">
+        <table>
+          <thead><tr><th>#</th><th>Nom</th><th>Prénom</th><th>Matricule</th><th>Filière</th><th>Niveau</th><th>Email Parent</th><th>Statut</th></tr></thead>
+          <tbody id="csv-preview-body"></tbody>
+        </table>
+      </div>
+      <div class="import-progress" id="csv-progress-bar" style="display:none">
+        <div class="import-progress-fill" id="csv-progress-fill" style="width:0%"></div>
+      </div>
+      <div id="csv-progress-label" style="font-size:12px;color:#6b7280;text-align:center;margin-top:4px;display:none"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="fermerModal('modal-import-csv');reinitialiserCSV()">Annuler</button>
+      <button id="btn-import-confirm" onclick="confirmerImportCSV()" disabled style="opacity:.5" class="btn-green">✅ Importer les étudiants valides</button>
+    </div>
+  </div>
+</div>
 
 <!-- Annonce -->
 <div class="modal-overlay" id="modal-annonce">
@@ -985,7 +1095,14 @@ button:hover { background:#a86615; transform:translateY(-1px); }
         <select id="input-niveau"><option>L1</option><option>L2</option><option>L3</option><option>M1</option><option>M2</option></select>
       </div>
     </div>
-    <div class="form-group"><label>Email</label><input type="email" id="input-email" placeholder="email@etudiant.com"></div>
+    <div class="form-group"><label>Email étudiant</label><input type="email" id="input-email" placeholder="email@etudiant.com"></div>
+    <div style="background:#f0fdf4;border-radius:10px;padding:.85rem;margin-bottom:1rem;border:1px solid #bbf7d0">
+      <div style="font-size:12px;font-weight:700;color:#059669;margin-bottom:.6rem">👨‍👩‍👧 Liaison Parent — Portail Famille</div>
+      <div class="form-grid">
+        <div class="form-group" style="margin-bottom:0"><label>Email parent *</label><input type="email" id="input-parent-email" placeholder="parent@gmail.com"></div>
+        <div class="form-group" style="margin-bottom:0"><label>Tél. parent</label><input type="text" id="input-parent-tel" placeholder="+229 97 00 00 00"></div>
+      </div>
+    </div>
     <div class="modal-footer">
       <button class="btn-secondary" onclick="fermerModal('modal-etudiant')">Annuler</button>
       <button onclick="ajouterEtudiant()">Enregistrer</button>
@@ -1527,18 +1644,38 @@ async function voirEtudiant(id) {
       <div class="info-item"><div class="ii-label">Sexe</div><div class="ii-val">${etudiant.sexe==='M'?'Masculin':'Féminin'}</div></div>
       <div class="info-item"><div class="ii-label">Filière</div><div class="ii-val">${etudiant.filiere||'—'}</div></div>
       <div class="info-item"><div class="ii-label">Niveau</div><div class="ii-val">${etudiant.niveau||'—'}</div></div>
-      <div class="info-item"><div class="ii-label">Email</div><div class="ii-val">${etudiant.email||'—'}</div></div>
+      <div class="info-item"><div class="ii-label">Email étudiant</div><div class="ii-val">${etudiant.email||'—'}</div></div>
       <div class="info-item"><div class="ii-label">Statut</div><div class="ii-val"><span class="badge ${etudiant.statut==='actif'?'green':'amber'}">${etudiant.statut}</span></div></div>
-    </div>`;
+    </div>
+    ${etudiant.parent_email ? `
+    <div style="margin-top:1rem">
+      <div class="section-label" style="margin-top:0">👨‍👩‍👧 Liaison Parent — Portail Famille</div>
+      <div class="parent-badge">
+        <span>📧</span>
+        <span class="pb-email">${etudiant.parent_email}</span>
+        ${etudiant.parent_tel ? `<span style="color:#6b7280;margin-left:8px">📞 ${etudiant.parent_tel}</span>` : ''}
+        <span class="badge green" style="margin-left:auto">✓ Lié</span>
+      </div>
+    </div>` : `
+    <div style="margin-top:1rem">
+      <div style="background:#fff8e6;border:1px solid #fde68a;border-radius:8px;padding:8px 12px;font-size:12px;color:#d97706">
+        ⚠️ Aucun parent lié — Le portail famille ne montrera pas cet étudiant.
+      </div>
+    </div>`}`;
   document.getElementById('modal-fiche-etudiant').classList.add('open');
 }
 async function ajouterEtudiant() {
   const nom=document.getElementById('input-nom').value.trim(), prenom=document.getElementById('input-prenom').value.trim(), matricule=document.getElementById('input-matricule').value.trim();
   if (!nom||!prenom||!matricule) { showToast('Remplissez les champs obligatoires', 'error'); return; }
-  const { error } = await db.from('etudiants').insert([{ ecole_id:currentEcoleId, nom, prenom, matricule, sexe:document.getElementById('input-sexe').value, filiere:document.getElementById('input-filiere').value, niveau:document.getElementById('input-niveau').value, email:document.getElementById('input-email').value.trim(), statut:'actif' }]);
+  const payload = { ecole_id:currentEcoleId, nom, prenom, matricule, sexe:document.getElementById('input-sexe').value, filiere:document.getElementById('input-filiere').value, niveau:document.getElementById('input-niveau').value, email:document.getElementById('input-email').value.trim(), statut:'actif' };
+  const parentEmail = document.getElementById('input-parent-email').value.trim();
+  const parentTel   = document.getElementById('input-parent-tel').value.trim();
+  if (parentEmail) payload.parent_email = parentEmail;
+  if (parentTel)   payload.parent_tel   = parentTel;
+  const { error } = await db.from('etudiants').insert([payload]);
   if (error) { showToast('Erreur : '+(error.message.includes('unique')?'Matricule déjà utilisé.':error.message),'error'); return; }
   fermerModal('modal-etudiant');
-  ['input-nom','input-prenom','input-matricule','input-email'].forEach(id=>document.getElementById(id).value='');
+  ['input-nom','input-prenom','input-matricule','input-email','input-parent-email','input-parent-tel'].forEach(id=>document.getElementById(id).value='');
   showToast('Étudiant ajouté !','success'); chargerEtudiants(); chargerDashboard();
 }
 
@@ -2294,6 +2431,128 @@ function copierLienPortail() {
   navigator.clipboard.writeText(url)
     .then(() => showToast('Lien copié !', 'success'))
     .catch(() => showToast('URL : ' + url, 'info'));
+}
+
+// ══ JOUR 7 — MOBILE NAV ═══════════════════════
+function toggleMobileNav() {
+  const nav = document.querySelector('nav');
+  const overlay = document.getElementById('nav-overlay');
+  nav.classList.toggle('mobile-open');
+  overlay.classList.toggle('open');
+}
+function fermerMobileNav() {
+  document.querySelector('nav').classList.remove('mobile-open');
+  document.getElementById('nav-overlay').classList.remove('open');
+}
+// Fermer le nav mobile quand on clique sur un lien
+document.querySelectorAll('nav a').forEach(a => a.addEventListener('click', fermerMobileNav));
+
+// ══ JOUR 7 — IMPORT CSV ÉTUDIANTS ═════════════
+let csvLignesValides = [];
+
+function telechargerTemplateCSV() {
+  const header = 'nom,prenom,matricule,sexe,filiere,niveau,email,parent_email,parent_tel';
+  const exemple = 'Agbodjan,Kossi,2024-001,M,Informatique,L1,kossi@edu.bj,parent.agbodjan@gmail.com,+229 97 00 00 01';
+  const blob = new Blob([header + '\n' + exemple], { type: 'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'edulink_modele_import.csv';
+  a.click();
+}
+
+function gererDropCSV(event) {
+  event.preventDefault();
+  document.getElementById('csv-drop-zone').classList.remove('dragover');
+  const file = event.dataTransfer.files[0];
+  if (file) lireCSV(file);
+}
+
+function lireCSV(file) {
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const text = e.target.result;
+    parserCSV(text);
+  };
+  reader.readAsText(file, 'UTF-8');
+}
+
+function parserCSV(text) {
+  const lignes = text.trim().split(/\r?\n/);
+  if (lignes.length < 2) { showToast('Fichier CSV vide ou invalide','error'); return; }
+  // Auto-detect separator
+  const sep = lignes[0].includes(';') ? ';' : ',';
+  // Skip header
+  const dataLignes = lignes.slice(1).filter(l => l.trim());
+  csvLignesValides = [];
+  let nbValid = 0, nbError = 0;
+  const rows = dataLignes.map((ligne, i) => {
+    const cols = ligne.split(sep).map(c => c.trim().replace(/^"|"$/g,''));
+    const [nom, prenom, matricule, sexe, filiere, niveau, email, parent_email, parent_tel] = cols;
+    const erreurs = [];
+    if (!nom)       erreurs.push('Nom manquant');
+    if (!prenom)    erreurs.push('Prénom manquant');
+    if (!matricule) erreurs.push('Matricule manquant');
+    const valide = erreurs.length === 0;
+    if (valide) { nbValid++; csvLignesValides.push({ nom, prenom, matricule, sexe: sexe||'M', filiere: filiere||'Informatique', niveau: niveau||'L1', email: email||'', parent_email: parent_email||'', parent_tel: parent_tel||'' }); }
+    else nbError++;
+    return { i:i+1, nom, prenom, matricule, filiere, niveau, parent_email, valide, erreurs };
+  });
+  // Render preview
+  document.getElementById('csv-count-valid').textContent = nbValid;
+  document.getElementById('csv-count-error').textContent = nbError;
+  const tbody = document.getElementById('csv-preview-body');
+  tbody.innerHTML = rows.map(r => `
+    <tr class="${r.valide?'csv-row-valid':'csv-row-error'}">
+      <td>${r.valide?'✓':'✗'}</td>
+      <td>${r.nom||'—'}</td><td>${r.prenom||'—'}</td>
+      <td><code style="font-size:10px;background:#f3f4f6;padding:1px 5px;border-radius:4px">${r.matricule||'—'}</code></td>
+      <td>${r.filiere||'—'}</td><td>${r.niveau||'—'}</td>
+      <td style="font-size:11px">${r.parent_email||'—'}</td>
+      <td>${r.valide?'<span class="badge green">✓ OK</span>':'<span class="badge red" title="'+r.erreurs.join(', ')+'">⚠ '+r.erreurs[0]+'</span>'}</td>
+    </tr>`).join('');
+  document.getElementById('csv-preview-wrap').style.display = 'block';
+  const btn = document.getElementById('btn-import-confirm');
+  if (nbValid > 0) { btn.disabled = false; btn.style.opacity = '1'; }
+  else { btn.disabled = true; btn.style.opacity = '.5'; }
+}
+
+function reinitialiserCSV() {
+  csvLignesValides = [];
+  document.getElementById('csv-preview-wrap').style.display = 'none';
+  document.getElementById('csv-file-input').value = '';
+  document.getElementById('btn-import-confirm').disabled = true;
+  document.getElementById('btn-import-confirm').style.opacity = '.5';
+}
+
+async function confirmerImportCSV() {
+  if (!csvLignesValides.length) return;
+  if (!currentEcoleId) { showToast('Sélectionnez un établissement', 'error'); return; }
+  const btn = document.getElementById('btn-import-confirm');
+  btn.disabled = true; btn.textContent = 'Import en cours...';
+  document.getElementById('csv-progress-bar').style.display = 'block';
+  document.getElementById('csv-progress-label').style.display = 'block';
+  let succes = 0, echecs = 0;
+  const BATCH = 10;
+  for (let i = 0; i < csvLignesValides.length; i += BATCH) {
+    const batch = csvLignesValides.slice(i, i + BATCH).map(e => ({
+      ecole_id: currentEcoleId, nom: e.nom, prenom: e.prenom,
+      matricule: e.matricule, sexe: e.sexe, filiere: e.filiere,
+      niveau: e.niveau, email: e.email, parent_email: e.parent_email||null,
+      parent_tel: e.parent_tel||null, statut: 'actif'
+    }));
+    const { error } = await db.from('etudiants').insert(batch);
+    if (error) echecs += batch.length;
+    else succes += batch.length;
+    const pct = Math.round(((i + BATCH) / csvLignesValides.length) * 100);
+    document.getElementById('csv-progress-fill').style.width = Math.min(pct,100) + '%';
+    document.getElementById('csv-progress-label').textContent = `${Math.min(i+BATCH, csvLignesValides.length)} / ${csvLignesValides.length} importés...`;
+  }
+  fermerModal('modal-import-csv');
+  reinitialiserCSV();
+  showToast(`✅ ${succes} étudiant(s) importé(s)${echecs?` · ${echecs} erreur(s)`:''}`, succes > 0 ? 'success' : 'error');
+  chargerEtudiants();
+  chargerDashboard();
 }
 
 // PWA Service Worker
