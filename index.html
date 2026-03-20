@@ -491,6 +491,16 @@ button:hover { background:#a86615; transform:translateY(-1px); }
     <div class="card"><div class="i">💳</div><div class="n" style="color:#c97c1a" id="stat-impayés">…</div><div class="l">Factures impayées</div></div>
     <div class="card"><div class="i">⚠️</div><div class="n" style="color:#7c3aed" id="stat-incidents">…</div><div class="l">Incidents ouverts</div></div>
   </div>
+  <div class="dash-grid" style="margin-bottom:1rem">
+    <div class="dash-block">
+      <div class="block-title">Répartition par filière</div>
+      <canvas id="dash-chart-filieres" height="180"></canvas>
+    </div>
+    <div class="dash-block">
+      <div class="block-title">Statut des paiements</div>
+      <canvas id="dash-chart-paiements" height="180"></canvas>
+    </div>
+  </div>
   <div class="dash-grid">
     <div class="dash-block">
       <div class="block-title">Absences récentes</div>
@@ -1385,6 +1395,7 @@ async function chargerDashboard() {
 
   const ecole = tousLesEcoles.find(e => e.id === currentEcoleId);
   if (ecole) document.getElementById('dash-subtitle').textContent = 'Vue générale — ' + ecole.nom;
+  setTimeout(chargerDashboardCharts, 400);
 }
 
 // ══ ÉTUDIANTS ════════════════════════════════
@@ -2040,6 +2051,39 @@ async function afficherRapport(type) {
 function exporterRapport(mode) {
   if (mode === 'print') { window.print(); return; }
   showToast('Export CSV — bientôt disponible','info');
+}
+
+// ══ DASHBOARD CHARTS ══════════════════════════
+let _dashChartFil = null, _dashChartPay = null;
+async function chargerDashboardCharts() {
+  // Chart filières
+  let qE = db.from('etudiants').select('filiere');
+  if (currentEcoleId) qE = qE.eq('ecole_id', currentEcoleId);
+  const { data: etData } = await qE;
+  const filMap = {};
+  (etData||[]).forEach(e => { filMap[e.filiere] = (filMap[e.filiere]||0)+1; });
+  const cvF = document.getElementById('dash-chart-filieres');
+  if (cvF) {
+    if (_dashChartFil) _dashChartFil.destroy();
+    _dashChartFil = new Chart(cvF, { type:'doughnut',
+      data:{ labels:Object.keys(filMap), datasets:[{ data:Object.values(filMap), backgroundColor:['#1e3a5f','#c97c1a','#059669','#dc2626','#7c3aed','#0d9488'], borderWidth:2, borderColor:'#fff' }] },
+      options:{ responsive:true, plugins:{ legend:{ position:'bottom', labels:{ font:{family:'Poppins',size:11}, boxWidth:12 } } } }
+    });
+  }
+  // Chart paiements
+  let qP = db.from('factures').select('statut');
+  if (currentEcoleId) qP = qP.eq('ecole_id', currentEcoleId);
+  const { data: payData } = await qP;
+  const ps = { payée:0, en_attente:0, retard:0, partiellement_payée:0 };
+  (payData||[]).forEach(f => { if(ps[f.statut]!==undefined) ps[f.statut]++; });
+  const cvP = document.getElementById('dash-chart-paiements');
+  if (cvP) {
+    if (_dashChartPay) _dashChartPay.destroy();
+    _dashChartPay = new Chart(cvP, { type:'bar',
+      data:{ labels:['Payées','En attente','En retard','Partielles'], datasets:[{ data:[ps.payée,ps.en_attente,ps.retard,ps.partiellement_payée], backgroundColor:['#dcfce7','#fef9c3','#fee2e2','#dbeafe'], borderColor:['#059669','#d97706','#dc2626','#1d4ed8'], borderWidth:2 }] },
+      options:{ responsive:true, scales:{ y:{ beginAtZero:true, ticks:{ font:{family:'Poppins',size:11} } } }, plugins:{ legend:{ display:false } } }
+    });
+  }
 }
 
 // PWA Service Worker
