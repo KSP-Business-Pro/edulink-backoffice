@@ -1911,7 +1911,7 @@ async function lireMessage(id) {
 async function envoyerMessage() {
   const destinataire=document.getElementById('input-msg-destinataire').value.trim(), objet=document.getElementById('input-msg-objet').value.trim(), contenu=document.getElementById('input-msg-contenu').value.trim();
   if (!destinataire||!objet||!contenu) { showToast('Remplissez tous les champs.','error'); return; }
-  const { error } = await db.from('messages').insert([{ ecole_id:currentEcoleId, expediteur_nom:'Administration', expediteur_role:'admin', destinataire_nom:destinataire, destinataire_role:document.getElementById('input-msg-role').value, objet, contenu, lu:true }]);
+  const { error } = await db.from('messages').insert([{ ecole_id:currentEcoleId, expediteur_nom:'Administration', expediteur_role:'admin', destinataire_nom:destinataire, destinataire_role:document.getElementById('input-msg-role').value, objet, contenu, lu:false, lu_at:null }]);
   if (error) { showToast('Erreur : '+error.message,'error'); return; }
   fermerModal('modal-message'); ['input-msg-destinataire','input-msg-objet','input-msg-contenu'].forEach(id=>document.getElementById(id).value='');
   showToast('Message envoyé !','success'); chargerMessages();
@@ -1920,7 +1920,7 @@ async function envoyerReponse() {
   const input=document.getElementById('msg-reply-input'), contenu=input.value.trim();
   if (!contenu) return;
   const orig = tousLesMessages.find(m=>m.id===selectedMsgId);
-  const { error } = await db.from('messages').insert([{ ecole_id:currentEcoleId, expediteur_nom:'Administration', expediteur_role:'admin', destinataire_nom:orig?.expediteur_nom||'', destinataire_role:orig?.expediteur_role||'', objet:'RE: '+(orig?.objet||''), contenu, lu:true }]);
+  const { error } = await db.from('messages').insert([{ ecole_id:currentEcoleId, expediteur_nom:'Administration', expediteur_role:'admin', destinataire_nom:orig?.expediteur_nom||'', destinataire_role:orig?.expediteur_role||'', objet:'RE: '+(orig?.objet||''), contenu, lu:false, lu_at:null }]);
   if (error) { showToast('Erreur envoi.','error'); return; }
   input.value=''; showToast('Réponse envoyée !','success'); chargerMessages();
 }
