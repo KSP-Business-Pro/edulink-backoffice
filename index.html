@@ -557,14 +557,7 @@ button:hover { background:#a86615; transform:translateY(-1px); }
      ÉTUDIANTS
 ═══════════════════════════════════════ -->
 <div class="page" id="page-etudiants">
-  <div class="top">
-    <h2>Étudiants</h2>
-    <div class="top-actions">
-      <button class="btn-secondary btn-outline" onclick="telechargerModeleCSV()">⬇️ Modèle CSV</button>
-      <button class="btn-purple" onclick="ouvrirModal('modal-import-csv')">📥 Import CSV</button>
-      <button onclick="ouvrirModal('modal-etudiant')">+ Ajouter étudiant</button>
-    </div>
-  </div>
+  <div class="top"><h2>Étudiants</h2><button onclick="ouvrirModal('modal-etudiant')">+ Ajouter étudiant</button></div>
   <div class="search-bar"><input type="text" id="search-etudiants" placeholder="Rechercher par nom, prénom, matricule..." oninput="filtrerEtudiants()"></div>
   <table>
     <tr><th>Matricule</th><th>Nom complet</th><th>Filière</th><th>Niveau</th><th>Statut</th><th>Actions</th></tr>
@@ -1053,48 +1046,6 @@ M2</textarea>
      MODALS
 ═══════════════════════════════════════════ -->
 
-<!-- ★ Modal Import CSV Jour 7 ★ -->
-<div class="modal-overlay" id="modal-import-csv">
-  <div class="modal modal-lg">
-    <h3>📥 Import CSV — Étudiants en masse</h3>
-    <div id="csv-step-1">
-      <div style="background:#eff6ff;border-radius:10px;padding:.9rem 1rem;margin-bottom:1rem;font-size:12.5px;color:#374151">
-        <strong style="color:#1e3a5f">Format :</strong> <code style="background:#dbeafe;padding:1px 5px;border-radius:4px">matricule, nom, prenom, sexe, filiere, niveau, email</code>
-      </div>
-      <div class="upload-drop" onclick="document.getElementById('csv-file-input').click()">
-        <div class="ud-ico">📄</div>
-        <div class="ud-txt">Cliquer pour choisir un fichier CSV</div>
-        <div class="ud-sub">Fichier .csv · UTF-8</div>
-        <input type="file" id="csv-file-input" accept=".csv" style="display:none" onchange="traiterFichierCSV(this.files[0])">
-      </div>
-      <div style="margin-top:.75rem;display:flex;gap:8px;justify-content:space-between">
-        <button class="btn-secondary btn-sm" onclick="telechargerModeleCSV()">⬇️ Modèle CSV</button>
-        <button class="btn-secondary" onclick="fermerModal('modal-import-csv')">Annuler</button>
-      </div>
-    </div>
-    <div id="csv-step-2" style="display:none">
-      <div id="csv-resume" style="display:flex;gap:1rem;margin-bottom:1rem"></div>
-      <div style="max-height:300px;overflow-y:auto;border-radius:10px;border:1px solid #e5e7eb">
-        <table style="border-radius:0"><thead id="csv-thead"></thead><tbody id="csv-tbody"></tbody></table>
-      </div>
-      <div id="csv-erreurs" style="display:none;margin-top:.75rem;background:#fee2e2;border-radius:8px;padding:.75rem;font-size:12px;color:#dc2626"></div>
-      <div class="modal-footer">
-        <button class="btn-secondary" onclick="resetCSVImport()">← Recommencer</button>
-        <button class="btn-secondary" onclick="fermerModal('modal-import-csv')">Annuler</button>
-        <button class="btn-green" id="btn-confirmer-import" onclick="confirmerImportCSV()">✅ Importer <span id="csv-nb-valides"></span> étudiant(s)</button>
-      </div>
-    </div>
-    <div id="csv-step-3" style="display:none;text-align:center;padding:2rem">
-      <div id="csv-result-ico" style="font-size:52px;margin-bottom:1rem">✅</div>
-      <div id="csv-result-titre" style="font-size:18px;font-weight:700;margin-bottom:.5rem"></div>
-      <div id="csv-result-detail" style="font-size:13px;color:#6b7280;margin-bottom:1.5rem"></div>
-      <div style="display:flex;gap:8px;justify-content:center">
-        <button class="btn-secondary" onclick="resetCSVImport()">📥 Nouvel import</button>
-        <button onclick="fermerModal('modal-import-csv');chargerEtudiants()">✓ Terminer</button>
-      </div>
-    </div>
-  </div>
-</div>
 <!-- Annonce -->
 <div class="modal-overlay" id="modal-annonce">
   <div class="modal">
@@ -1357,26 +1308,6 @@ M2</textarea>
   </div>
 </div>
 
-<!-- ★ Modal Lier parent-étudiant Jour 7 ★ -->
-<div class="modal-overlay" id="modal-lier-etudiant">
-  <div class="modal">
-    <h3>🔗 Lier un compte à un étudiant</h3>
-    <input type="hidden" id="lien-profile-id">
-    <div style="background:#eff6ff;border-radius:10px;padding:.9rem;margin-bottom:1rem;font-size:12.5px">
-      <strong style="color:#1e3a5f">Compte : </strong><span id="lien-profile-nom" style="font-weight:700;color:#1e3a5f"></span>
-    </div>
-    <div class="form-group">
-      <label>Étudiant à associer</label>
-      <select id="lien-etudiant-select" style="width:100%;padding:8px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:13px;font-family:'Poppins',sans-serif;outline:none">
-        <option value="">— Aucun (supprimer liaison) —</option>
-      </select>
-    </div>
-    <div class="modal-footer">
-      <button class="btn-secondary" onclick="fermerModal('modal-lier-etudiant')">Annuler</button>
-      <button class="btn-green" onclick="sauvegarderLienEtudiant()">🔗 Enregistrer</button>
-    </div>
-  </div>
-</div>
 <!-- Modal Nouvel utilisateur -->
 <div class="modal-overlay" id="modal-user">
   <div class="modal">
@@ -1529,7 +1460,6 @@ function showPage(p) {
     parametres: chargerParametres,
   };
   if (loaders[p]) loaders[p]();
-  if (p === 'dashboard') setTimeout(function(){ if(typeof chargerDashboardCharts==='function') chargerDashboardCharts(); }, 600);
 }
 
 function showTab(page, tabId) {
@@ -2277,6 +2207,8 @@ let dashChartFilieres = null;
 let dashChartFinances = null;
 let ficheTabActive = 'infos';
 
+// ── Navigation J6 : Paramètres ──
+// Ajout de 'parametres' dans la map de showPage
 // ══ FICHE ÉTUDIANT  ★ JOUR 6 ══════════════════
 async function voirEtudiant(id) {
   ficheEtudiantCourant = id;
@@ -2633,108 +2565,6 @@ window.addEventListener('DOMContentLoaded', function() {
     }
   }, 1200);
 });
-
-
-// ══ IMPORT CSV  ★ JOUR 7 ══════════════════════
-let csvDonnees = [];
-function telechargerModeleCSV() {
-  const csv = 'matricule,nom,prenom,sexe,filiere,niveau,email\n2025-001,AGBODJAN,Kossi,M,Informatique,L1,kossi@etud.bj\n2025-002,BONI,Fatou,F,Gestion,L2,';
-  const blob = new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='modele_etudiants.csv';a.click();
-  showToast('Modèle téléchargé !','success');
-}
-function traiterFichierCSV(file) {
-  if(!file||!file.name.endsWith('.csv')){showToast('Fichier .csv uniquement.','error');return;}
-  const r=new FileReader();r.onload=e=>parseCSV(e.target.result);r.readAsText(file,'UTF-8');
-}
-function parseCSV(text) {
-  text=text.replace(/^\uFEFF/,'').replace(/\r\n/g,'\n').replace(/\r/g,'\n');
-  const lignes=text.split('\n').filter(l=>l.trim());
-  if(lignes.length<2){showToast('Fichier vide.','error');return;}
-  const sep=lignes[0].includes(';')?';':',';
-  const entetes=lignes[0].split(sep).map(h=>h.trim().toLowerCase().replace(/['"]/g,''));
-  const obligatoires=['matricule','nom','prenom','filiere','niveau'];
-  const manquantes=obligatoires.filter(c=>!entetes.includes(c));
-  if(manquantes.length){showToast('Colonnes manquantes : '+manquantes.join(', '),'error');return;}
-  const donnees=[],erreurs=[];
-  for(let i=1;i<lignes.length;i++){
-    const vals=lignes[i].split(sep).map(v=>v.trim().replace(/^["']/,'').replace(/["']$/,''));
-    const row={};entetes.forEach((h,idx)=>{row[h]=vals[idx]||'';});
-    const err=[];
-    if(!row.matricule)err.push('matricule manquant');
-    if(!row.nom)err.push('nom manquant');
-    if(!row.prenom)err.push('prénom manquant');
-    if(!row.filiere)err.push('filière manquante');
-    if(!row.niveau)err.push('niveau manquant');
-    row._valide=err.length===0;row._erreurs=err;
-    donnees.push(row);
-    if(err.length)erreurs.push('Ligne '+(i+1)+' : '+err.join(', '));
-  }
-  csvDonnees=donnees;
-  const valides=donnees.filter(r=>r._valide).length;
-  document.getElementById('csv-step-1').style.display='none';
-  document.getElementById('csv-step-2').style.display='block';
-  document.getElementById('csv-nb-valides').textContent=valides;
-  document.getElementById('csv-resume').innerHTML=
-    '<div style="flex:1;background:#f0fdf4;border-radius:10px;padding:.75rem;text-align:center;border:1px solid #bbf7d0"><div style="font-size:22px;font-weight:800;color:#059669">'+valides+'</div><div style="font-size:11px;color:#059669;font-weight:600">Valides</div></div>'+
-    '<div style="flex:1;background:#eff6ff;border-radius:10px;padding:.75rem;text-align:center;border:1px solid #bfdbfe"><div style="font-size:22px;font-weight:800;color:#1d4ed8">'+donnees.length+'</div><div style="font-size:11px;color:#1d4ed8;font-weight:600">Total</div></div>';
-  const cols=['matricule','nom','prenom','sexe','filiere','niveau','email'].filter(c=>entetes.includes(c));
-  document.getElementById('csv-thead').innerHTML='<tr>'+cols.map(c=>'<th>'+c+'</th>').join('')+'<th>Statut</th></tr>';
-  document.getElementById('csv-tbody').innerHTML=donnees.map(row=>
-    '<tr style="'+(row._valide?'':'background:#fff7f0')+'">'
-    +cols.map(c=>'<td style="font-size:12px">'+(row[c]||'—')+'</td>').join('')
-    +'<td><span class="badge '+(row._valide?'green':'red')+'">'+(row._valide?'✓ OK':'⚠ Err')+'</span></td></tr>'
-  ).join('');
-  if(erreurs.length){const b=document.getElementById('csv-erreurs');b.style.display='block';b.innerHTML='<strong>'+erreurs.length+' ligne(s) ignorée(s)</strong><br>'+erreurs.join('<br>');}
-}
-async function confirmerImportCSV() {
-  const valides=csvDonnees.filter(r=>r._valide);
-  if(!valides.length)return;
-  document.getElementById('btn-confirmer-import').disabled=true;
-  const inserts=valides.map(r=>({ecole_id:currentEcoleId,matricule:r.matricule,nom:r.nom.toUpperCase(),prenom:r.prenom,sexe:(r.sexe||'M').toUpperCase(),filiere:r.filiere,niveau:r.niveau,email:r.email||null,statut:'actif'}));
-  let succes=0,echecs=0;
-  for(let i=0;i<inserts.length;i+=50){
-    const {error}=await db.from('etudiants').insert(inserts.slice(i,i+50));
-    if(error)echecs+=Math.min(50,inserts.length-i);else succes+=Math.min(50,inserts.length-i);
-  }
-  document.getElementById('csv-step-2').style.display='none';
-  document.getElementById('csv-step-3').style.display='block';
-  document.getElementById('csv-result-ico').textContent=succes>0?'🎉':'❌';
-  document.getElementById('csv-result-titre').textContent=succes+' étudiant(s) importé(s)';
-  document.getElementById('csv-result-detail').textContent=echecs>0?echecs+' échec(s) - doublons?':'Import réussi !';
-  showToast(succes+' importé(s) !','success');chargerDashboard();
-}
-function resetCSVImport() {
-  csvDonnees=[];
-  document.getElementById('csv-file-input').value='';
-  document.getElementById('csv-step-1').style.display='block';
-  document.getElementById('csv-step-2').style.display='none';
-  document.getElementById('csv-step-3').style.display='none';
-  document.getElementById('csv-erreurs').style.display='none';
-}
-
-// ══ LIAISON PARENT-ÉTUDIANT  ★ JOUR 7 ══════════
-function ouvrirLienEtudiant(profileId, profileNom) {
-  document.getElementById('lien-profile-id').value=profileId;
-  document.getElementById('lien-profile-nom').textContent=profileNom;
-  const sel=document.getElementById('lien-etudiant-select');
-  sel.innerHTML='<option value="">— Aucun —</option>';
-  tousLesEtudiants.forEach(e=>{
-    const o=document.createElement('option');o.value=e.id;
-    o.textContent=e.nom+' '+e.prenom+' — '+e.filiere+' '+e.niveau+' ('+e.matricule+')';
-    sel.appendChild(o);
-  });
-  ouvrirModal('modal-lier-etudiant');
-}
-async function sauvegarderLienEtudiant() {
-  const profileId=document.getElementById('lien-profile-id').value;
-  const etudiantId=document.getElementById('lien-etudiant-select').value;
-  const {error}=await db.from('profiles').update({etudiant_id:etudiantId||null}).eq('id',profileId);
-  if(error){showToast('Erreur : '+error.message,'error');return;}
-  fermerModal('modal-lier-etudiant');
-  showToast(etudiantId?'🔗 Liaison enregistrée !':'Liaison supprimée.','success');
-  if(typeof chargerUtilisateurs==='function')chargerUtilisateurs();
-}
 
 // PWA Service Worker
 if ('serviceWorker' in navigator) {
