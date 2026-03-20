@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EduLink — Back-office J6</title>
+<title>EduLink — Back-office</title>
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
 
 <!-- PWA -->
@@ -343,51 +343,6 @@ button:hover { background:#a86615; transform:translateY(-1px); }
 #pwa-banner .pb-btn { background:#c97c1a; color:#fff; border:none; padding:7px 14px; border-radius:8px; cursor:pointer; font-size:12px; font-weight:600; font-family:'Poppins',sans-serif; }
 #pwa-banner .pb-close { cursor:pointer; opacity:.6; font-size:18px; margin-left:4px; }
 #auth-source-badge { font-size:10px; padding:2px 8px; border-radius:20px; font-weight:600; margin-top:3px; display:none; }
-/* ══════════════════════════════════════════════
-   FICHE ÉTUDIANT  ★ JOUR 6
-══════════════════════════════════════════════ */
-.fiche-overlay { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.5); z-index:200; align-items:flex-start; justify-content:flex-end; }
-.fiche-overlay.open { display:flex; }
-.fiche-panel { background:#fff; width:660px; max-width:95vw; height:100%; overflow-y:auto; box-shadow:-8px 0 40px rgba(0,0,0,.15); display:flex; flex-direction:column; animation:slideInRight .25s cubic-bezier(.4,0,.2,1); }
-@keyframes slideInRight { from{transform:translateX(100%)} to{transform:translateX(0)} }
-.fiche-header { background:#1e3a5f; color:#fff; padding:1.2rem 1.5rem; display:flex; align-items:center; gap:1rem; flex-shrink:0; }
-.fiche-avatar { width:54px; height:54px; border-radius:50%; background:#c97c1a; display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:700; color:#fff; flex-shrink:0; }
-.fiche-header-info h3 { font-size:17px; font-weight:700; margin-bottom:2px; }
-.fiche-header-info p { font-size:12px; opacity:.75; }
-.fiche-close { margin-left:auto; cursor:pointer; font-size:22px; opacity:.7; flex-shrink:0; }
-.fiche-close:hover { opacity:1; }
-.fiche-tabs { display:flex; border-bottom:1px solid #e5e7eb; background:#f9fafb; flex-shrink:0; }
-.fiche-tab { flex:1; padding:10px 8px; text-align:center; font-size:12px; font-weight:600; color:#6b7280; cursor:pointer; border-bottom:2px solid transparent; transition:all .15s; }
-.fiche-tab.active { color:#1e3a5f; border-bottom-color:#1e3a5f; background:#fff; }
-.fiche-tab:hover { color:#1e3a5f; }
-.fiche-body { flex:1; padding:1.5rem; }
-.fiche-section { margin-bottom:1.5rem; }
-.fiche-section-title { font-size:11px; font-weight:700; color:#6b7280; text-transform:uppercase; letter-spacing:.06em; margin-bottom:.75rem; padding-bottom:.5rem; border-bottom:1px solid #f3f4f6; }
-.fiche-info-grid { display:grid; grid-template-columns:1fr 1fr; gap:.75rem; }
-.fiche-info-item label { display:block; font-size:10.5px; font-weight:600; color:#9ca3af; text-transform:uppercase; letter-spacing:.04em; margin-bottom:2px; }
-.fiche-info-item span { font-size:13px; color:#111827; font-weight:500; }
-.fiche-stat-row { display:grid; grid-template-columns:repeat(3,1fr); gap:1rem; margin-bottom:1.2rem; }
-.fiche-stat { background:#f9fafb; border:1px solid #e5e7eb; border-radius:10px; padding:.9rem; text-align:center; }
-.fiche-stat .fs-val { font-size:22px; font-weight:700; }
-.fiche-stat .fs-lbl { font-size:11px; color:#6b7280; font-weight:500; margin-top:2px; }
-.fiche-actions { display:flex; gap:8px; flex-shrink:0; padding:1rem 1.5rem; border-top:1px solid #e5e7eb; background:#f9fafb; }
-
-/* ══════════════════════════════════════════════
-   DASHBOARD CHARTS  ★ JOUR 6
-══════════════════════════════════════════════ */
-.dash-chart-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-top:1rem; }
-.dash-chart-block { background:#fff; border-radius:14px; border:1px solid #e5e7eb; padding:1.2rem; }
-.dash-chart-block .block-title { font-size:12.5px; font-weight:600; color:#374151; margin-bottom:1rem; }
-
-/* ══════════════════════════════════════════════
-   PARAMÈTRES  ★ JOUR 6
-══════════════════════════════════════════════ */
-.param-section { background:#fff; border-radius:14px; border:1px solid #e5e7eb; padding:1.5rem; margin-bottom:1.2rem; }
-.param-section-title { font-size:13px; font-weight:700; color:#111827; margin-bottom:1.2rem; padding-bottom:.75rem; border-bottom:1px solid #f3f4f6; display:flex; align-items:center; gap:8px; }
-.param-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
-.color-picker-wrap { display:flex; align-items:center; gap:10px; }
-.color-picker-wrap input[type=color] { width:36px; height:36px; border-radius:8px; border:1px solid #e5e7eb; cursor:pointer; padding:2px; }
-
 </style>
 </head>
 <body>
@@ -482,7 +437,6 @@ button:hover { background:#a86615; transform:translateY(-1px); }
   <a onclick="showPage('rapports')"  id="nav-rapports"><span class="ico">📈</span> Rapports</a>
   <a onclick="showPage('utilisateurs')" id="nav-utilisateurs" style="display:none"><span class="ico">👥</span> Utilisateurs</a>
   <a onclick="ouvrirConfigNotif()" id="nav-notifs" style="display:none"><span class="ico">📧</span> Notifications</a>
-  <a onclick="showPage('parametres')" id="nav-parametres" style="display:none"><span class="ico">⚙️</span> Paramètres école</a>
 
   <div class="nav-bottom">
     <div class="nav-actions">
@@ -538,17 +492,6 @@ button:hover { background:#a86615; transform:translateY(-1px); }
         <tr><th>Étudiant</th><th>Matière</th><th>Note</th><th>Appréciation</th></tr>
         <tbody id="tbody-notes-dashboard"><tr><td colspan="4" class="loading">Chargement...</td></tr></tbody>
       </table>
-    </div>
-
-  <!-- ★ JOUR 6 : Graphiques Dashboard -->
-  <div class="dash-chart-grid" id="dash-charts-wrap">
-    <div class="dash-chart-block">
-      <div class="block-title">📊 Répartition par filière</div>
-      <div style="position:relative;max-width:100%;height:200px"><canvas id="dash-chart-filieres"></canvas></div>
-    </div>
-    <div class="dash-chart-block">
-      <div class="block-title">💳 Bilan financier (FCFA)</div>
-      <div style="position:relative;max-width:100%;height:200px"><canvas id="dash-chart-finances"></canvas></div>
     </div>
   </div>
 </div>
@@ -893,153 +836,7 @@ button:hover { background:#a86615; transform:translateY(-1px); }
   </table>
 </div>
 
-
-<!-- ═══════════════════════════════════════
-     PARAMÈTRES ÉCOLE  ★ JOUR 6
-═══════════════════════════════════════ -->
-<div class="page" id="page-parametres">
-  <div class="top">
-    <div>
-      <h2>⚙️ Paramètres école</h2>
-      <p class="page-subtitle">Configuration de l'établissement courant</p>
-    </div>
-    <button onclick="sauvegarderParametres()">💾 Sauvegarder</button>
-  </div>
-
-  <div class="param-section">
-    <div class="param-section-title">🏫 Informations générales</div>
-    <div class="param-grid">
-      <div class="form-group"><label>Nom de l'établissement</label><input type="text" id="param-nom" placeholder="Ex: Université d'Abomey-Calavi"></div>
-      <div class="form-group"><label>Type d'établissement</label>
-        <select id="param-type">
-          <option value="université">Université</option>
-          <option value="école supérieure">École supérieure</option>
-          <option value="lycée">Lycée</option>
-          <option value="collège">Collège</option>
-          <option value="école primaire">École primaire</option>
-          <option value="centre de formation">Centre de formation</option>
-        </select>
-      </div>
-      <div class="form-group"><label>Ville</label><input type="text" id="param-ville" placeholder="Ex: Cotonou"></div>
-      <div class="form-group"><label>Pays</label><input type="text" id="param-pays" value="Bénin"></div>
-      <div class="form-group"><label>Email officiel</label><input type="email" id="param-email" placeholder="contact@ecole.bj"></div>
-      <div class="form-group"><label>Téléphone</label><input type="tel" id="param-tel" placeholder="+229 XX XX XX XX"></div>
-    </div>
-    <div class="form-group"><label>Adresse complète</label><textarea id="param-adresse" rows="2" placeholder="Adresse postale..."></textarea></div>
-  </div>
-
-  <div class="param-section">
-    <div class="param-section-title">📅 Année scolaire</div>
-    <div class="param-grid">
-      <div class="form-group"><label>Année scolaire en cours</label><input type="text" id="param-annee" placeholder="Ex: 2024-2025"></div>
-      <div class="form-group"><label>Semestre / Trimestre actuel</label>
-        <select id="param-periode">
-          <option value="S1">Semestre 1</option><option value="S2">Semestre 2</option>
-          <option value="T1">Trimestre 1</option><option value="T2">Trimestre 2</option><option value="T3">Trimestre 3</option>
-        </select>
-      </div>
-      <div class="form-group"><label>Date de début</label><input type="date" id="param-debut"></div>
-      <div class="form-group"><label>Date de fin</label><input type="date" id="param-fin"></div>
-    </div>
-  </div>
-
-  <div class="param-section">
-    <div class="param-section-title">📊 Configuration des notes</div>
-    <div class="param-grid">
-      <div class="form-group"><label>Note maximale</label>
-        <select id="param-note-max">
-          <option value="20">20 (système français)</option>
-          <option value="100">100 (système américain)</option>
-          <option value="10">10</option>
-        </select>
-      </div>
-      <div class="form-group"><label>Note de passage</label><input type="number" id="param-note-passage" value="10" min="0" max="20" step="0.5"></div>
-      <div class="form-group"><label>Mention Passable à partir de</label><input type="number" id="param-mention-passable" value="10" min="0" step="0.5"></div>
-      <div class="form-group"><label>Mention Bien à partir de</label><input type="number" id="param-mention-bien" value="14" min="0" step="0.5"></div>
-      <div class="form-group"><label>Mention Très Bien à partir de</label><input type="number" id="param-mention-tb" value="16" min="0" step="0.5"></div>
-      <div class="form-group"><label>Coefficient par défaut</label><input type="number" id="param-coeff-def" value="2" min="1" max="10"></div>
-    </div>
-  </div>
-
-  <div class="param-section">
-    <div class="param-section-title">💳 Paramètres financiers</div>
-    <div class="param-grid">
-      <div class="form-group"><label>Devise</label>
-        <select id="param-devise">
-          <option value="FCFA">FCFA (XOF)</option>
-          <option value="EUR">Euro (€)</option>
-          <option value="USD">Dollar (USD)</option>
-          <option value="GNF">Franc guinéen (GNF)</option>
-        </select>
-      </div>
-      <div class="form-group"><label>Frais de scolarité annuels (défaut)</label><input type="number" id="param-frais-scol" placeholder="Ex: 350000" min="0"></div>
-      <div class="form-group"><label>Frais d'inscription (défaut)</label><input type="number" id="param-frais-inscr" placeholder="Ex: 50000" min="0"></div>
-      <div class="form-group"><label>Délai de retard paiement (jours)</label><input type="number" id="param-delai-retard" value="30" min="1"></div>
-    </div>
-  </div>
-
-  <div class="param-section">
-    <div class="param-section-title">🔔 Préférences notifications</div>
-    <div style="display:flex;flex-direction:column;gap:.75rem">
-      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px"><input type="checkbox" id="param-notif-absence" checked style="width:16px;height:16px;cursor:pointer"> Notifier les parents automatiquement lors d'une absence</label>
-      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px"><input type="checkbox" id="param-notif-retard" checked style="width:16px;height:16px;cursor:pointer"> Notifier les parents lors d'un retard</label>
-      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px"><input type="checkbox" id="param-notif-paiement" checked style="width:16px;height:16px;cursor:pointer"> Envoyer des rappels automatiques pour les paiements en retard</label>
-      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px"><input type="checkbox" id="param-notif-bulletin" style="width:16px;height:16px;cursor:pointer"> Notifier quand un bulletin est disponible</label>
-    </div>
-  </div>
-
-  <div class="param-section">
-    <div class="param-section-title">🎓 Filières et niveaux disponibles</div>
-    <div class="form-group">
-      <label>Filières (une par ligne)</label>
-      <textarea id="param-filieres" rows="5" placeholder="Informatique&#10;Gestion&#10;Droit&#10;Médecine&#10;Finance&#10;Lettres">Informatique
-Gestion
-Droit
-Médecine
-Finance
-Lettres</textarea>
-    </div>
-    <div class="form-group">
-      <label>Niveaux (une par ligne)</label>
-      <textarea id="param-niveaux" rows="4" placeholder="L1&#10;L2&#10;L3&#10;M1&#10;M2">L1
-L2
-L3
-M1
-M2</textarea>
-    </div>
-  </div>
-</div>
-
 </main>
-
-<!-- ═══════════════════════════════════════
-     FICHE ÉTUDIANT (panel latéral)  ★ JOUR 6
-═══════════════════════════════════════ -->
-<div class="fiche-overlay" id="fiche-etudiant-overlay">
-  <div class="fiche-panel" id="fiche-etudiant-panel">
-    <div class="fiche-header">
-      <div class="fiche-avatar" id="fiche-avatar">?</div>
-      <div class="fiche-header-info">
-        <h3 id="fiche-nom-complet">Étudiant</h3>
-        <p id="fiche-meta">Filière · Niveau · Matricule</p>
-      </div>
-      <span class="fiche-close" onclick="fermerFiche()">✕</span>
-    </div>
-    <div class="fiche-tabs">
-      <div class="fiche-tab active" id="ftab-infos" onclick="showFicheTab('infos')">📋 Infos</div>
-      <div class="fiche-tab" id="ftab-notes" onclick="showFicheTab('notes')">📊 Notes</div>
-      <div class="fiche-tab" id="ftab-absences" onclick="showFicheTab('absences')">🚫 Absences</div>
-      <div class="fiche-tab" id="ftab-paiements" onclick="showFicheTab('paiements')">💳 Paiements</div>
-    </div>
-    <div class="fiche-body" id="fiche-body">
-      <div class="loading">Chargement...</div>
-    </div>
-    <div class="fiche-actions">
-      <button class="btn-sm btn-blue" onclick="imprimerFiche()">🖨️ Imprimer fiche</button>
-      <button class="btn-sm btn-secondary" onclick="fermerFiche()">Fermer</button>
-    </div>
-  </div>
-</div>
 </div><!-- /#app-main -->
 
 <!-- ═══════════════════════════════════════════
@@ -1457,7 +1254,6 @@ function showPage(p) {
     documents:    chargerDocuments,
     rapports:     () => afficherRapport('effectifs'),
     utilisateurs: () => { if (typeof chargerUtilisateurs === 'function') chargerUtilisateurs(); },
-    parametres: chargerParametres,
   };
   if (loaders[p]) loaders[p]();
 }
@@ -1505,7 +1301,6 @@ async function chargerEcoles() {
     sel.innerHTML = '<option value="">Aucun établissement</option>';
   }
   chargerDashboard();
-  if (typeof afficherNavAdmin === 'function') afficherNavAdmin();
 }
 function changerEcole() {
   currentEcoleId = document.getElementById('ecole-selector').value;
@@ -1515,12 +1310,6 @@ function changerEcole() {
   chargerDashboard();
   showToast('Établissement : ' + (ecole?.nom || ''), 'info');
 }
-function afficherNavAdmin() {
-  // Montrer les liens admin dans la nav
-  const adminEls = document.querySelectorAll('#nav-utilisateurs, #nav-notifs, #nav-parametres');
-  adminEls.forEach(el => { if(el) el.style.display='flex'; });
-}
-
 function mettreAJourBadgeEcole(ecole) {
   if (!ecole) return;
   document.getElementById('ecole-nom-nav').textContent = ecole.nom || 'EduLink';
@@ -1588,7 +1377,7 @@ function filtrerEtudiants() {
   const q = document.getElementById('search-etudiants').value.toLowerCase();
   afficherEtudiants(tousLesEtudiants.filter(e => e.nom.toLowerCase().includes(q) || e.prenom.toLowerCase().includes(q) || e.matricule.toLowerCase().includes(q)));
 }
-function voirEtudiant(id) { /* Handled by J6 voirEtudiant below */ }
+function voirEtudiant(id) { showToast('Fiche détaillée — bientôt disponible', 'info'); }
 async function ajouterEtudiant() {
   const nom=document.getElementById('input-nom').value.trim(), prenom=document.getElementById('input-prenom').value.trim(), matricule=document.getElementById('input-matricule').value.trim();
   if (!nom||!prenom||!matricule) { showToast('Remplissez les champs obligatoires', 'error'); return; }
@@ -2195,376 +1984,6 @@ function exporterRapport(mode) {
   if (mode === 'print') { window.print(); return; }
   showToast('Export CSV — bientôt disponible','info');
 }
-
-
-// ══════════════════════════════════════════════
-//   JOUR 6 — NOUVELLES FONCTIONNALITÉS
-// ══════════════════════════════════════════════
-
-// ── Variables globales J6 ──
-let ficheEtudiantCourant = null;
-let dashChartFilieres = null;
-let dashChartFinances = null;
-let ficheTabActive = 'infos';
-
-// ── Navigation J6 : Paramètres ──
-// Ajout de 'parametres' dans la map de showPage
-// ══ FICHE ÉTUDIANT  ★ JOUR 6 ══════════════════
-async function voirEtudiant(id) {
-  ficheEtudiantCourant = id;
-  ficheTabActive = 'infos';
-  document.getElementById('fiche-etudiant-overlay').classList.add('open');
-  document.getElementById('fiche-body').innerHTML = '<div class="loading">Chargement...</div>';
-  // Reset tabs
-  document.querySelectorAll('.fiche-tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('ftab-infos').classList.add('active');
-
-  const etudiant = tousLesEtudiants.find(e => e.id === id);
-  if (!etudiant) {
-    // Fetch from DB
-    const { data } = await db.from('etudiants').select('*').eq('id', id).single();
-    if (data) { ficheEtudiantCourant = data; await afficherFicheInfos(data); return; }
-    document.getElementById('fiche-body').innerHTML = '<div class="empty-state"><div class="icon">❌</div><h3>Étudiant introuvable</h3></div>';
-    return;
-  }
-  ficheEtudiantCourant = etudiant;
-  // Header
-  const initiales = (etudiant.prenom?.[0]||'') + (etudiant.nom?.[0]||'');
-  document.getElementById('fiche-avatar').textContent = initiales.toUpperCase();
-  document.getElementById('fiche-nom-complet').textContent = etudiant.nom + ' ' + etudiant.prenom;
-  document.getElementById('fiche-meta').textContent = etudiant.filiere + ' · ' + etudiant.niveau + ' · ' + etudiant.matricule;
-  await afficherFicheInfos(etudiant);
-}
-
-function fermerFiche() {
-  document.getElementById('fiche-etudiant-overlay').classList.remove('open');
-  ficheEtudiantCourant = null;
-}
-
-document.getElementById('fiche-etudiant-overlay').addEventListener('click', function(e) {
-  if (e.target === this) fermerFiche();
-});
-
-async function showFicheTab(tab) {
-  ficheTabActive = tab;
-  document.querySelectorAll('.fiche-tab').forEach(t => t.classList.remove('active'));
-  document.getElementById('ftab-' + tab).classList.add('active');
-  document.getElementById('fiche-body').innerHTML = '<div class="loading">Chargement...</div>';
-  const id = typeof ficheEtudiantCourant === 'object' ? ficheEtudiantCourant.id : ficheEtudiantCourant;
-  const etudiant = typeof ficheEtudiantCourant === 'object' ? ficheEtudiantCourant : tousLesEtudiants.find(e=>e.id===id);
-  if (tab === 'infos') await afficherFicheInfos(etudiant);
-  else if (tab === 'notes') await afficherFicheNotes(id);
-  else if (tab === 'absences') await afficherFicheAbsences(id);
-  else if (tab === 'paiements') await afficherFichePaiements(id);
-}
-
-async function afficherFicheInfos(etudiant) {
-  if (!etudiant) return;
-  // Compter notes, absences, factures
-  const [{ count: nbNotes }, { count: nbAbs }, { count: nbFac }] = await Promise.all([
-    db.from('notes').select('*',{count:'exact',head:true}).eq('etudiant_id', etudiant.id),
-    db.from('absences').select('*',{count:'exact',head:true}).eq('etudiant_id', etudiant.id),
-    db.from('factures').select('*',{count:'exact',head:true}).eq('etudiant_id', etudiant.id),
-  ]);
-  document.getElementById('fiche-body').innerHTML = `
-    <div class="fiche-stat-row">
-      <div class="fiche-stat"><div class="fs-val" style="color:#1e3a5f">${nbNotes||0}</div><div class="fs-lbl">Notes saisies</div></div>
-      <div class="fiche-stat"><div class="fs-val" style="color:#dc2626">${nbAbs||0}</div><div class="fs-lbl">Absences</div></div>
-      <div class="fiche-stat"><div class="fs-val" style="color:#c97c1a">${nbFac||0}</div><div class="fs-lbl">Factures</div></div>
-    </div>
-    <div class="fiche-section">
-      <div class="fiche-section-title">Informations personnelles</div>
-      <div class="fiche-info-grid">
-        <div class="fiche-info-item"><label>Nom</label><span>${etudiant.nom}</span></div>
-        <div class="fiche-info-item"><label>Prénom</label><span>${etudiant.prenom}</span></div>
-        <div class="fiche-info-item"><label>Matricule</label><span><code style="background:#f3f4f6;padding:2px 6px;border-radius:4px;font-size:12px">${etudiant.matricule}</code></span></div>
-        <div class="fiche-info-item"><label>Sexe</label><span>${etudiant.sexe==='M'?'Masculin':'Féminin'}</span></div>
-        <div class="fiche-info-item"><label>Email</label><span>${etudiant.email||'—'}</span></div>
-        <div class="fiche-info-item"><label>Statut</label><span><span class="badge ${etudiant.statut==='actif'?'green':'amber'}">${etudiant.statut||'actif'}</span></span></div>
-      </div>
-    </div>
-    <div class="fiche-section">
-      <div class="fiche-section-title">Scolarité</div>
-      <div class="fiche-info-grid">
-        <div class="fiche-info-item"><label>Filière</label><span>${etudiant.filiere}</span></div>
-        <div class="fiche-info-item"><label>Niveau</label><span><span class="badge blue">${etudiant.niveau}</span></span></div>
-        <div class="fiche-info-item"><label>Date inscription</label><span>${fmtDate(etudiant.created_at)}</span></div>
-        <div class="fiche-info-item"><label>Établissement</label><span>${tousLesEcoles.find(e=>e.id===etudiant.ecole_id)?.nom||'—'}</span></div>
-      </div>
-    </div>
-    <div style="display:flex;gap:8px;margin-top:1rem">
-      <button class="btn-sm btn-blue" onclick="showFicheTab('notes')">📊 Voir les notes</button>
-      <button class="btn-sm" onclick="showFicheTab('absences')">🚫 Voir les absences</button>
-      <button class="btn-sm btn-green" onclick="showFicheTab('paiements')">💳 Voir les paiements</button>
-    </div>`;
-}
-
-async function afficherFicheNotes(id) {
-  const { data } = await db.from('notes').select('*').eq('etudiant_id', id).order('created_at',{ascending:false});
-  const notes = data || [];
-  if (!notes.length) {
-    document.getElementById('fiche-body').innerHTML = '<div class="empty-state"><div class="icon">📭</div><h3>Aucune note</h3><p>Aucune note enregistrée pour cet étudiant.</p></div>';
-    return;
-  }
-  // Calcul moyenne générale
-  const periodes = [...new Set(notes.map(n=>n.periode))];
-  let moyHTML = '<div class="fiche-stat-row">';
-  for (const p of periodes.slice(0,3)) {
-    const pNotes = notes.filter(n=>n.periode===p);
-    let pts=0, coeff=0;
-    pNotes.forEach(n=>{ pts+=n.note*(n.coefficient||1); coeff+=(n.coefficient||1); });
-    const moy = coeff>0?(pts/coeff):0;
-    const app = getApp(moy);
-    moyHTML += `<div class="fiche-stat"><div class="fs-val" style="color:${moy>=10?'#059669':'#dc2626'}">${moy.toFixed(2)}</div><div class="fs-lbl">Moy. ${p}</div></div>`;
-  }
-  moyHTML += '</div>';
-  const tableHTML = `<table>
-    <tr><th>Matière</th><th>Note</th><th>Coeff.</th><th>Période</th><th>Appréciation</th></tr>
-    ${notes.map(n=>{const a=getApp(n.note);return`<tr><td>${n.matiere}</td><td><span class="note-badge ${a.cls}">${n.note}/20</span></td><td>${n.coefficient||1}</td><td><span class="badge gray">${n.periode}</span></td><td><span class="badge ${a.cls}">${a.label}</span></td></tr>`;}).join('')}
-  </table>`;
-  document.getElementById('fiche-body').innerHTML = '<div class="fiche-section"><div class="fiche-section-title">Moyennes par période</div>' + moyHTML + '</div><div class="fiche-section"><div class="fiche-section-title">Toutes les notes</div>' + tableHTML + '</div>';
-}
-
-async function afficherFicheAbsences(id) {
-  const { data } = await db.from('absences').select('*').eq('etudiant_id', id).order('date_absence',{ascending:false});
-  const abs = data || [];
-  if (!abs.length) {
-    document.getElementById('fiche-body').innerHTML = '<div class="empty-state"><div class="icon">✅</div><h3>Aucune absence</h3><p>Assiduité parfaite !</p></div>';
-    return;
-  }
-  const nbAbs = abs.filter(a=>a.statut==='absent').length;
-  const nbRet = abs.filter(a=>a.statut==='retard').length;
-  const nbExc = abs.filter(a=>a.statut==='excuse').length;
-  const statsHTML = `<div class="fiche-stat-row">
-    <div class="fiche-stat"><div class="fs-val" style="color:#dc2626">${nbAbs}</div><div class="fs-lbl">Absences</div></div>
-    <div class="fiche-stat"><div class="fs-val" style="color:#d97706">${nbRet}</div><div class="fs-lbl">Retards</div></div>
-    <div class="fiche-stat"><div class="fs-val" style="color:#059669">${nbExc}</div><div class="fs-lbl">Excusées</div></div>
-  </div>`;
-  const tableHTML = `<table>
-    <tr><th>Date</th><th>Matière</th><th>Statut</th><th>Justification</th></tr>
-    ${abs.map(a=>`<tr><td>${fmtDate(a.date_absence)}</td><td>${a.matiere}</td><td><span class="badge ${a.statut==='absent'?'red':a.statut==='retard'?'amber':'blue'}">${a.statut}</span></td><td>${a.justification||'—'}</td></tr>`).join('')}
-  </table>`;
-  document.getElementById('fiche-body').innerHTML = '<div class="fiche-section"><div class="fiche-section-title">Récapitulatif</div>' + statsHTML + '</div><div class="fiche-section"><div class="fiche-section-title">Détail</div>' + tableHTML + '</div>';
-}
-
-async function afficherFichePaiements(id) {
-  const { data } = await db.from('factures').select('*').eq('etudiant_id', id).order('created_at',{ascending:false});
-  const facs = data || [];
-  if (!facs.length) {
-    document.getElementById('fiche-body').innerHTML = '<div class="empty-state"><div class="icon">💳</div><h3>Aucune facture</h3><p>Aucune facture pour cet étudiant.</p></div>';
-    return;
-  }
-  const totalDu  = facs.reduce((s,f)=>s+f.montant_total,0);
-  const totalPay = facs.reduce((s,f)=>s+(f.montant_paye||0),0);
-  const statsHTML = `<div class="fiche-stat-row">
-    <div class="fiche-stat"><div class="fs-val" style="color:#1e3a5f;font-size:16px">${fmtMontant(totalDu)}</div><div class="fs-lbl">Total facturé</div></div>
-    <div class="fiche-stat"><div class="fs-val" style="color:#059669;font-size:16px">${fmtMontant(totalPay)}</div><div class="fs-lbl">Payé</div></div>
-    <div class="fiche-stat"><div class="fs-val" style="color:#dc2626;font-size:16px">${fmtMontant(totalDu-totalPay)}</div><div class="fs-lbl">Reste à payer</div></div>
-  </div>`;
-  const tableHTML = `<table>
-    <tr><th>Réf.</th><th>Objet</th><th>Montant</th><th>Payé</th><th>Statut</th><th>Échéance</th></tr>
-    ${facs.map(f=>{
-      const sc=f.statut==='payée'?'green':f.statut==='retard'?'red':f.statut==='partiellement_payée'?'amber':'amber';
-      return `<tr><td><code style="font-size:10px">${f.reference||'—'}</code></td><td>${f.description||f.type_frais||'—'}</td><td><strong>${fmtMontant(f.montant_total)}</strong></td><td>${fmtMontant(f.montant_paye||0)}</td><td><span class="badge ${sc}">${f.statut}</span></td><td>${fmtDate(f.date_echeance)}</td></tr>`;
-    }).join('')}
-  </table>`;
-  document.getElementById('fiche-body').innerHTML = '<div class="fiche-section"><div class="fiche-section-title">Bilan</div>' + statsHTML + '</div><div class="fiche-section"><div class="fiche-section-title">Factures</div>' + tableHTML + '</div>';
-}
-
-function imprimerFiche() {
-  const nom = typeof ficheEtudiantCourant === 'object' ? ficheEtudiantCourant.nom + ' ' + ficheEtudiantCourant.prenom : 'Étudiant';
-  const body = document.getElementById('fiche-body').innerHTML;
-  const w = window.open('','_blank');
-  w.document.write(`<html><head><title>Fiche — ${nom}</title><link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet"><style>*{font-family:'Poppins',sans-serif;margin:0;box-sizing:border-box}body{padding:2rem}h2{color:#1e3a5f;margin-bottom:1rem}table{width:100%;border-collapse:collapse;margin-top:.5rem}th,td{border:1px solid #e5e7eb;padding:7px 10px;font-size:12px}th{background:#f3f4f6;font-weight:700}.badge{padding:2px 7px;border-radius:20px;font-size:11px;font-weight:600;display:inline-block}.green{background:#dcfce7;color:#059669}.red{background:#fee2e2;color:#dc2626}.amber{background:#fef9c3;color:#d97706}.blue{background:#dbeafe;color:#1d4ed8}.gray{background:#f3f4f6;color:#6b7280}.fiche-stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:.75rem;margin-bottom:1rem}.fiche-stat{background:#f9fafb;border:1px solid #e5e7eb;border-radius:8px;padding:.75rem;text-align:center}.fs-val{font-size:20px;font-weight:700}.fs-lbl{font-size:11px;color:#6b7280}.fiche-section{margin-bottom:1.2rem}.fiche-section-title{font-size:11px;font-weight:700;color:#6b7280;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.5rem;padding-bottom:.35rem;border-bottom:1px solid #e5e7eb}.fiche-info-grid{display:grid;grid-template-columns:1fr 1fr;gap:.5rem}.fiche-info-item label{font-size:10px;font-weight:700;color:#9ca3af;text-transform:uppercase;display:block;margin-bottom:1px}.fiche-info-item span{font-size:12px;color:#111827}.note-badge{font-size:12px;font-weight:700;padding:2px 8px;border-radius:6px;display:inline-block}</style></head><body><h2>Fiche étudiant — ${nom}</h2>${body}</body></html>`);
-  w.document.close(); w.print();
-}
-
-// ══ DASHBOARD CHARTS  ★ JOUR 6 ════════════════
-async function chargerDashboardCharts() {
-  // Chart 1: Répartition par filière
-  let q1 = db.from('etudiants').select('filiere');
-  if (currentEcoleId) q1 = q1.eq('ecole_id', currentEcoleId);
-  const { data: ets } = await q1;
-  const filieres = {};
-  (ets||[]).forEach(e => { filieres[e.filiere] = (filieres[e.filiere]||0)+1; });
-  const canvas1 = document.getElementById('dash-chart-filieres');
-  if (canvas1) {
-    if (dashChartFilieres) dashChartFilieres.destroy();
-    dashChartFilieres = new Chart(canvas1, {
-      type: 'doughnut',
-      data: {
-        labels: Object.keys(filieres),
-        datasets: [{ data: Object.values(filieres), backgroundColor:['#1e3a5f','#c97c1a','#059669','#dc2626','#7c3aed','#0d9488'], borderWidth:2, borderColor:'#fff' }]
-      },
-      options: { responsive:true, maintainAspectRatio:false, plugins:{ legend:{ position:'right', labels:{ font:{family:'Poppins',size:10}, boxWidth:12 } } } }
-    });
-  }
-  // Chart 2: Bilan financier
-  let q2 = db.from('factures').select('montant_total, montant_paye');
-  if (currentEcoleId) q2 = q2.eq('ecole_id', currentEcoleId);
-  const { data: facs } = await q2;
-  const totalDu  = (facs||[]).reduce((s,f)=>s+f.montant_total,0);
-  const totalPay = (facs||[]).reduce((s,f)=>s+(f.montant_paye||0),0);
-  const canvas2 = document.getElementById('dash-chart-finances');
-  if (canvas2) {
-    if (dashChartFinances) dashChartFinances.destroy();
-    dashChartFinances = new Chart(canvas2, {
-      type: 'bar',
-      data: {
-        labels: ['Total facturé','Payé','Reste à percevoir'],
-        datasets: [{
-          data: [totalDu, totalPay, totalDu - totalPay],
-          backgroundColor: ['#1e3a5f','#059669','#dc2626'],
-          borderRadius: 8,
-        }]
-      },
-      options: {
-        responsive:true, maintainAspectRatio:false,
-        plugins:{ legend:{ display:false } },
-        scales:{ y:{ beginAtZero:true, ticks:{ font:{family:'Poppins',size:10}, callback: v => (v/1000)+'k FCFA' } } }
-      }
-    });
-  }
-}
-
-// ══ EXPORT CSV  ★ JOUR 6 ══════════════════════
-function exporterRapport(mode) {
-  if (mode === 'print') { window.print(); return; }
-  if (mode === 'csv') {
-    const activeMenu = document.querySelector('.rapport-menu-item.active');
-    const type = activeMenu ? activeMenu.id.replace('rmenu-','') : 'effectifs';
-    exporterCSV(type);
-  }
-}
-
-async function exporterCSV(type) {
-  showToast('Préparation de l'export CSV...', 'info');
-  let rows = [], headers = [], filename = 'export';
-
-  if (type === 'effectifs') {
-    let q = db.from('etudiants').select('matricule, nom, prenom, filiere, niveau, sexe, email, statut, created_at');
-    if (currentEcoleId) q = q.eq('ecole_id', currentEcoleId);
-    const { data } = await q;
-    headers = ['Matricule','Nom','Prénom','Filière','Niveau','Sexe','Email','Statut','Date inscription'];
-    rows = (data||[]).map(e => [e.matricule,e.nom,e.prenom,e.filiere,e.niveau,e.sexe,e.email||'',e.statut,fmtDate(e.created_at)]);
-    filename = 'edulink_etudiants';
-  } else if (type === 'absences') {
-    const { data } = await db.from('absences').select('*, etudiants(nom,prenom)').order('date_absence',{ascending:false});
-    headers = ['Étudiant','Matière','Date','Statut','Justification','Parent notifié'];
-    rows = (data||[]).map(a => [
-      a.etudiants?a.etudiants.nom+' '+a.etudiants.prenom:'N/A',
-      a.matiere, fmtDate(a.date_absence), a.statut, a.justification||'', a.parent_notifie?'Oui':'Non'
-    ]);
-    filename = 'edulink_absences';
-  } else if (type === 'moyennes') {
-    let q = db.from('notes').select('*, etudiants(nom,prenom,matricule,filiere,niveau)');
-    if (currentEcoleId) q = q.eq('ecole_id', currentEcoleId);
-    const { data } = await q;
-    headers = ['Matricule','Étudiant','Filière','Niveau','Matière','Note /20','Coefficient','Période','Appréciation'];
-    rows = (data||[]).map(n => {
-      const a = getApp(n.note);
-      return [n.etudiants?.matricule||'',n.etudiants?n.etudiants.nom+' '+n.etudiants.prenom:'N/A',n.etudiants?.filiere||'',n.etudiants?.niveau||'',n.matiere,n.note,n.coefficient||1,n.periode,a.label];
-    });
-    filename = 'edulink_notes';
-  } else if (type === 'paiements') {
-    let q = db.from('factures').select('*, etudiants(nom,prenom,matricule)');
-    if (currentEcoleId) q = q.eq('ecole_id', currentEcoleId);
-    const { data } = await q;
-    headers = ['Référence','Étudiant','Matricule','Type','Montant total','Montant payé','Reste','Statut','Échéance'];
-    rows = (data||[]).map(f => [
-      f.reference||'',f.etudiants?f.etudiants.nom+' '+f.etudiants.prenom:'N/A',f.etudiants?.matricule||'',
-      f.type_frais||'',f.montant_total,f.montant_paye||0,f.montant_total-(f.montant_paye||0),f.statut,fmtDate(f.date_echeance)
-    ]);
-    filename = 'edulink_paiements';
-  } else if (type === 'discipline') {
-    let q = db.from('incidents').select('*, etudiants(nom,prenom)');
-    if (currentEcoleId) q = q.eq('ecole_id', currentEcoleId);
-    const { data } = await q;
-    headers = ['Étudiant','Type','Sévérité','Date','Statut','Sanction','Description'];
-    rows = (data||[]).map(i => [
-      i.etudiants?i.etudiants.nom+' '+i.etudiants.prenom:'N/A',
-      i.type_incident,i.severite,fmtDate(i.date_incident),i.statut,i.sanction||'',i.description||''
-    ]);
-    filename = 'edulink_incidents';
-  }
-
-  // Génération CSV
-  const escape = v => '"' + String(v).replace(/"/g,'""') + '"';
-  const csvContent = [headers, ...rows].map(r => r.map(escape).join(',')).join('
-');
-  const blob = new Blob(['﻿' + csvContent], { type:'text/csv;charset=utf-8;' });
-  const url  = URL.createObjectURL(blob);
-  const a    = document.createElement('a');
-  a.href = url; a.download = filename + '_' + new Date().toISOString().split('T')[0] + '.csv';
-  document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-  showToast('Export CSV téléchargé !', 'success');
-}
-
-// ══ PARAMÈTRES ÉCOLE  ★ JOUR 6 ════════════════
-function chargerParametres() {
-  const prefix = 'edulink_param_' + (currentEcoleId || 'global');
-  const saved = JSON.parse(localStorage.getItem(prefix) || '{}');
-
-  // Infos générales depuis l'école courante
-  const ecole = tousLesEcoles.find(e => e.id === currentEcoleId);
-  if (ecole) {
-    document.getElementById('param-nom').value   = saved.nom   || ecole.nom   || '';
-    document.getElementById('param-type').value  = saved.type  || ecole.type  || 'université';
-  }
-  // Charger les autres champs depuis localStorage
-  const fields = ['ville','pays','email','tel','adresse','annee','periode','debut','fin',
-    'note-max','note-passage','mention-passable','mention-bien','mention-tb','coeff-def',
-    'devise','frais-scol','frais-inscr','delai-retard'];
-  fields.forEach(f => {
-    const el = document.getElementById('param-' + f);
-    if (el && saved[f] !== undefined) el.value = saved[f];
-  });
-  // Checkboxes
-  ['notif-absence','notif-retard','notif-paiement','notif-bulletin'].forEach(f => {
-    const el = document.getElementById('param-' + f);
-    if (el && saved[f] !== undefined) el.checked = saved[f];
-  });
-}
-
-async function sauvegarderParametres() {
-  const prefix = 'edulink_param_' + (currentEcoleId || 'global');
-  const data = {};
-  const fields = ['nom','type','ville','pays','email','tel','adresse','annee','periode','debut','fin',
-    'note-max','note-passage','mention-passable','mention-bien','mention-tb','coeff-def',
-    'devise','frais-scol','frais-inscr','delai-retard','filieres','niveaux'];
-  fields.forEach(f => {
-    const el = document.getElementById('param-' + f);
-    if (el) data[f] = el.value;
-  });
-  ['notif-absence','notif-retard','notif-paiement','notif-bulletin'].forEach(f => {
-    const el = document.getElementById('param-' + f);
-    if (el) data[f] = el.checked;
-  });
-  localStorage.setItem(prefix, JSON.stringify(data));
-
-  // Mettre à jour le nom de l'école dans Supabase si changé
-  if (currentEcoleId && data.nom) {
-    await db.from('ecoles').update({ nom: data.nom, type: data.type }).eq('id', currentEcoleId);
-    const ecole = tousLesEcoles.find(e=>e.id===currentEcoleId);
-    if (ecole) { ecole.nom = data.nom; ecole.type = data.type; }
-    mettreAJourBadgeEcole({ nom: data.nom, type: data.type });
-    // Mettre à jour le sélecteur
-    const sel = document.getElementById('ecole-selector');
-    const opt = sel ? [...sel.options].find(o=>o.value===currentEcoleId) : null;
-    if (opt) opt.textContent = data.nom;
-  }
-  showToast('Paramètres sauvegardés !', 'success');
-}
-
-// Charger les graphiques dashboard au démarrage
-window.addEventListener('DOMContentLoaded', function() {
-  setTimeout(function() {
-    if (document.getElementById('page-dashboard')?.classList.contains('active')) {
-      chargerDashboardCharts();
-    }
-  }, 1200);
-});
 
 // PWA Service Worker
 if ('serviceWorker' in navigator) {
