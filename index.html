@@ -2864,7 +2864,7 @@ window.addEventListener('appinstalled', function() {
    ===================================================================== */
 
 var ROLE_PERMISSIONS = {
-  admin:      { pages:['dashboard','etudiants','presences','notes','emploi','messages','discipline','paiements','documents','rapports','utilisateurs'], label:'Administrateur', color:'#7c3aed' },
+  admin:      { pages:['dashboard','etudiants','presences','notes','emploi','messages','discipline','paiements','documents','rapports','utilisateurs','parametres'], label:'Administrateur', color:'#7c3aed' },
   enseignant: { pages:['dashboard','etudiants','presences','notes','emploi','messages'], label:'Enseignant', color:'#059669' },
   comptable:  { pages:['dashboard','paiements','rapports','etudiants'], label:'Comptable', color:'#d97706' },
   parent:     { pages:['dashboard','notes','messages','presences'], label:'Parent / Tuteur', color:'#1d4ed8' },
@@ -2997,7 +2997,7 @@ function ouvrirSession() {
     srcBadge.style.display = 'block';
   }
 
-  var allNav = { dashboard:'nav-dashboard', etudiants:'nav-etudiants', presences:'nav-presences', notes:'nav-notes', emploi:'nav-emploi', messages:'nav-messages', discipline:'nav-discipline', paiements:'nav-paiements', documents:'nav-documents', rapports:'nav-rapports', utilisateurs:'nav-utilisateurs' };
+  var allNav = { dashboard:'nav-dashboard', etudiants:'nav-etudiants', presences:'nav-presences', notes:'nav-notes', emploi:'nav-emploi', messages:'nav-messages', discipline:'nav-discipline', paiements:'nav-paiements', documents:'nav-documents', rapports:'nav-rapports', utilisateurs:'nav-utilisateurs', parametres:'nav-parametres' };
   Object.keys(allNav).forEach(function(page) {
     var el = document.getElementById(allNav[page]);
     if (el) el.style.display = perms.pages.indexOf(page) !== -1 ? 'flex' : 'none';
@@ -3007,11 +3007,18 @@ function ouvrirSession() {
   afficherNotifsNav();
 
   var firstPage = perms.pages[0] || 'dashboard';
-  if (typeof chargerEcoles === 'function') {
-    chargerEcoles().then(function() { showPage(firstPage); }).catch(function() { showPage(firstPage); });
-  } else {
-    showPage(firstPage);
+  function doShowFirst() {
+    if (typeof showPage === 'function') {
+      if (typeof chargerEcoles === 'function') {
+        chargerEcoles().then(function() { showPage(firstPage); }).catch(function() { showPage(firstPage); });
+      } else {
+        showPage(firstPage);
+      }
+    } else {
+      setTimeout(doShowFirst, 30);
+    }
   }
+  doShowFirst();
   if (typeof showToast === 'function') showToast('Bienvenue, ' + currentUser.prenom + ' !', 'success');
 }
 
