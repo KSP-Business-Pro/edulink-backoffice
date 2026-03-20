@@ -950,7 +950,11 @@ async function envoyerOTP() {
   try {
     const resp = await fetch(EDGE_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON },
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_ANON,
+        'Authorization': 'Bearer ' + SUPABASE_ANON
+      },
       body: JSON.stringify({ action: 'envoyer', telephone: tel })
     });
     const data = await resp.json();
@@ -984,7 +988,11 @@ async function verifierOTP() {
   try {
     const resp = await fetch(EDGE_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'apikey': SUPABASE_ANON },
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_ANON,
+        'Authorization': 'Bearer ' + SUPABASE_ANON
+      },
       body: JSON.stringify({ action: 'verifier', telephone: otpTelephone, code })
     });
     const data = await resp.json();
