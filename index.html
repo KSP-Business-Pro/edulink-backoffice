@@ -1053,18 +1053,18 @@ M2</textarea>
      MODALS
 ═══════════════════════════════════════════ -->
 
-
 <!-- ★ Modal Import CSV Jour 7 ★ -->
 <div class="modal-overlay" id="modal-import-csv">
   <div class="modal modal-lg">
     <h3>📥 Import CSV — Étudiants en masse</h3>
     <div id="csv-step-1">
       <div style="background:#eff6ff;border-radius:10px;padding:.9rem 1rem;margin-bottom:1rem;font-size:12.5px;color:#374151">
-        <strong style="color:#1e3a5f">Format :</strong> <code>matricule, nom, prenom, sexe, filiere, niveau, email</code>
+        <strong style="color:#1e3a5f">Format :</strong> <code style="background:#dbeafe;padding:1px 5px;border-radius:4px">matricule, nom, prenom, sexe, filiere, niveau, email</code>
       </div>
       <div class="upload-drop" onclick="document.getElementById('csv-file-input').click()">
         <div class="ud-ico">📄</div>
         <div class="ud-txt">Cliquer pour choisir un fichier CSV</div>
+        <div class="ud-sub">Fichier .csv · UTF-8</div>
         <input type="file" id="csv-file-input" accept=".csv" style="display:none" onchange="traiterFichierCSV(this.files[0])">
       </div>
       <div style="margin-top:.75rem;display:flex;gap:8px;justify-content:space-between">
@@ -1095,7 +1095,6 @@ M2</textarea>
     </div>
   </div>
 </div>
-
 <!-- Annonce -->
 <div class="modal-overlay" id="modal-annonce">
   <div class="modal">
@@ -1358,7 +1357,6 @@ M2</textarea>
   </div>
 </div>
 
-
 <!-- ★ Modal Lier parent-étudiant Jour 7 ★ -->
 <div class="modal-overlay" id="modal-lier-etudiant">
   <div class="modal">
@@ -1379,7 +1377,6 @@ M2</textarea>
     </div>
   </div>
 </div>
-
 <!-- Modal Nouvel utilisateur -->
 <div class="modal-overlay" id="modal-user">
   <div class="modal">
@@ -1532,6 +1529,7 @@ function showPage(p) {
     parametres: chargerParametres,
   };
   if (loaders[p]) loaders[p]();
+  if (p === 'dashboard') setTimeout(function(){ if(typeof chargerDashboardCharts==='function') chargerDashboardCharts(); }, 600);
 }
 
 function showTab(page, tabId) {
@@ -2279,13 +2277,6 @@ let dashChartFilieres = null;
 let dashChartFinances = null;
 let ficheTabActive = 'infos';
 
-// Charger les graphiques dashboard après showPage
-const _origShowPage = showPage;
-function showPage(p) {
-  _origShowPage(p);
-  if (p === 'dashboard') setTimeout(chargerDashboardCharts, 500);
-}
-
 // ══ FICHE ÉTUDIANT  ★ JOUR 6 ══════════════════
 async function voirEtudiant(id) {
   ficheEtudiantCourant = id;
@@ -2646,76 +2637,72 @@ window.addEventListener('DOMContentLoaded', function() {
 
 // ══ IMPORT CSV  ★ JOUR 7 ══════════════════════
 let csvDonnees = [];
-const CSV_COLONNES = ['matricule','nom','prenom','sexe','filiere','niveau','email'];
-const CSV_OBLIGATOIRES = ['matricule','nom','prenom','filiere','niveau'];
-
 function telechargerModeleCSV() {
-  const csv = CSV_COLONNES.join(',') + '\n2025-001,AGBODJAN,Kossi,M,Informatique,L1,kossi@etud.bj\n2025-002,BONI,Fatou,F,Gestion,L2,';
-  const blob = new Blob(['\uFEFF' + csv], {type:'text/csv;charset=utf-8;'});
-  const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='modele_etudiants.csv'; a.click();
+  const csv = 'matricule,nom,prenom,sexe,filiere,niveau,email\n2025-001,AGBODJAN,Kossi,M,Informatique,L1,kossi@etud.bj\n2025-002,BONI,Fatou,F,Gestion,L2,';
+  const blob = new Blob(['\uFEFF'+csv],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='modele_etudiants.csv';a.click();
   showToast('Modèle téléchargé !','success');
 }
 function traiterFichierCSV(file) {
-  if (!file||!file.name.endsWith('.csv')) { showToast('Fichier .csv uniquement.','error'); return; }
-  const reader = new FileReader();
-  reader.onload = e => parseCSV(e.target.result);
-  reader.readAsText(file,'UTF-8');
+  if(!file||!file.name.endsWith('.csv')){showToast('Fichier .csv uniquement.','error');return;}
+  const r=new FileReader();r.onload=e=>parseCSV(e.target.result);r.readAsText(file,'UTF-8');
 }
 function parseCSV(text) {
-  text = text.replace(/^\uFEFF/,'').replace(/\r\n/g,'\n').replace(/\r/g,'\n');
-  const lignes = text.split('\n').filter(l=>l.trim());
-  if (lignes.length < 2) { showToast('Fichier vide.','error'); return; }
-  const sep = lignes[0].includes(';') ? ';' : ',';
-  const entetes = lignes[0].split(sep).map(h=>h.trim().toLowerCase().replace(/[\'"]/g,''));
-  const manquantes = CSV_OBLIGATOIRES.filter(c=>!entetes.includes(c));
-  if (manquantes.length) { showToast('Colonnes manquantes : '+manquantes.join(', '),'error'); return; }
-  const donnees = [], erreurs = [];
-  for (let i=1;i<lignes.length;i++) {
-    const vals = lignes[i].split(sep).map(v=>v.trim().replace(/^["\']/,'').replace(/["\'"]$/,''));
-    const row = {}; entetes.forEach((h,idx)=>{row[h]=vals[idx]||'';});
-    const err = [];
-    if (!row.matricule) err.push('matricule manquant');
-    if (!row.nom) err.push('nom manquant');
-    if (!row.prenom) err.push('prénom manquant');
-    if (!row.filiere) err.push('filière manquante');
-    if (!row.niveau) err.push('niveau manquant');
-    row._valide=err.length===0; row._erreurs=err; row._ligne=i+1;
+  text=text.replace(/^\uFEFF/,'').replace(/\r\n/g,'\n').replace(/\r/g,'\n');
+  const lignes=text.split('\n').filter(l=>l.trim());
+  if(lignes.length<2){showToast('Fichier vide.','error');return;}
+  const sep=lignes[0].includes(';')?';':',';
+  const entetes=lignes[0].split(sep).map(h=>h.trim().toLowerCase().replace(/['"]/g,''));
+  const obligatoires=['matricule','nom','prenom','filiere','niveau'];
+  const manquantes=obligatoires.filter(c=>!entetes.includes(c));
+  if(manquantes.length){showToast('Colonnes manquantes : '+manquantes.join(', '),'error');return;}
+  const donnees=[],erreurs=[];
+  for(let i=1;i<lignes.length;i++){
+    const vals=lignes[i].split(sep).map(v=>v.trim().replace(/^["']/,'').replace(/["']$/,''));
+    const row={};entetes.forEach((h,idx)=>{row[h]=vals[idx]||'';});
+    const err=[];
+    if(!row.matricule)err.push('matricule manquant');
+    if(!row.nom)err.push('nom manquant');
+    if(!row.prenom)err.push('prénom manquant');
+    if(!row.filiere)err.push('filière manquante');
+    if(!row.niveau)err.push('niveau manquant');
+    row._valide=err.length===0;row._erreurs=err;
     donnees.push(row);
-    if (err.length) erreurs.push('Ligne '+(i+1)+' : '+err.join(', '));
+    if(err.length)erreurs.push('Ligne '+(i+1)+' : '+err.join(', '));
   }
-  csvDonnees = donnees;
-  const valides = donnees.filter(r=>r._valide).length;
+  csvDonnees=donnees;
+  const valides=donnees.filter(r=>r._valide).length;
   document.getElementById('csv-step-1').style.display='none';
   document.getElementById('csv-step-2').style.display='block';
-  document.getElementById('csv-nb-valides').textContent = valides;
-  document.getElementById('csv-resume').innerHTML =
-    '<div style="flex:1;background:#f0fdf4;border-radius:10px;padding:.75rem;text-align:center;border:1px solid #bbf7d0"><div style="font-size:22px;font-weight:800;color:#059669">'+valides+'</div><div style="font-size:11px;color:#059669;font-weight:600">Lignes valides</div></div>'+
+  document.getElementById('csv-nb-valides').textContent=valides;
+  document.getElementById('csv-resume').innerHTML=
+    '<div style="flex:1;background:#f0fdf4;border-radius:10px;padding:.75rem;text-align:center;border:1px solid #bbf7d0"><div style="font-size:22px;font-weight:800;color:#059669">'+valides+'</div><div style="font-size:11px;color:#059669;font-weight:600">Valides</div></div>'+
     '<div style="flex:1;background:#eff6ff;border-radius:10px;padding:.75rem;text-align:center;border:1px solid #bfdbfe"><div style="font-size:22px;font-weight:800;color:#1d4ed8">'+donnees.length+'</div><div style="font-size:11px;color:#1d4ed8;font-weight:600">Total</div></div>';
-  const cols = CSV_COLONNES.filter(c=>entetes.includes(c));
+  const cols=['matricule','nom','prenom','sexe','filiere','niveau','email'].filter(c=>entetes.includes(c));
   document.getElementById('csv-thead').innerHTML='<tr>'+cols.map(c=>'<th>'+c+'</th>').join('')+'<th>Statut</th></tr>';
   document.getElementById('csv-tbody').innerHTML=donnees.map(row=>
     '<tr style="'+(row._valide?'':'background:#fff7f0')+'">'
     +cols.map(c=>'<td style="font-size:12px">'+(row[c]||'—')+'</td>').join('')
     +'<td><span class="badge '+(row._valide?'green':'red')+'">'+(row._valide?'✓ OK':'⚠ Err')+'</span></td></tr>'
   ).join('');
-  if (erreurs.length) { const b=document.getElementById('csv-erreurs'); b.style.display='block'; b.innerHTML='<strong>'+erreurs.length+' ligne(s) ignorée(s) :</strong><br>'+erreurs.join('<br>'); }
+  if(erreurs.length){const b=document.getElementById('csv-erreurs');b.style.display='block';b.innerHTML='<strong>'+erreurs.length+' ligne(s) ignorée(s)</strong><br>'+erreurs.join('<br>');}
 }
 async function confirmerImportCSV() {
-  const valides = csvDonnees.filter(r=>r._valide);
-  if (!valides.length) return;
+  const valides=csvDonnees.filter(r=>r._valide);
+  if(!valides.length)return;
   document.getElementById('btn-confirmer-import').disabled=true;
-  const inserts = valides.map(r=>({ecole_id:currentEcoleId,matricule:r.matricule,nom:r.nom.toUpperCase(),prenom:r.prenom,sexe:(r.sexe||'M').toUpperCase(),filiere:r.filiere,niveau:r.niveau,email:r.email||null,statut:'actif'}));
-  let succes=0, echecs=0;
-  for (let i=0;i<inserts.length;i+=50) {
+  const inserts=valides.map(r=>({ecole_id:currentEcoleId,matricule:r.matricule,nom:r.nom.toUpperCase(),prenom:r.prenom,sexe:(r.sexe||'M').toUpperCase(),filiere:r.filiere,niveau:r.niveau,email:r.email||null,statut:'actif'}));
+  let succes=0,echecs=0;
+  for(let i=0;i<inserts.length;i+=50){
     const {error}=await db.from('etudiants').insert(inserts.slice(i,i+50));
-    if (error) echecs+=Math.min(50,inserts.length-i); else succes+=Math.min(50,inserts.length-i);
+    if(error)echecs+=Math.min(50,inserts.length-i);else succes+=Math.min(50,inserts.length-i);
   }
   document.getElementById('csv-step-2').style.display='none';
   document.getElementById('csv-step-3').style.display='block';
-  document.getElementById('csv-result-ico').textContent= succes>0?'🎉':'❌';
-  document.getElementById('csv-result-titre').textContent= succes+' étudiant(s) importé(s)';
-  document.getElementById('csv-result-detail').textContent= echecs>0?echecs+' échec(s) (doublons?)':'Import réussi !';
-  showToast(succes+' importé(s) !','success'); chargerDashboard();
+  document.getElementById('csv-result-ico').textContent=succes>0?'🎉':'❌';
+  document.getElementById('csv-result-titre').textContent=succes+' étudiant(s) importé(s)';
+  document.getElementById('csv-result-detail').textContent=echecs>0?echecs+' échec(s) - doublons?':'Import réussi !';
+  showToast(succes+' importé(s) !','success');chargerDashboard();
 }
 function resetCSVImport() {
   csvDonnees=[];
@@ -2728,25 +2715,25 @@ function resetCSVImport() {
 
 // ══ LIAISON PARENT-ÉTUDIANT  ★ JOUR 7 ══════════
 function ouvrirLienEtudiant(profileId, profileNom) {
-  document.getElementById('lien-profile-id').value = profileId;
-  document.getElementById('lien-profile-nom').textContent = profileNom;
-  const sel = document.getElementById('lien-etudiant-select');
-  sel.innerHTML = '<option value="">— Aucun (supprimer liaison) —</option>';
+  document.getElementById('lien-profile-id').value=profileId;
+  document.getElementById('lien-profile-nom').textContent=profileNom;
+  const sel=document.getElementById('lien-etudiant-select');
+  sel.innerHTML='<option value="">— Aucun —</option>';
   tousLesEtudiants.forEach(e=>{
-    const o=document.createElement('option'); o.value=e.id;
+    const o=document.createElement('option');o.value=e.id;
     o.textContent=e.nom+' '+e.prenom+' — '+e.filiere+' '+e.niveau+' ('+e.matricule+')';
     sel.appendChild(o);
   });
   ouvrirModal('modal-lier-etudiant');
 }
 async function sauvegarderLienEtudiant() {
-  const profileId  = document.getElementById('lien-profile-id').value;
-  const etudiantId = document.getElementById('lien-etudiant-select').value;
-  const {error} = await db.from('profiles').update({etudiant_id:etudiantId||null}).eq('id',profileId);
-  if (error) { showToast('Erreur : '+error.message,'error'); return; }
+  const profileId=document.getElementById('lien-profile-id').value;
+  const etudiantId=document.getElementById('lien-etudiant-select').value;
+  const {error}=await db.from('profiles').update({etudiant_id:etudiantId||null}).eq('id',profileId);
+  if(error){showToast('Erreur : '+error.message,'error');return;}
   fermerModal('modal-lier-etudiant');
   showToast(etudiantId?'🔗 Liaison enregistrée !':'Liaison supprimée.','success');
-  if (typeof chargerUtilisateurs==='function') chargerUtilisateurs();
+  if(typeof chargerUtilisateurs==='function')chargerUtilisateurs();
 }
 
 // PWA Service Worker
