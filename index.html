@@ -16,6 +16,8 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+<script data-cfasync="false" src="edulink-auth.js" defer></script>
+<script data-cfasync="false" src="edulink-notif.js" defer></script>
 <style>
 /* ══════════════════════════════════════════════
    BASE
@@ -558,7 +560,7 @@ button:hover { background:#a86615; transform:translateY(-1px); }
   <div class="top">
     <h2>Étudiants</h2>
     <div class="top-actions">
-      <button class="btn-secondary btn-outline" onclick="telechargerModeleCSV()" title="Télécharger un modèle CSV vide">⬇️ Modèle CSV</button>
+      <button class="btn-secondary btn-outline" onclick="telechargerModeleCSV()">⬇️ Modèle CSV</button>
       <button class="btn-purple" onclick="ouvrirModal('modal-import-csv')">📥 Import CSV</button>
       <button onclick="ouvrirModal('modal-etudiant')">+ Ajouter étudiant</button>
     </div>
@@ -1051,53 +1053,40 @@ M2</textarea>
      MODALS
 ═══════════════════════════════════════════ -->
 
-<!-- ★ Modal : Import CSV étudiants  JOUR 7 ★ -->
+
+<!-- ★ Modal Import CSV Jour 7 ★ -->
 <div class="modal-overlay" id="modal-import-csv">
   <div class="modal modal-lg">
     <h3>📥 Import CSV — Étudiants en masse</h3>
-
-    <!-- Étape 1 : Upload -->
     <div id="csv-step-1">
       <div style="background:#eff6ff;border-radius:10px;padding:.9rem 1rem;margin-bottom:1rem;font-size:12.5px;color:#374151">
-        <strong style="color:#1e3a5f">Format attendu :</strong><br>
-        Colonnes : <code style="background:#dbeafe;padding:1px 5px;border-radius:4px">matricule, nom, prenom, sexe, filiere, niveau, email</code><br>
-        <span style="font-size:11.5px;color:#6b7280">• Séparateur : virgule (,) · Encodage : UTF-8 · Ligne 1 = en-têtes</span>
+        <strong style="color:#1e3a5f">Format :</strong> <code>matricule, nom, prenom, sexe, filiere, niveau, email</code>
       </div>
-      <div class="upload-drop" id="csv-drop-zone" onclick="document.getElementById('csv-file-input').click()"
-           ondragover="event.preventDefault();this.style.borderColor='#1e3a5f'" ondragleave="this.style.borderColor=''"
-           ondrop="event.preventDefault();this.style.borderColor='';traiterFichierCSV(event.dataTransfer.files[0])">
+      <div class="upload-drop" onclick="document.getElementById('csv-file-input').click()">
         <div class="ud-ico">📄</div>
-        <div class="ud-txt">Cliquer ou glisser un fichier CSV ici</div>
-        <div class="ud-sub">Fichier .csv uniquement</div>
+        <div class="ud-txt">Cliquer pour choisir un fichier CSV</div>
         <input type="file" id="csv-file-input" accept=".csv" style="display:none" onchange="traiterFichierCSV(this.files[0])">
       </div>
-      <div style="margin-top:.75rem;display:flex;gap:8px;justify-content:space-between;align-items:center">
-        <button class="btn-secondary btn-sm" onclick="telechargerModeleCSV()">⬇️ Télécharger modèle CSV</button>
+      <div style="margin-top:.75rem;display:flex;gap:8px;justify-content:space-between">
+        <button class="btn-secondary btn-sm" onclick="telechargerModeleCSV()">⬇️ Modèle CSV</button>
         <button class="btn-secondary" onclick="fermerModal('modal-import-csv')">Annuler</button>
       </div>
     </div>
-
-    <!-- Étape 2 : Prévisualisation + Validation -->
     <div id="csv-step-2" style="display:none">
       <div id="csv-resume" style="display:flex;gap:1rem;margin-bottom:1rem"></div>
-      <div style="max-height:320px;overflow-y:auto;border-radius:10px;border:1px solid #e5e7eb">
-        <table style="border-radius:0">
-          <thead id="csv-thead"></thead>
-          <tbody id="csv-tbody"></tbody>
-        </table>
+      <div style="max-height:300px;overflow-y:auto;border-radius:10px;border:1px solid #e5e7eb">
+        <table style="border-radius:0"><thead id="csv-thead"></thead><tbody id="csv-tbody"></tbody></table>
       </div>
-      <div id="csv-erreurs" style="display:none;margin-top:.75rem;background:#fee2e2;border-radius:8px;padding:.75rem 1rem;font-size:12px;color:#dc2626"></div>
+      <div id="csv-erreurs" style="display:none;margin-top:.75rem;background:#fee2e2;border-radius:8px;padding:.75rem;font-size:12px;color:#dc2626"></div>
       <div class="modal-footer">
         <button class="btn-secondary" onclick="resetCSVImport()">← Recommencer</button>
         <button class="btn-secondary" onclick="fermerModal('modal-import-csv')">Annuler</button>
         <button class="btn-green" id="btn-confirmer-import" onclick="confirmerImportCSV()">✅ Importer <span id="csv-nb-valides"></span> étudiant(s)</button>
       </div>
     </div>
-
-    <!-- Étape 3 : Résultat -->
-    <div id="csv-step-3" style="display:none;text-align:center;padding:2rem 1rem">
+    <div id="csv-step-3" style="display:none;text-align:center;padding:2rem">
       <div id="csv-result-ico" style="font-size:52px;margin-bottom:1rem">✅</div>
-      <div id="csv-result-titre" style="font-size:18px;font-weight:700;color:#111827;margin-bottom:.5rem"></div>
+      <div id="csv-result-titre" style="font-size:18px;font-weight:700;margin-bottom:.5rem"></div>
       <div id="csv-result-detail" style="font-size:13px;color:#6b7280;margin-bottom:1.5rem"></div>
       <div style="display:flex;gap:8px;justify-content:center">
         <button class="btn-secondary" onclick="resetCSVImport()">📥 Nouvel import</button>
@@ -1369,6 +1358,28 @@ M2</textarea>
   </div>
 </div>
 
+
+<!-- ★ Modal Lier parent-étudiant Jour 7 ★ -->
+<div class="modal-overlay" id="modal-lier-etudiant">
+  <div class="modal">
+    <h3>🔗 Lier un compte à un étudiant</h3>
+    <input type="hidden" id="lien-profile-id">
+    <div style="background:#eff6ff;border-radius:10px;padding:.9rem;margin-bottom:1rem;font-size:12.5px">
+      <strong style="color:#1e3a5f">Compte : </strong><span id="lien-profile-nom" style="font-weight:700;color:#1e3a5f"></span>
+    </div>
+    <div class="form-group">
+      <label>Étudiant à associer</label>
+      <select id="lien-etudiant-select" style="width:100%;padding:8px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:13px;font-family:'Poppins',sans-serif;outline:none">
+        <option value="">— Aucun (supprimer liaison) —</option>
+      </select>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="fermerModal('modal-lier-etudiant')">Annuler</button>
+      <button class="btn-green" onclick="sauvegarderLienEtudiant()">🔗 Enregistrer</button>
+    </div>
+  </div>
+</div>
+
 <!-- Modal Nouvel utilisateur -->
 <div class="modal-overlay" id="modal-user">
   <div class="modal">
@@ -1507,7 +1518,7 @@ function showPage(p) {
   if (pageEl) pageEl.classList.add('active');
   if (navEl)  navEl.classList.add('on');
   const loaders = {
-    dashboard:    () => { chargerDashboard(); setTimeout(chargerDashboardCharts, 600); },
+    dashboard:    chargerDashboard,
     etudiants:    chargerEtudiants,
     presences:    chargerAbsences,
     notes:        () => { chargerNotes(); remplirSelectBulletin(); },
@@ -2268,6 +2279,13 @@ let dashChartFilieres = null;
 let dashChartFinances = null;
 let ficheTabActive = 'infos';
 
+// Charger les graphiques dashboard après showPage
+const _origShowPage = showPage;
+function showPage(p) {
+  _origShowPage(p);
+  if (p === 'dashboard') setTimeout(chargerDashboardCharts, 500);
+}
+
 // ══ FICHE ÉTUDIANT  ★ JOUR 6 ══════════════════
 async function voirEtudiant(id) {
   ficheEtudiantCourant = id;
@@ -2497,7 +2515,7 @@ function exporterRapport(mode) {
 }
 
 async function exporterCSV(type) {
-  showToast('Préparation export CSV...', 'info');
+  showToast('Préparation de l'export CSV...', 'info');
   let rows = [], headers = [], filename = 'export';
 
   if (type === 'effectifs') {
@@ -2549,7 +2567,8 @@ async function exporterCSV(type) {
 
   // Génération CSV
   const escape = v => '"' + String(v).replace(/"/g,'""') + '"';
-  const csvContent = [headers, ...rows].map(r => r.map(escape).join(',')).join('\n');
+  const csvContent = [headers, ...rows].map(r => r.map(escape).join(',')).join('
+');
   const blob = new Blob(['﻿' + csvContent], { type:'text/csv;charset=utf-8;' });
   const url  = URL.createObjectURL(blob);
   const a    = document.createElement('a');
@@ -2624,195 +2643,110 @@ window.addEventListener('DOMContentLoaded', function() {
   }, 1200);
 });
 
-// ══ IMPORT CSV ÉTUDIANTS  ★ JOUR 7 ════════════
-let csvDonnees = []; // données parsées et validées
 
+// ══ IMPORT CSV  ★ JOUR 7 ══════════════════════
+let csvDonnees = [];
 const CSV_COLONNES = ['matricule','nom','prenom','sexe','filiere','niveau','email'];
 const CSV_OBLIGATOIRES = ['matricule','nom','prenom','filiere','niveau'];
 
 function telechargerModeleCSV() {
-  const entetes = CSV_COLONNES.join(',');
-  const exemples = [
-    '2025-001,AGBODJAN,Kossi,M,Informatique,L1,kossi@etud.bj',
-    '2025-002,BONI,Fatou,F,Gestion,L2,fatou@etud.bj',
-    '2025-003,DOSSOU,Séraphin,M,Droit,L3,',
-  ].join('\n');
-  const csv = entetes + '\n' + exemples;
-  const blob = new Blob(['\uFEFF' + csv], { type:'text/csv;charset=utf-8;' });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a'); a.href=url; a.download='modele_etudiants.csv'; a.click();
-  URL.revokeObjectURL(url);
-  showToast('Modèle CSV téléchargé !', 'success');
+  const csv = CSV_COLONNES.join(',') + '\n2025-001,AGBODJAN,Kossi,M,Informatique,L1,kossi@etud.bj\n2025-002,BONI,Fatou,F,Gestion,L2,';
+  const blob = new Blob(['\uFEFF' + csv], {type:'text/csv;charset=utf-8;'});
+  const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='modele_etudiants.csv'; a.click();
+  showToast('Modèle téléchargé !','success');
 }
-
 function traiterFichierCSV(file) {
-  if (!file) return;
-  if (!file.name.endsWith('.csv')) { showToast('Fichier .csv uniquement.', 'error'); return; }
+  if (!file||!file.name.endsWith('.csv')) { showToast('Fichier .csv uniquement.','error'); return; }
   const reader = new FileReader();
-  reader.onload = function(e) {
-    const text = e.target.result;
-    parseCSV(text);
-  };
-  reader.readAsText(file, 'UTF-8');
+  reader.onload = e => parseCSV(e.target.result);
+  reader.readAsText(file,'UTF-8');
 }
-
 function parseCSV(text) {
-  // Nettoyage BOM et normalisation lignes
-  text = text.replace(/^\uFEFF/, '').replace(/\r\n/g,'\n').replace(/\r/g,'\n');
-  const lignes = text.split('\n').filter(l => l.trim());
-  if (lignes.length < 2) { showToast('Le fichier CSV est vide ou invalide.', 'error'); return; }
-
-  // Détecter séparateur (virgule ou point-virgule)
-  const separateur = lignes[0].includes(';') ? ';' : ',';
-  const entetes = lignes[0].split(separateur).map(h => h.trim().toLowerCase().replace(/['"]/g,''));
-
-  // Vérifier colonnes obligatoires
-  const manquantes = CSV_OBLIGATOIRES.filter(c => !entetes.includes(c));
-  if (manquantes.length) {
-    showToast('Colonnes manquantes : ' + manquantes.join(', '), 'error'); return;
-  }
-
-  const donnees = [];
-  const erreurs = [];
-
-  for (let i = 1; i < lignes.length; i++) {
-    const vals = lignes[i].split(separateur).map(v => v.trim().replace(/^["']|["']$/g,''));
-    const row = {};
-    entetes.forEach((h, idx) => { row[h] = vals[idx] || ''; });
-
-    // Validation ligne
+  text = text.replace(/^\uFEFF/,'').replace(/\r\n/g,'\n').replace(/\r/g,'\n');
+  const lignes = text.split('\n').filter(l=>l.trim());
+  if (lignes.length < 2) { showToast('Fichier vide.','error'); return; }
+  const sep = lignes[0].includes(';') ? ';' : ',';
+  const entetes = lignes[0].split(sep).map(h=>h.trim().toLowerCase().replace(/[\'"]/g,''));
+  const manquantes = CSV_OBLIGATOIRES.filter(c=>!entetes.includes(c));
+  if (manquantes.length) { showToast('Colonnes manquantes : '+manquantes.join(', '),'error'); return; }
+  const donnees = [], erreurs = [];
+  for (let i=1;i<lignes.length;i++) {
+    const vals = lignes[i].split(sep).map(v=>v.trim().replace(/^["\']/,'').replace(/["\'"]$/,''));
+    const row = {}; entetes.forEach((h,idx)=>{row[h]=vals[idx]||'';});
     const err = [];
     if (!row.matricule) err.push('matricule manquant');
     if (!row.nom) err.push('nom manquant');
     if (!row.prenom) err.push('prénom manquant');
     if (!row.filiere) err.push('filière manquante');
-    if (!row.niveau)  err.push('niveau manquant');
-    if (row.sexe && !['M','F','m','f'].includes(row.sexe)) err.push('sexe invalide (M/F)');
-
-    row._ligne   = i + 1;
-    row._valide  = err.length === 0;
-    row._erreurs = err;
+    if (!row.niveau) err.push('niveau manquant');
+    row._valide=err.length===0; row._erreurs=err; row._ligne=i+1;
     donnees.push(row);
-    if (err.length) erreurs.push(`Ligne ${i+1} : ${err.join(', ')}`);
+    if (err.length) erreurs.push('Ligne '+(i+1)+' : '+err.join(', '));
   }
-
   csvDonnees = donnees;
-  afficherPreviewCSV(donnees, erreurs, entetes);
-}
-
-function afficherPreviewCSV(donnees, erreurs, entetes) {
-  document.getElementById('csv-step-1').style.display = 'none';
-  document.getElementById('csv-step-2').style.display = 'block';
-
-  const valides   = donnees.filter(r => r._valide).length;
-  const invalides = donnees.length - valides;
-
-  // Résumé
-  document.getElementById('csv-resume').innerHTML = `
-    <div style="flex:1;background:#f0fdf4;border-radius:10px;padding:.75rem 1rem;text-align:center;border:1px solid #bbf7d0">
-      <div style="font-size:22px;font-weight:800;color:#059669">${valides}</div>
-      <div style="font-size:11px;color:#059669;font-weight:600">Lignes valides</div>
-    </div>
-    <div style="flex:1;background:${invalides>0?'#fff7f0':'#f9fafb'};border-radius:10px;padding:.75rem 1rem;text-align:center;border:1px solid ${invalides>0?'#fed7aa':'#e5e7eb'}">
-      <div style="font-size:22px;font-weight:800;color:${invalides>0?'#d97706':'#9ca3af'}">${invalides}</div>
-      <div style="font-size:11px;color:${invalides>0?'#d97706':'#9ca3af'};font-weight:600">Lignes invalides</div>
-    </div>
-    <div style="flex:1;background:#eff6ff;border-radius:10px;padding:.75rem 1rem;text-align:center;border:1px solid #bfdbfe">
-      <div style="font-size:22px;font-weight:800;color:#1d4ed8">${donnees.length}</div>
-      <div style="font-size:11px;color:#1d4ed8;font-weight:600">Total lignes</div>
-    </div>`;
-
+  const valides = donnees.filter(r=>r._valide).length;
+  document.getElementById('csv-step-1').style.display='none';
+  document.getElementById('csv-step-2').style.display='block';
   document.getElementById('csv-nb-valides').textContent = valides;
-  document.getElementById('btn-confirmer-import').disabled = valides === 0;
-
-  // En-têtes table
-  const colsAfficher = CSV_COLONNES.filter(c => entetes.includes(c));
-  document.getElementById('csv-thead').innerHTML =
-    `<tr>${colsAfficher.map(c=>`<th>${c}</th>`).join('')}<th>Statut</th></tr>`;
-
-  // Lignes
-  document.getElementById('csv-tbody').innerHTML = donnees.map(row => {
-    const cls = row._valide ? '' : 'background:#fff7f0';
-    return `<tr style="${cls}">
-      ${colsAfficher.map(c => `<td style="font-size:12px">${row[c]||'<span style="color:#d1d5db">—</span>'}</td>`).join('')}
-      <td>${row._valide
-        ? '<span class="badge green">✓ OK</span>'
-        : `<span class="badge red" title="${row._erreurs.join(', ')}">⚠ Erreur</span>`}
-      </td>
-    </tr>`;
-  }).join('');
-
-  // Bloc erreurs
-  if (erreurs.length) {
-    const bloc = document.getElementById('csv-erreurs');
-    bloc.style.display = 'block';
-    bloc.innerHTML = `<strong>⚠️ ${erreurs.length} ligne(s) ignorée(s) :</strong><br>` + erreurs.join('<br>');
-  }
+  document.getElementById('csv-resume').innerHTML =
+    '<div style="flex:1;background:#f0fdf4;border-radius:10px;padding:.75rem;text-align:center;border:1px solid #bbf7d0"><div style="font-size:22px;font-weight:800;color:#059669">'+valides+'</div><div style="font-size:11px;color:#059669;font-weight:600">Lignes valides</div></div>'+
+    '<div style="flex:1;background:#eff6ff;border-radius:10px;padding:.75rem;text-align:center;border:1px solid #bfdbfe"><div style="font-size:22px;font-weight:800;color:#1d4ed8">'+donnees.length+'</div><div style="font-size:11px;color:#1d4ed8;font-weight:600">Total</div></div>';
+  const cols = CSV_COLONNES.filter(c=>entetes.includes(c));
+  document.getElementById('csv-thead').innerHTML='<tr>'+cols.map(c=>'<th>'+c+'</th>').join('')+'<th>Statut</th></tr>';
+  document.getElementById('csv-tbody').innerHTML=donnees.map(row=>
+    '<tr style="'+(row._valide?'':'background:#fff7f0')+'">'
+    +cols.map(c=>'<td style="font-size:12px">'+(row[c]||'—')+'</td>').join('')
+    +'<td><span class="badge '+(row._valide?'green':'red')+'">'+(row._valide?'✓ OK':'⚠ Err')+'</span></td></tr>'
+  ).join('');
+  if (erreurs.length) { const b=document.getElementById('csv-erreurs'); b.style.display='block'; b.innerHTML='<strong>'+erreurs.length+' ligne(s) ignorée(s) :</strong><br>'+erreurs.join('<br>'); }
 }
-
 async function confirmerImportCSV() {
-  const valides = csvDonnees.filter(r => r._valide);
+  const valides = csvDonnees.filter(r=>r._valide);
   if (!valides.length) return;
-
-  const btn = document.getElementById('btn-confirmer-import');
-  btn.disabled = true; btn.textContent = '⏳ Import en cours...';
-
-  const inserts = valides.map(r => ({
-    ecole_id:  currentEcoleId,
-    matricule: r.matricule,
-    nom:       r.nom.toUpperCase(),
-    prenom:    r.prenom,
-    sexe:      (r.sexe||'M').toUpperCase(),
-    filiere:   r.filiere,
-    niveau:    r.niveau,
-    email:     r.email || null,
-    statut:    'actif',
-  }));
-
-  // Insertion par lots de 50
-  let succes = 0, echecs = 0;
-  const taille = 50;
-  for (let i = 0; i < inserts.length; i += taille) {
-    const lot = inserts.slice(i, i + taille);
-    const { error } = await db.from('etudiants').insert(lot);
-    if (error) {
-      // Si erreur de doublon (matricule unique), compter les échecs
-      echecs += lot.length;
-      console.error('Erreur import lot:', error.message);
-    } else {
-      succes += lot.length;
-    }
+  document.getElementById('btn-confirmer-import').disabled=true;
+  const inserts = valides.map(r=>({ecole_id:currentEcoleId,matricule:r.matricule,nom:r.nom.toUpperCase(),prenom:r.prenom,sexe:(r.sexe||'M').toUpperCase(),filiere:r.filiere,niveau:r.niveau,email:r.email||null,statut:'actif'}));
+  let succes=0, echecs=0;
+  for (let i=0;i<inserts.length;i+=50) {
+    const {error}=await db.from('etudiants').insert(inserts.slice(i,i+50));
+    if (error) echecs+=Math.min(50,inserts.length-i); else succes+=Math.min(50,inserts.length-i);
   }
-
-  // Afficher résultat
-  document.getElementById('csv-step-2').style.display = 'none';
-  document.getElementById('csv-step-3').style.display = 'block';
-
-  if (succes > 0) {
-    document.getElementById('csv-result-ico').textContent = '🎉';
-    document.getElementById('csv-result-titre').textContent = succes + ' étudiant(s) importé(s) !';
-    document.getElementById('csv-result-detail').textContent =
-      echecs > 0
-        ? `${succes} succès · ${echecs} échec(s) (matricules en doublon ou données invalides)`
-        : `Tous les étudiants ont été ajoutés avec succès.`;
-    showToast(succes + ' étudiant(s) importé(s) !', 'success');
-  } else {
-    document.getElementById('csv-result-ico').textContent = '❌';
-    document.getElementById('csv-result-titre').textContent = 'Import échoué';
-    document.getElementById('csv-result-detail').textContent = 'Vérifiez que les matricules ne sont pas déjà utilisés.';
-    showToast('Import échoué — matricules en doublon ?', 'error');
-  }
-  chargerDashboard();
+  document.getElementById('csv-step-2').style.display='none';
+  document.getElementById('csv-step-3').style.display='block';
+  document.getElementById('csv-result-ico').textContent= succes>0?'🎉':'❌';
+  document.getElementById('csv-result-titre').textContent= succes+' étudiant(s) importé(s)';
+  document.getElementById('csv-result-detail').textContent= echecs>0?echecs+' échec(s) (doublons?)':'Import réussi !';
+  showToast(succes+' importé(s) !','success'); chargerDashboard();
+}
+function resetCSVImport() {
+  csvDonnees=[];
+  document.getElementById('csv-file-input').value='';
+  document.getElementById('csv-step-1').style.display='block';
+  document.getElementById('csv-step-2').style.display='none';
+  document.getElementById('csv-step-3').style.display='none';
+  document.getElementById('csv-erreurs').style.display='none';
 }
 
-function resetCSVImport() {
-  csvDonnees = [];
-  document.getElementById('csv-file-input').value = '';
-  document.getElementById('csv-step-1').style.display = 'block';
-  document.getElementById('csv-step-2').style.display = 'none';
-  document.getElementById('csv-step-3').style.display = 'none';
-  document.getElementById('csv-erreurs').style.display = 'none';
-  document.getElementById('csv-resume').innerHTML = '';
+// ══ LIAISON PARENT-ÉTUDIANT  ★ JOUR 7 ══════════
+function ouvrirLienEtudiant(profileId, profileNom) {
+  document.getElementById('lien-profile-id').value = profileId;
+  document.getElementById('lien-profile-nom').textContent = profileNom;
+  const sel = document.getElementById('lien-etudiant-select');
+  sel.innerHTML = '<option value="">— Aucun (supprimer liaison) —</option>';
+  tousLesEtudiants.forEach(e=>{
+    const o=document.createElement('option'); o.value=e.id;
+    o.textContent=e.nom+' '+e.prenom+' — '+e.filiere+' '+e.niveau+' ('+e.matricule+')';
+    sel.appendChild(o);
+  });
+  ouvrirModal('modal-lier-etudiant');
+}
+async function sauvegarderLienEtudiant() {
+  const profileId  = document.getElementById('lien-profile-id').value;
+  const etudiantId = document.getElementById('lien-etudiant-select').value;
+  const {error} = await db.from('profiles').update({etudiant_id:etudiantId||null}).eq('id',profileId);
+  if (error) { showToast('Erreur : '+error.message,'error'); return; }
+  fermerModal('modal-lier-etudiant');
+  showToast(etudiantId?'🔗 Liaison enregistrée !':'Liaison supprimée.','success');
+  if (typeof chargerUtilisateurs==='function') chargerUtilisateurs();
 }
 
 // PWA Service Worker
@@ -2854,656 +2788,6 @@ window.addEventListener('appinstalled', function() {
   if (b) b.classList.remove('show');
   showToast('EduLink installe sur votre appareil !','success');
 });
-
-</script>
-
-<script>
-// ══ EDULINK AUTH (inline) ══
-/* =====================================================================
-   EduLink — Auth Jour 5 : Supabase Auth + fallback demo
-   ===================================================================== */
-
-var ROLE_PERMISSIONS = {
-  admin:      { pages:['dashboard','etudiants','presences','notes','emploi','messages','discipline','paiements','documents','rapports','utilisateurs','parametres'], label:'Administrateur', color:'#7c3aed' },
-  enseignant: { pages:['dashboard','etudiants','presences','notes','emploi','messages'], label:'Enseignant', color:'#059669' },
-  comptable:  { pages:['dashboard','paiements','rapports','etudiants'], label:'Comptable', color:'#d97706' },
-  parent:     { pages:['dashboard','notes','messages','presences'], label:'Parent / Tuteur', color:'#1d4ed8' },
-  etudiant:   { pages:['dashboard','notes','presences','emploi'], label:'Etudiant', color:'#6b7280' },
-};
-
-var DEMO_USERS = [
-  { email:'admin@edulink.bj',  mdp:'admin123',  prenom:'Serge',    nom:'AHOUNOU', role:'admin',      avatar:'SA', actif:true  },
-  { email:'compta@edulink.bj', mdp:'compta123', prenom:'Fatima',   nom:'BONI',    role:'comptable',  avatar:'FB', actif:true  },
-  { email:'prof@edulink.bj',   mdp:'prof123',   prenom:'Rodrigue', nom:'DOSSOU',  role:'enseignant', avatar:'RD', actif:true  },
-  { email:'parent@edulink.bj', mdp:'parent123', prenom:'Marie',    nom:'ADJOVI',  role:'parent',     avatar:'MA', actif:true  },
-  { email:'etud@edulink.bj',   mdp:'etud123',   prenom:'Kofi',     nom:'BAGRI',   role:'etudiant',   avatar:'KB', actif:false },
-];
-
-var currentUser = null;
-var toutesLesNotifs = [];
-var notifIdCounter = 1;
-var tousLesUtilisateurs = DEMO_USERS.slice();
-
-function fillDemo(email, mdp) {
-  document.getElementById('login-email').value = email;
-  document.getElementById('login-pwd').value   = mdp;
-}
-
-function setLoginLoading(on) {
-  var btn = document.getElementById('login-btn');
-  if (!btn) return;
-  btn.disabled    = on;
-  btn.textContent = on ? 'Connexion...' : 'Se connecter';
-}
-
-function showLoginError(msg) {
-  var el = document.getElementById('login-error');
-  if (!el) return;
-  el.textContent   = msg;
-  el.style.display = 'block';
-}
-
-function hideLoginError() {
-  var el = document.getElementById('login-error');
-  if (el) el.style.display = 'none';
-}
-
-// ━━━━━━ CONNEXION ━━━━━━
-function seConnecter() {
-  var email = (document.getElementById('login-email').value || '').trim().toLowerCase();
-  var mdp   = (document.getElementById('login-pwd').value   || '');
-  hideLoginError();
-  if (!email || !mdp) { showLoginError('Remplissez email et mot de passe.'); return; }
-  setLoginLoading(true);
-
-  if (typeof db !== 'undefined' && db.auth) {
-    db.auth.signInWithPassword({ email: email, password: mdp })
-      .then(function(res) {
-        if (res.error) {
-          fallbackDemo(email, mdp);
-        } else {
-          chargerProfilSupabase(res.data.user);
-        }
-      })
-      .catch(function() { fallbackDemo(email, mdp); });
-  } else {
-    setTimeout(function() { fallbackDemo(email, mdp); }, 400);
-  }
-}
-
-function fallbackDemo(email, mdp) {
-  var found = null;
-  for (var i = 0; i < DEMO_USERS.length; i++) {
-    if (DEMO_USERS[i].email === email && DEMO_USERS[i].mdp === mdp) { found = DEMO_USERS[i]; break; }
-  }
-  if (!found) { setLoginLoading(false); showLoginError('E-mail ou mot de passe incorrect.'); return; }
-  if (!found.actif) { setLoginLoading(false); showLoginError('Compte desactive. Contactez un administrateur.'); return; }
-  currentUser = { id:'demo', email:found.email, prenom:found.prenom, nom:found.nom, role:found.role, avatar:found.avatar, actif:true, source:'demo' };
-  try { sessionStorage.setItem('edulink_user', JSON.stringify(currentUser)); } catch(e) {}
-  ouvrirSession();
-}
-
-function chargerProfilSupabase(authUser) {
-  var meta = authUser.user_metadata || {};
-  if (typeof db !== 'undefined') {
-    db.from('profiles').select('*').eq('id', authUser.id).single()
-      .then(function(res) {
-        var p = (res.data) ? res.data : null;
-        currentUser = {
-          id:     authUser.id,
-          email:  authUser.email,
-          prenom: p ? p.prenom : (meta.prenom || authUser.email.split('@')[0]),
-          nom:    p ? p.nom    : (meta.nom    || ''),
-          role:   p ? p.role   : (meta.role   || 'etudiant'),
-          avatar: p ? (p.avatar || ((p.prenom||'?')[0]+(p.nom||'?')[0])) : (meta.avatar || 'US'),
-          actif:  p ? p.actif  : true,
-          source: 'supabase'
-        };
-        if (!currentUser.actif) {
-          db.auth.signOut();
-          setLoginLoading(false);
-          showLoginError('Compte desactive. Contactez un administrateur.');
-          return;
-        }
-        try { sessionStorage.setItem('edulink_user', JSON.stringify(currentUser)); } catch(e) {}
-        ouvrirSession();
-      })
-      .catch(function() {
-        currentUser = { id:authUser.id, email:authUser.email, prenom:meta.prenom||authUser.email.split('@')[0], nom:meta.nom||'', role:meta.role||'etudiant', avatar:meta.avatar||'US', actif:true, source:'supabase' };
-        try { sessionStorage.setItem('edulink_user', JSON.stringify(currentUser)); } catch(e) {}
-        ouvrirSession();
-      });
-  }
-}
-
-// ━━━━━━ SESSION ━━━━━━
-function ouvrirSession() {
-  setLoginLoading(false);
-  document.getElementById('login-screen').style.display = 'none';
-  document.getElementById('app-main').style.display     = 'flex';
-
-  var perms = ROLE_PERMISSIONS[currentUser.role] || ROLE_PERMISSIONS.etudiant;
-  var navAvatar = document.getElementById('nav-avatar');
-  var navName   = document.getElementById('nav-user-name');
-  var navRole   = document.getElementById('nav-user-role');
-  if (navAvatar) navAvatar.textContent = currentUser.avatar || '?';
-  if (navName)   navName.textContent   = currentUser.prenom + ' ' + currentUser.nom;
-  if (navRole)   navRole.textContent   = perms.label;
-
-  var srcBadge = document.getElementById('auth-source-badge');
-  if (srcBadge) {
-    srcBadge.textContent   = currentUser.source === 'supabase' ? 'Supabase Auth' : 'Mode demo';
-    srcBadge.style.color   = currentUser.source === 'supabase' ? '#059669' : '#c97c1a';
-    srcBadge.style.display = 'block';
-  }
-
-  var allNav = { dashboard:'nav-dashboard', etudiants:'nav-etudiants', presences:'nav-presences', notes:'nav-notes', emploi:'nav-emploi', messages:'nav-messages', discipline:'nav-discipline', paiements:'nav-paiements', documents:'nav-documents', rapports:'nav-rapports', utilisateurs:'nav-utilisateurs', parametres:'nav-parametres' };
-  Object.keys(allNav).forEach(function(page) {
-    var el = document.getElementById(allNav[page]);
-    if (el) el.style.display = perms.pages.indexOf(page) !== -1 ? 'flex' : 'none';
-  });
-
-  genererNotifications();
-  afficherNotifsNav();
-
-  var firstPage = perms.pages[0] || 'dashboard';
-  function doShowFirst() {
-    if (typeof showPage === 'function') {
-      if (typeof chargerEcoles === 'function') {
-        chargerEcoles().then(function() { showPage(firstPage); }).catch(function() { showPage(firstPage); });
-      } else {
-        showPage(firstPage);
-      }
-    } else {
-      setTimeout(doShowFirst, 30);
-    }
-  }
-  doShowFirst();
-  if (typeof showToast === 'function') showToast('Bienvenue, ' + currentUser.prenom + ' !', 'success');
-}
-
-function seDeconnecter() {
-  if (typeof db !== 'undefined' && db.auth && currentUser && currentUser.source === 'supabase') {
-    db.auth.signOut();
-  }
-  currentUser = null;
-  toutesLesNotifs = [];
-  try { sessionStorage.removeItem('edulink_user'); } catch(e) {}
-  document.getElementById('app-main').style.display    = 'none';
-  document.getElementById('login-screen').style.display = 'flex';
-  document.getElementById('login-email').value = '';
-  document.getElementById('login-pwd').value   = '';
-  hideLoginError();
-}
-
-function checkSession() {
-  if (typeof db !== 'undefined' && db.auth) {
-    db.auth.getSession().then(function(res) {
-      if (res.data && res.data.session && res.data.session.user) {
-        chargerProfilSupabase(res.data.session.user);
-      } else {
-        checkSessionStorage();
-      }
-    }).catch(function() { checkSessionStorage(); });
-  } else {
-    checkSessionStorage();
-  }
-}
-
-function checkSessionStorage() {
-  try {
-    var s = sessionStorage.getItem('edulink_user');
-    if (s) { currentUser = JSON.parse(s); ouvrirSession(); }
-  } catch(e) {}
-}
-
-// ━━━━━━ UTILISATEURS ━━━━━━
-function chargerUtilisateurs() {
-  var tbody = document.getElementById('tbody-utilisateurs');
-  if (!tbody) return;
-
-  var rC = { admin:'purple', enseignant:'green', comptable:'amber', parent:'blue', etudiant:'gray' };
-  var rL = { admin:'Administrateur', enseignant:'Enseignant', comptable:'Comptable', parent:'Parent', etudiant:'Etudiant' };
-
-  if (typeof db !== 'undefined') {
-    db.from('profiles').select('*').order('nom')
-      .then(function(res) {
-        if (res.data && res.data.length > 0) {
-          tousLesUtilisateurs = res.data.map(function(p) {
-            return { id:p.id, email:'—', prenom:p.prenom, nom:p.nom, role:p.role, avatar:p.avatar||((p.prenom||'?')[0]+(p.nom||'?')[0]), actif:p.actif, lastLogin:null, source:'supabase' };
-          });
-        } else {
-          tousLesUtilisateurs = DEMO_USERS.slice();
-        }
-        updateUserCounts();
-        afficherUtilisateurs(tousLesUtilisateurs);
-      })
-      .catch(function() {
-        tousLesUtilisateurs = DEMO_USERS.slice();
-        updateUserCounts();
-        afficherUtilisateurs(tousLesUtilisateurs);
-      });
-  } else {
-    tousLesUtilisateurs = DEMO_USERS.slice();
-    updateUserCounts();
-    afficherUtilisateurs(tousLesUtilisateurs);
-  }
-
-  var ecole = (typeof tousLesEcoles !== 'undefined') ? tousLesEcoles.find(function(e){ return e.id === currentEcoleId; }) : null;
-  var nomEl = document.getElementById('sub-ecole-util-nom');
-  if (nomEl) nomEl.textContent = ecole ? ecole.nom : '';
-}
-
-function updateUserCounts() {
-  var c = { admin:0, enseignant:0, comptable:0, parent:0, etudiant:0 };
-  tousLesUtilisateurs.forEach(function(u) { if (c[u.role] !== undefined) c[u.role]++; });
-  ['admins','profs','comptas','parents'].forEach(function(k, i) {
-    var keys = ['admin','enseignant','comptable','parentetudiant'];
-    var el = document.getElementById('cnt-' + k);
-    if (el) el.textContent = k === 'parents' ? (c.parent + c.etudiant) : c[['admin','enseignant','comptable'][i]];
-  });
-}
-
-function afficherUtilisateurs(liste) {
-  var tbody = document.getElementById('tbody-utilisateurs');
-  if (!tbody || !liste) return;
-  var rC = { admin:'purple', enseignant:'green', comptable:'amber', parent:'blue', etudiant:'gray' };
-  var rL = { admin:'Administrateur', enseignant:'Enseignant', comptable:'Comptable', parent:'Parent', etudiant:'Etudiant' };
-  if (!liste.length) { tbody.innerHTML = '<tr><td colspan="6" class="loading">Aucun utilisateur.</td></tr>'; return; }
-  tbody.innerHTML = liste.map(function(u) {
-    var isMe = currentUser && u.id === currentUser.id;
-    return '<tr><td><div style="display:flex;align-items:center;gap:10px">' +
-      '<div style="width:34px;height:34px;border-radius:50%;background:#c97c1a;color:#fff;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center">'+(u.avatar||'?')+'</div>' +
-      '<div><strong>'+u.prenom+' '+u.nom+'</strong></div></div></td>' +
-      '<td style="font-size:12px;color:#6b7280">'+u.email+'</td>' +
-      '<td><span class="badge '+(rC[u.role]||'gray')+'">'+(rL[u.role]||u.role)+'</span></td>' +
-      '<td><span class="badge '+(u.actif?'green':'red')+'">'+(u.actif?'Actif':'Inactif')+'</span></td>' +
-      '<td style="font-size:12px;color:#6b7280">'+(u.lastLogin?u.lastLogin:'Jamais')+'</td>' +
-      '<td>'+(isMe?'<span style="font-size:11px;color:#6b7280">Vous</span>':'<button class="btn-sm '+(u.actif?'btn-red':'btn-green')+'" onclick="toggleUserActif(\''+u.id+'\')">'+(u.actif?'Desactiver':'Activer')+'</button>')+'</td>' +
-    '</tr>';
-  }).join('');
-}
-
-function filtrerUtilisateurs(q) {
-  var f = q.toLowerCase();
-  afficherUtilisateurs(tousLesUtilisateurs.filter(function(u) {
-    return (u.nom||'').toLowerCase().indexOf(f)!==-1||(u.prenom||'').toLowerCase().indexOf(f)!==-1||(u.email||'').toLowerCase().indexOf(f)!==-1;
-  }));
-}
-
-function toggleEtudiantField() {
-  var role  = document.getElementById('input-user-role').value;
-  var field = document.getElementById('user-etudiant-field');
-  if (field) field.style.display = (role==='etudiant'||role==='parent') ? 'block' : 'none';
-}
-
-function creerUtilisateur() {
-  var prenom = (document.getElementById('input-user-prenom').value||'').trim();
-  var nom    = (document.getElementById('input-user-nom').value||'').trim();
-  var email  = (document.getElementById('input-user-email').value||'').trim().toLowerCase();
-  var mdp    = (document.getElementById('input-user-mdp').value||'');
-  var role   = (document.getElementById('input-user-role').value||'etudiant');
-  if (!prenom||!nom||!email||!mdp) { if(typeof showToast==='function') showToast('Remplissez tous les champs.','error'); return; }
-  if (mdp.length < 6) { if(typeof showToast==='function') showToast('Mot de passe : 6 caracteres minimum.','error'); return; }
-  var avatar = (prenom[0]||'?').toUpperCase()+(nom[0]||'?').toUpperCase();
-  DEMO_USERS.push({ email:email, mdp:mdp, prenom:prenom, nom:nom, role:role, avatar:avatar, actif:true });
-  fermerModal('modal-user');
-  ['input-user-prenom','input-user-nom','input-user-email','input-user-mdp'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
-  if(typeof showToast==='function') showToast('Utilisateur cree : '+email,'success');
-  ajouterNotif('info','Nouvel utilisateur', prenom+' '+nom+' ('+role+') ajoute.');
-  chargerUtilisateurs();
-}
-
-function toggleUserActif(id) {
-  var u = tousLesUtilisateurs.find(function(x){ return x.id===id; });
-  if (!u) return;
-  u.actif = !u.actif;
-  if (typeof db !== 'undefined' && u.source === 'supabase') {
-    db.from('profiles').update({ actif: u.actif }).eq('id', id);
-  }
-  if(typeof showToast==='function') showToast((u.actif?u.prenom+' reactivé.':u.prenom+' desactivé.'), u.actif?'success':'info');
-  chargerUtilisateurs();
-}
-
-// ━━━━━━ NOTIFS IN-APP ━━━━━━
-function ajouterNotif(type, title, msg) {
-  toutesLesNotifs.unshift({ id:notifIdCounter++, type:type, title:title, msg:msg, lu:false, time:new Date() });
-  afficherNotifsNav();
-}
-
-function genererNotifications() {
-  toutesLesNotifs = [];
-  ajouterNotif('absence','Absence detectee','BAGRI Sadou absent en Finance aujourd\'hui.');
-  ajouterNotif('system','Bienvenue sur EduLink','Connexion reussie. Bonne journee !');
-}
-
-function afficherNotifsNav() {
-  var nonLus = toutesLesNotifs.filter(function(n){ return !n.lu; }).length;
-  var badge  = document.getElementById('notif-badge');
-  if (badge) { badge.textContent = nonLus>9?'9+':nonLus; badge.style.display = nonLus>0?'flex':'none'; }
-}
-
-function afficherNotifsPanel() {
-  var list = document.getElementById('notif-list');
-  if (!list) return;
-  if (!toutesLesNotifs.length) { list.innerHTML = '<div class="notif-empty">Aucune notification</div>'; return; }
-  list.innerHTML = toutesLesNotifs.map(function(n) {
-    var diff = Math.floor((Date.now()-new Date(n.time))/1000);
-    var t = diff<60?"A l'instant":diff<3600?"Il y a "+Math.floor(diff/60)+" min":"Il y a "+Math.floor(diff/3600)+" h";
-    return '<div class="notif-item '+(n.lu?'':'unread')+'" onclick="marquerLuNotif('+n.id+')">' +
-      '<div class="ni-body"><div class="ni-title">'+n.title+'</div><div class="ni-msg">'+n.msg+'</div><div class="ni-time">'+t+'</div></div></div>';
-  }).join('');
-}
-
-function marquerLuNotif(id) {
-  var n = toutesLesNotifs.find(function(x){ return x.id===id; });
-  if (n) n.lu = true;
-  afficherNotifsNav(); afficherNotifsPanel();
-}
-
-function toutMarquerLu() {
-  toutesLesNotifs.forEach(function(n){ n.lu=true; });
-  afficherNotifsNav(); afficherNotifsPanel();
-  if(typeof showToast==='function') showToast('Toutes les notifications lues','success');
-}
-
-function ouvrirNotifPanel() {
-  afficherNotifsPanel();
-  document.getElementById('notif-panel').classList.add('open');
-  document.getElementById('notif-overlay').classList.add('open');
-}
-
-function fermerNotifPanel() {
-  document.getElementById('notif-panel').classList.remove('open');
-  document.getElementById('notif-overlay').classList.remove('open');
-}
-
-setInterval(function() {
-  if (!currentUser || typeof db === 'undefined') return;
-  var today = new Date().toISOString().split('T')[0];
-  db.from('absences').select('*',{count:'exact',head:true}).eq('date_absence',today).then(function(res) {
-    var nb = res.count||0;
-    if (nb>0 && !toutesLesNotifs.find(function(n){ return n.type==='absence'&&!n.lu; })) {
-      ajouterNotif('absence','Nouvelles absences', nb+' absence(s) aujourd\'hui.');
-    }
-  });
-}, 60000);
-
-window.addEventListener('DOMContentLoaded', function() { checkSession(); });
-
-</script>
-<script>
-// ══ EDULINK NOTIF (inline) ══
-/* =====================================================================
-   EduLink — Notifications Email (Brevo API)
-   Brevo gratuit : 300 emails/jour
-   Config : renseigner BREVO_API_KEY et EMAIL_EXPEDITEUR ci-dessous
-   ===================================================================== */
-
-var NOTIF_CONFIG = {
-  brevoApiKey:    'VOTRE_CLE_BREVO_ICI',   // https://app.brevo.com → API Keys
-  emailExpediteur: 'noreply@edulink.bj',
-  nomExpediteur:   'EduLink Bénin',
-  actif: false  // passer à true après avoir configuré la clé
-};
-
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-//  FONCTION CENTRALE : envoyer un email via Brevo
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-async function envoyerEmailBrevo(opts) {
-  if (!NOTIF_CONFIG.actif) {
-    console.log('[EduLink Notif] Email simulé (Brevo non configuré):', opts);
-    return { ok: false, simule: true };
-  }
-  if (!NOTIF_CONFIG.brevoApiKey || NOTIF_CONFIG.brevoApiKey === 'VOTRE_CLE_BREVO_ICI') {
-    console.warn('[EduLink Notif] Clé Brevo manquante. Configurez NOTIF_CONFIG.brevoApiKey');
-    return { ok: false, erreur: 'cle_manquante' };
-  }
-
-  try {
-    var res = await fetch('https://api.brevo.com/v3/smtp/email', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'api-key': NOTIF_CONFIG.brevoApiKey
-      },
-      body: JSON.stringify({
-        sender:   { name: NOTIF_CONFIG.nomExpediteur, email: NOTIF_CONFIG.emailExpediteur },
-        to:       opts.destinataires,
-        subject:  opts.objet,
-        htmlContent: opts.html
-      })
-    });
-    var data = await res.json();
-    if (res.ok) {
-      console.log('[EduLink Notif] Email envoyé à', opts.destinataires.map(function(d){ return d.email; }).join(', '));
-      return { ok: true, messageId: data.messageId };
-    } else {
-      console.error('[EduLink Notif] Erreur Brevo:', data);
-      return { ok: false, erreur: data };
-    }
-  } catch (e) {
-    console.error('[EduLink Notif] Fetch error:', e);
-    return { ok: false, erreur: e.message };
-  }
-}
-
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-//  TEMPLATES EMAILS
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-function templateBase(titre, contenu, couleur) {
-  couleur = couleur || '#1e3a5f';
-  return '<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">' +
-  '<style>body{font-family:Arial,sans-serif;background:#f3f4f6;margin:0;padding:20px}' +
-  '.card{background:#fff;border-radius:12px;max-width:600px;margin:0 auto;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.1)}' +
-  '.header{background:'+couleur+';color:#fff;padding:24px 32px}' +
-  '.header h1{margin:0;font-size:22px}.header p{margin:6px 0 0;opacity:.8;font-size:13px}' +
-  '.body{padding:28px 32px;color:#374151;line-height:1.6;font-size:14px}' +
-  '.footer{background:#f9fafb;padding:16px 32px;text-align:center;font-size:12px;color:#9ca3af;border-top:1px solid #e5e7eb}' +
-  '.btn{display:inline-block;background:'+couleur+';color:#fff;padding:10px 24px;border-radius:8px;text-decoration:none;font-weight:700;margin-top:16px}' +
-  '.badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:12px;font-weight:700}' +
-  '.red{background:#fee2e2;color:#dc2626}.green{background:#dcfce7;color:#059669}.amber{background:#fef9c3;color:#d97706}' +
-  '</style></head><body>' +
-  '<div class="card">' +
-  '<div class="header"><h1>🎓 EduLink</h1><p>' + titre + '</p></div>' +
-  '<div class="body">' + contenu + '</div>' +
-  '<div class="footer">EduLink — Plateforme de gestion scolaire · Bénin<br>Ce message est automatique, merci de ne pas y répondre.</div>' +
-  '</div></body></html>';
-}
-
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-//  NOTIFICATIONS MÉTIER
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-// 1. Absence détectée → notifier le parent
-async function notifAbsenceParent(opts) {
-  // opts: { parentEmail, parentNom, etudiantNom, matiere, date, statut, ecoleNom }
-  var couleur = opts.statut === 'absent' ? '#dc2626' : '#d97706';
-  var contenu =
-    '<p>Bonjour <strong>' + opts.parentNom + '</strong>,</p>' +
-    '<p>Nous vous informons que votre enfant <strong>' + opts.etudiantNom + '</strong> ' +
-    'a été enregistré(e) <span class="badge ' + (opts.statut==='absent'?'red':'amber') + '">' + opts.statut + '</span> ' +
-    'lors du cours de <strong>' + opts.matiere + '</strong> le <strong>' + opts.date + '</strong>.</p>' +
-    '<p>Si cette absence est justifiée, veuillez contacter l\'administration de ' + opts.ecoleNom + ' dans les plus brefs délais.</p>' +
-    '<p>Vous pouvez également consulter le détail via le portail parents :</p>' +
-    '<a class="btn" href="edulink-portail.html">Accéder au portail</a>';
-
-  return envoyerEmailBrevo({
-    destinataires: [{ email: opts.parentEmail, name: opts.parentNom }],
-    objet: '🚫 Absence de ' + opts.etudiantNom + ' — ' + opts.matiere,
-    html:  templateBase('Notification d\'absence', contenu, couleur)
-  });
-}
-
-// 2. Facture impayée → rappel
-async function notifFactureImpayee(opts) {
-  // opts: { parentEmail, parentNom, etudiantNom, reference, montant, echeance, ecoleNom }
-  var contenu =
-    '<p>Bonjour <strong>' + opts.parentNom + '</strong>,</p>' +
-    '<p>Nous vous rappelons que la facture <strong>' + opts.reference + '</strong> ' +
-    'd\'un montant de <strong>' + opts.montant + ' FCFA</strong> pour <strong>' + opts.etudiantNom + '</strong> ' +
-    'arrive à échéance le <strong>' + opts.echeance + '</strong>.</p>' +
-    '<p>Merci de procéder au règlement avant cette date pour éviter tout désagrément.</p>' +
-    '<table style="border-collapse:collapse;width:100%;margin:16px 0">' +
-    '<tr style="background:#f9fafb"><td style="padding:8px 12px;font-weight:600;border:1px solid #e5e7eb">Référence</td><td style="padding:8px 12px;border:1px solid #e5e7eb">' + opts.reference + '</td></tr>' +
-    '<tr><td style="padding:8px 12px;font-weight:600;border:1px solid #e5e7eb">Montant</td><td style="padding:8px 12px;border:1px solid #e5e7eb">' + opts.montant + ' FCFA</td></tr>' +
-    '<tr style="background:#f9fafb"><td style="padding:8px 12px;font-weight:600;border:1px solid #e5e7eb">Echéance</td><td style="padding:8px 12px;border:1px solid #e5e7eb"><strong style="color:#dc2626">' + opts.echeance + '</strong></td></tr>' +
-    '</table>' +
-    '<a class="btn" href="edulink-portail.html">Voir ma facture</a>';
-
-  return envoyerEmailBrevo({
-    destinataires: [{ email: opts.parentEmail, name: opts.parentNom }],
-    objet: '💳 Rappel de paiement — ' + opts.reference,
-    html:  templateBase('Rappel de paiement', contenu, '#d97706')
-  });
-}
-
-// 3. Bulletin disponible → notifier
-async function notifBulletinDisponible(opts) {
-  // opts: { parentEmail, parentNom, etudiantNom, periode, moyenne, ecoleNom }
-  var couleur = parseFloat(opts.moyenne) >= 10 ? '#059669' : '#dc2626';
-  var contenu =
-    '<p>Bonjour <strong>' + opts.parentNom + '</strong>,</p>' +
-    '<p>Le bulletin de notes de <strong>' + opts.etudiantNom + '</strong> ' +
-    'pour la période <strong>' + opts.periode + '</strong> est disponible.</p>' +
-    '<div style="text-align:center;padding:20px;background:#f9fafb;border-radius:10px;margin:16px 0">' +
-    '<div style="font-size:40px;font-weight:800;color:' + couleur + '">' + opts.moyenne + '/20</div>' +
-    '<div style="font-size:14px;color:#6b7280;margin-top:4px">Moyenne générale — ' + opts.periode + '</div>' +
-    '</div>' +
-    '<a class="btn" href="edulink-portail.html" style="background:' + couleur + '">Consulter le bulletin complet</a>';
-
-  return envoyerEmailBrevo({
-    destinataires: [{ email: opts.parentEmail, name: opts.parentNom }],
-    objet: '📊 Bulletin ' + opts.periode + ' disponible — ' + opts.etudiantNom,
-    html:  templateBase('Bulletin de notes disponible', contenu, couleur)
-  });
-}
-
-// 4. Incident disciplinaire → notifier
-async function notifIncident(opts) {
-  // opts: { parentEmail, parentNom, etudiantNom, typeIncident, severite, date, ecoleNom }
-  var couleur = opts.severite==='haute'?'#dc2626':opts.severite==='moyenne'?'#d97706':'#6b7280';
-  var contenu =
-    '<p>Bonjour <strong>' + opts.parentNom + '</strong>,</p>' +
-    '<p>Nous vous informons qu\'un incident a été enregistré concernant votre enfant <strong>' + opts.etudiantNom + '</strong> ' +
-    'le <strong>' + opts.date + '</strong> à ' + opts.ecoleNom + '.</p>' +
-    '<div style="border-left:4px solid ' + couleur + ';padding:12px 16px;background:#f9fafb;margin:16px 0;border-radius:0 8px 8px 0">' +
-    '<div><strong>Type :</strong> ' + opts.typeIncident + '</div>' +
-    '<div style="margin-top:4px"><strong>Sévérité :</strong> <span style="color:' + couleur + ';font-weight:700">' + opts.severite.toUpperCase() + '</span></div>' +
-    '</div>' +
-    '<p>Nous vous invitons à prendre contact avec l\'administration pour en discuter.</p>';
-
-  return envoyerEmailBrevo({
-    destinataires: [{ email: opts.parentEmail, name: opts.parentNom }],
-    objet: '⚠️ Incident signalé — ' + opts.etudiantNom,
-    html:  templateBase('Notification d\'incident', contenu, couleur)
-  });
-}
-
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-//  BOUTON ENVOI RAPIDE (depuis le back-office)
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-async function envoyerRappelsPaiement() {
-  if (typeof db === 'undefined') { showToast('Supabase non disponible.', 'error'); return; }
-
-  showToast('Envoi des rappels en cours...', 'info');
-
-  var res = await db.from('factures')
-    .select('*, etudiants(nom, prenom, email)')
-    .in('statut', ['en_attente', 'retard'])
-    .order('date_echeance');
-
-  if (!res.data || !res.data.length) { showToast('Aucune facture impayee.', 'info'); return; }
-
-  var envoyes = 0;
-  for (var i = 0; i < res.data.length; i++) {
-    var f = res.data[i];
-    if (!f.etudiants || !f.etudiants.email) continue;
-    await notifFactureImpayee({
-      parentEmail:  f.etudiants.email,
-      parentNom:    'Parent de ' + f.etudiants.nom + ' ' + f.etudiants.prenom,
-      etudiantNom:  f.etudiants.nom + ' ' + f.etudiants.prenom,
-      reference:    f.reference,
-      montant:      new Intl.NumberFormat('fr-FR').format(f.montant_total - f.montant_paye),
-      echeance:     f.date_echeance ? new Date(f.date_echeance).toLocaleDateString('fr-FR') : '—',
-      ecoleNom:     'EduLink'
-    });
-    envoyes++;
-  }
-
-  if (NOTIF_CONFIG.actif) {
-    showToast(envoyes + ' rappel(s) envoye(s) !', 'success');
-  } else {
-    showToast(envoyes + ' rappel(s) simule(s) (Brevo non configure).', 'info');
-  }
-  ajouterNotif('paiement', 'Rappels envoyes', envoyes + ' email(s) de rappel envoyes aux parents.');
-}
-
-async function envoyerNotifAbsencesJour() {
-  if (typeof db === 'undefined') { showToast('Supabase non disponible.', 'error'); return; }
-
-  var today = new Date().toISOString().split('T')[0];
-  var res = await db.from('absences')
-    .select('*, etudiants(nom, prenom, email)')
-    .eq('date_absence', today)
-    .eq('parent_notifie', false);
-
-  if (!res.data || !res.data.length) { showToast('Toutes les absences ont ete notifiees.', 'info'); return; }
-
-  var envoyes = 0;
-  for (var i = 0; i < res.data.length; i++) {
-    var a = res.data[i];
-    if (!a.etudiants || !a.etudiants.email) continue;
-    await notifAbsenceParent({
-      parentEmail:  a.etudiants.email,
-      parentNom:    'Parent de ' + a.etudiants.nom,
-      etudiantNom:  a.etudiants.nom + ' ' + a.etudiants.prenom,
-      matiere:      a.matiere,
-      date:         new Date(a.date_absence).toLocaleDateString('fr-FR'),
-      statut:       a.statut,
-      ecoleNom:     'EduLink'
-    });
-    // Marquer comme notifié
-    await db.from('absences').update({ parent_notifie: true }).eq('id', a.id);
-    envoyes++;
-  }
-
-  showToast(envoyes + ' parent(s) notifie(s) !', 'success');
-}
-
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-//  MODAL DE CONFIGURATION BREVO
-// ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-function ouvrirConfigNotif() {
-  var modal = document.getElementById('modal-notif-config');
-  if (modal) {
-    var inp = document.getElementById('input-brevo-key');
-    if (inp) inp.value = NOTIF_CONFIG.brevoApiKey !== 'VOTRE_CLE_BREVO_ICI' ? NOTIF_CONFIG.brevoApiKey : '';
-    modal.classList.add('open');
-  }
-}
-
-function sauvegarderConfigNotif() {
-  var key = (document.getElementById('input-brevo-key').value||'').trim();
-  var exp = (document.getElementById('input-brevo-email').value||'').trim();
-  if (!key) { if(typeof showToast==='function') showToast('Entrez votre cle Brevo.','error'); return; }
-  NOTIF_CONFIG.brevoApiKey      = key;
-  NOTIF_CONFIG.actif            = true;
-  if (exp) NOTIF_CONFIG.emailExpediteur = exp;
-  try { localStorage.setItem('edulink_brevo_key', key); if(exp) localStorage.setItem('edulink_brevo_email', exp); } catch(e) {}
-  fermerModal('modal-notif-config');
-  if(typeof showToast==='function') showToast('Configuration Brevo sauvegardee !','success');
-}
-
-// Charger config sauvegardee
-(function loadBrevoConfig() {
-  try {
-    var k = localStorage.getItem('edulink_brevo_key');
-    var e = localStorage.getItem('edulink_brevo_email');
-    if (k) { NOTIF_CONFIG.brevoApiKey = k; NOTIF_CONFIG.actif = true; }
-    if (e)   NOTIF_CONFIG.emailExpediteur = e;
-  } catch(err) {}
-})();
 
 </script>
 </body>
