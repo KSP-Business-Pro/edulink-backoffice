@@ -3154,19 +3154,32 @@ async function sauvegarderPV() {
     const etudiantId = inp.id.replace('pv-note-','');
     const val = parseFloat(inp.value);
     if (isNaN(val) || inp.value === '') continue;
-    // Upsert
-    const { error } = await db.from('notes').upsert({
-      ecole_id: currentEcoleId,
-      etudiant_id: etudiantId,
-      matiere: examen.matiere,
-      note: val,
-      coefficient: 1,
-      periode: periode,
-    }, { onConflict: 'ecole_id,etudiant_id,matiere,periode' });
-    if (error) errs++; else nb++;
+    // Vérifier si une note existe déjà pour cet examen
+    const { data: existing } = await db.from('notes')
+      .select('id')
+      .eq('etudiant_id', etudiantId)
+      .eq('matiere', examen.matiere)
+      .eq('periode', periode)
+      .maybeSingle();
+    let error;
+    if (existing) {
+      // Mise à jour
+      ({ error } = await db.from('notes').update({ note: val }).eq('id', existing.id));
+    } else {
+      // Insertion
+      ({ error } = await db.from('notes').insert([{
+        ecole_id: currentEcoleId || null,
+        etudiant_id: etudiantId,
+        matiere: examen.matiere,
+        note: val,
+        coefficient: 1,
+        periode: periode,
+      }]));
+    }
+    if (error) { console.error('PV error:', error.message); errs++; } else nb++;
   }
   fermerModal('modal-pv-examen');
-  showToast(`✅ ${nb} note(s) enregistrée(s)${errs?` · ${errs} erreur(s)`:''}`, nb > 0 ? 'success' : 'error');
+  showToast(`✅ ${nb} note(s) enregistrée(s)${errs?' · '+errs+' erreur(s)':''}`, nb > 0 ? 'success' : 'error');
   chargerExamens();
 }
 
