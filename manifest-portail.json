@@ -1,0 +1,43 @@
+{
+  "name": "EduLink Famille",
+  "short_name": "EduLink Famille",
+  "description": "Portail Famille EduLink — Suivez la scolarité de votre enfant",
+  "start_url": "./edulink-portail.html",
+  "display": "standalone",
+  "background_color": "#0f6e56",
+  "theme_color": "#0f6e56",
+  "orientation": "portrait",
+  "lang": "fr",
+  "icons": [
+    { "src": "icon-72.png",  "sizes": "72x72",   "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon-96.png",  "sizes": "96x96",   "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon-128.png", "sizes": "128x128", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ],
+  "shortcuts": [
+    {
+      "name": "Mes Notes",
+      "short_name": "Notes",
+      "description": "Voir mes notes et bulletins",
+      "url": "./edulink-portail.html#notes",
+      "icons": [{ "src": "icon-96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Mes Absences",
+      "short_name": "Absences",
+      "description": "Voir mes absences",
+      "url": "./edulink-portail.html#absences",
+      "icons": [{ "src": "icon-96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Paiements",
+      "short_name": "Paiements",
+      "description": "Suivre mes paiements",
+      "url": "./edulink-portail.html#paiements",
+      "icons": [{ "src": "icon-96.png", "sizes": "96x96" }]
+    }
+  ],
+  "categories": ["education", "productivity"],
+  "screenshots": []
+}

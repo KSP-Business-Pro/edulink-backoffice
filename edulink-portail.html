@@ -5,11 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>EduLink — Portail Famille</title>
 <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-<link rel="manifest" href="manifest.json">
+<link rel="manifest" href="manifest-portail.json">
 <meta name="theme-color" content="#0f6e56">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="EduLink Famille">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.6.0/jspdf.plugin.autotable.min.js"></script>
 <style>
 /* ══ BASE ══ */
 *{margin:0;box-sizing:border-box}
@@ -856,7 +858,10 @@ function afficherNotes() {
           </tr>
         </table>
         <div style="padding:1rem">
-          <button class="print-btn" onclick="imprimerBulletin('${periode}')">🖨️ Imprimer / Télécharger</button>
+          <div style="display:flex;gap:8px;margin-top:1rem">
+          <button class="print-btn" style="flex:1" onclick="imprimerBulletin('${periode}')">🖨️ Imprimer</button>
+          <button class="print-btn" style="flex:1;background:linear-gradient(135deg,#059669,#047857)" onclick="telechargerBulletinPDFPortail('${periode}')">⬇️ Télécharger PDF</button>
+        </div>
         </div>
       </div>` : '<div class="empty"><div class="e-ico">📭</div><p>Aucune note pour cette période.</p></div>'}`;
   }
@@ -1405,6 +1410,156 @@ function afficherEnseignantsPortail() {
       }).join('')}
     </div>
   </div>`;
+}
+
+// ══ PDF PORTAIL FAMILLE  ★ JOUR 14 ══════════════════════════════════
+
+function getJsPDFPortail() {
+  if (typeof window !== 'undefined' && window.jspdf) return window.jspdf.jsPDF;
+  if (typeof jspdf !== 'undefined') return jspdf.jsPDF;
+  return null;
+}
+
+async function telechargerBulletinPDFPortail(periode) {
+  const JsPDF = getJsPDFPortail();
+  if (!JsPDF) { showToast('jsPDF non chargé — réessayez', 'error'); return; }
+  if (!currentEtudiant) { showToast('Aucun étudiant lié', 'error'); return; }
+
+  showToast('Génération du PDF...', 'info');
+
+  const notes = periode ? toutesNotes.filter(n => n.periode === periode) : toutesNotes;
+  if (!notes.length) { showToast('Aucune note pour cette période', 'error'); return; }
+
+  let totalPts = 0, totalCoeff = 0;
+  notes.forEach(n => { totalPts += n.note*(n.coefficient||1); totalCoeff += (n.coefficient||1); });
+  const moy = totalCoeff > 0 ? totalPts/totalCoeff : 0;
+
+  const NAVY  = [15, 110, 86];   // teal portail
+  const NAVY2 = [30, 58, 95];
+  const GREEN = [5, 150, 105];
+  const RED   = [220, 38, 38];
+  const AMBER = [217, 119, 6];
+  const GRAY  = [107, 114, 128];
+
+  function mentionColor(note) { return note>=14?GREEN:note>=10?AMBER:RED; }
+  function mentionLabel(note) {
+    if (note>=16) return 'Très bien';
+    if (note>=14) return 'Bien';
+    if (note>=12) return 'Assez bien';
+    if (note>=10) return 'Passable';
+    return 'Insuffisant';
+  }
+
+  const doc = new JsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
+  const pw = doc.internal.pageSize.getWidth();
+
+  // Entête teal
+  doc.setFillColor(...NAVY);
+  doc.rect(0, 0, pw, 38, 'F');
+  doc.setFillColor(...NAVY2);
+  doc.rect(0, 38, pw, 3, 'F');
+
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(17); doc.setFont('helvetica','bold');
+  doc.text('EduLink', 14, 15);
+  doc.setFontSize(9); doc.setFont('helvetica','normal');
+  doc.text('Portail Famille — Bulletin de notes', 14, 23);
+  doc.setTextColor(200,200,200); doc.setFontSize(8);
+  doc.text('Édité le '+new Date().toLocaleDateString('fr-FR'), 14, 30);
+
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(12); doc.setFont('helvetica','bold');
+  doc.text('BULLETIN DE NOTES', pw-14, 15, { align:'right' });
+  doc.setFontSize(9); doc.setFont('helvetica','normal');
+  doc.text('Période : '+(periode||'Toutes'), pw-14, 23, { align:'right' });
+
+  let y = 48;
+
+  // Bloc étudiant
+  doc.setFillColor(225, 245, 238);
+  doc.roundedRect(14, y, pw-28, 28, 3, 3, 'F');
+  doc.setDrawColor(...NAVY); doc.setLineWidth(0.4);
+  doc.roundedRect(14, y, pw-28, 28, 3, 3, 'S');
+
+  doc.setTextColor(...NAVY2); doc.setFontSize(13); doc.setFont('helvetica','bold');
+  doc.text(currentEtudiant.nom+' '+currentEtudiant.prenom, 22, y+9);
+  doc.setFontSize(9); doc.setFont('helvetica','normal'); doc.setTextColor(...GRAY);
+  doc.text('Matricule : '+(currentEtudiant.matricule||'—'), 22, y+16);
+  doc.text('Filière : '+(currentEtudiant.filiere||'—')+'  |  Niveau : '+(currentEtudiant.niveau||'—'), 22, y+22);
+
+  // Moyenne
+  doc.setFillColor(...(moy>=10?GREEN:RED));
+  doc.roundedRect(pw-55, y+4, 41, 20, 3, 3, 'F');
+  doc.setTextColor(255,255,255); doc.setFontSize(17); doc.setFont('helvetica','bold');
+  doc.text(moy.toFixed(2)+'/20', pw-34, y+15, { align:'center' });
+  doc.setFontSize(8); doc.setFont('helvetica','normal');
+  doc.text(mentionLabel(moy), pw-34, y+21, { align:'center' });
+
+  y += 34;
+
+  doc.setTextColor(...NAVY); doc.setFontSize(10); doc.setFont('helvetica','bold');
+  doc.text('Relevé de notes — '+(periode||'Toutes périodes'), 14, y); y += 5;
+
+  const rows = notes.map(n => [
+    n.matiere,
+    n.note+'/20',
+    n.coefficient||1,
+    (n.note*(n.coefficient||1)).toFixed(2),
+    mentionLabel(n.note)
+  ]);
+  rows.push([
+    'MOYENNE GÉNÉRALE',
+    { content:moy.toFixed(2)+'/20', styles:{ fontStyle:'bold', textColor:mentionColor(moy), fontSize:11 } },
+    totalCoeff,
+    totalPts.toFixed(2),
+    { content:mentionLabel(moy), styles:{ fontStyle:'bold', textColor:mentionColor(moy) } }
+  ]);
+
+  doc.autoTable({
+    startY: y,
+    head: [['Matière','Note /20','Coeff.','Points','Mention']],
+    body: rows,
+    theme: 'grid',
+    headStyles: { fillColor:NAVY, textColor:[255,255,255], fontSize:9, fontStyle:'bold', halign:'center' },
+    columnStyles: { 0:{halign:'left',cellWidth:68}, 1:{halign:'center'}, 2:{halign:'center'}, 3:{halign:'center'} },
+    bodyStyles: { fontSize:9, textColor:[55,65,81] },
+    alternateRowStyles: { fillColor:[225,245,238] },
+    didParseCell: (d) => { if(d.row.index===rows.length-1){ d.cell.styles.fillColor=[225,245,238]; d.cell.styles.fontStyle='bold'; } },
+    margin: { left:14, right:14 }
+  });
+
+  y = doc.lastAutoTable.finalY + 15;
+
+  // Barre progression visuelle
+  const pct = Math.min(100, moy/20*100);
+  doc.setFillColor(229,231,235);
+  doc.roundedRect(14, y, pw-28, 6, 3, 3, 'F');
+  doc.setFillColor(...(moy>=10?GREEN:RED));
+  doc.roundedRect(14, y, (pw-28)*pct/100, 6, 3, 3, 'F');
+  doc.setFontSize(8); doc.setTextColor(...GRAY);
+  doc.text('Progression : '+pct.toFixed(0)+'%', pw/2, y+11, { align:'center' });
+  y += 20;
+
+  // Signatures
+  if (y > 240) { doc.addPage(); y = 20; }
+  ['Direction','Enseignant(e) référent(e)','Parent / Tuteur'].forEach((s,i) => {
+    const sx = 14+(pw-28)/3*i;
+    doc.setDrawColor(200,200,200); doc.line(sx, y+16, sx+53, y+16);
+    doc.setFontSize(8); doc.setTextColor(...GRAY);
+    doc.text(s, sx+26.5, y+22, { align:'center' });
+  });
+
+  // Footer
+  const ph = doc.internal.pageSize.getHeight();
+  doc.setFillColor(243,244,246);
+  doc.rect(0, ph-12, pw, 12, 'F');
+  doc.setFontSize(7.5); doc.setTextColor(...GRAY);
+  doc.text('Bulletin généré via EduLink — Portail Famille', 14, ph-4);
+  doc.text('Page 1', pw-14, ph-4, { align:'right' });
+
+  const filename = `Bulletin_${currentEtudiant.nom}_${currentEtudiant.prenom}_${periode||'all'}.pdf`.replace(/\s+/g,'_');
+  doc.save(filename);
+  showToast('✅ Bulletin PDF téléchargé !', 'success');
 }
 // ══ INIT ══
 (async function() {
