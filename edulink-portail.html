@@ -905,31 +905,62 @@ function afficherNotes() {
   };
 }
 
+function labelPeriodeImpression(p) {
+  if (!p) return 'Toutes périodes';
+  if (p === 'S1') return 'Semestre 1';
+  if (p === 'S2') return 'Semestre 2';
+  if (p === 'T1') return 'Trimestre 1';
+  if (p === 'T2') return 'Trimestre 2';
+  if (p === 'T3') return 'Trimestre 3';
+  if (p.startsWith('EXAM-')) return 'Examen';
+  return p;
+}
+
 function imprimerBulletin(periode) {
   const notes = periode ? toutesNotes.filter(n => n.periode === periode) : toutesNotes;
   if (!notes.length) { showToast('Aucune note à imprimer.', 'error'); return; }
   let totalPts = 0, totalCoeff = 0;
   notes.forEach(n => { totalPts += n.note*(n.coefficient||1); totalCoeff += (n.coefficient||1); });
   const moy = totalCoeff > 0 ? totalPts/totalCoeff : 0;
-  const app = moy>=14?'Bien':moy>=12?'Assez bien':moy>=10?'Passable':'Insuffisant';
+  const app = moy>=16?'Très bien':moy>=14?'Bien':moy>=12?'Assez bien':moy>=10?'Passable':'Insuffisant';
+  const periodeLabel = labelPeriodeImpression(periode);
   const w = window.open('','_blank');
   w.document.write(`<html><head><title>Bulletin — ${currentEtudiant.nom}</title>
-  <style>*{font-family:Arial,sans-serif;margin:0;box-sizing:border-box}body{padding:2rem}
-  .header{background:#1e3a5f;color:#fff;padding:1.2rem;border-radius:8px;margin-bottom:1.5rem}
-  h1{font-size:18px;margin-bottom:4px}p{font-size:12px;opacity:.8}
-  .moy{font-size:32px;font-weight:800;margin:.5rem 0}
-  table{width:100%;border-collapse:collapse;margin-top:1rem}
-  th,td{border:1px solid #e5e7eb;padding:8px 12px;font-size:12px;text-align:left}
-  th{background:#f3f4f6;font-weight:700}
-  .good{color:#059669}.bad{color:#dc2626}
+  <style>
+    *{font-family:Arial,sans-serif;margin:0;box-sizing:border-box}
+    body{padding:2rem;background:#f9fafb}
+    .header{background:linear-gradient(135deg,#0f6e56,#1e3a5f);color:#fff;padding:1.5rem;border-radius:10px;margin-bottom:1.5rem}
+    .header h1{font-size:18px;font-weight:800;margin-bottom:4px}
+    .header p{font-size:12px;opacity:.8;margin-bottom:.5rem}
+    .moy{font-size:36px;font-weight:900;margin:.4rem 0}
+    .mention{display:inline-block;background:rgba(255,255,255,.2);padding:3px 12px;border-radius:20px;font-size:12px;font-weight:700}
+    table{width:100%;border-collapse:collapse;margin-top:1rem;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06)}
+    th{background:#1e3a5f;color:#fff;padding:9px 12px;font-size:11px;text-align:left;font-weight:700;text-transform:uppercase;letter-spacing:.04em}
+    td{padding:9px 12px;font-size:12px;border-bottom:1px solid #f3f4f6;color:#374151}
+    tr:last-child td{border-bottom:none;background:#f0fdf4;font-weight:700}
+    .good{color:#059669;font-weight:700}.bad{color:#dc2626;font-weight:700}
+    .footer{margin-top:2.5rem;display:flex;justify-content:space-between}
+    .sig{text-align:center;width:30%}
+    .sig-line{border-top:1px solid #9ca3af;padding-top:6px;font-size:11px;color:#6b7280;margin-top:2rem}
   </style></head><body>
-  <div class="header"><h1>Bulletin de Notes — ${currentEtudiant.nom} ${currentEtudiant.prenom}</h1>
-  <p>${currentEtudiant.filiere} · ${currentEtudiant.niveau} · ${periode}</p>
-  <div class="moy">${moy.toFixed(2)}/20</div><span>${app}</span></div>
-  <table><tr><th>Matière</th><th>Note /20</th><th>Coefficient</th><th>Points</th></tr>
-  ${notes.map(n=>`<tr><td>${n.matiere}</td><td class="${n.note>=10?'good':'bad'}">${n.note}/20</td><td>${n.coefficient||1}</td><td>${(n.note*(n.coefficient||1)).toFixed(2)}</td></tr>`).join('')}
-  <tr style="background:#f9fafb;font-weight:700"><td>MOYENNE</td><td class="${moy>=10?'good':'bad'}">${moy.toFixed(2)}/20</td><td>${totalCoeff}</td><td>${totalPts.toFixed(2)}</td></tr>
-  </table></body></html>`);
+  <div class="header">
+    <h1>Bulletin de Notes — ${currentEtudiant.nom} ${currentEtudiant.prenom}</h1>
+    <p>${currentEtudiant.filiere} · Niveau ${currentEtudiant.niveau} · ${periodeLabel}</p>
+    <div class="moy">${moy.toFixed(2)}/20</div>
+    <span class="mention">${app}</span>
+  </div>
+  <table>
+    <tr><th>Matière</th><th>Note /20</th><th>Coefficient</th><th>Points</th></tr>
+    ${notes.map(n=>`<tr><td>${n.matiere}</td><td class="${n.note>=10?'good':'bad'}">${n.note}/20</td><td>${n.coefficient||1}</td><td>${(n.note*(n.coefficient||1)).toFixed(2)}</td></tr>`).join('')}
+    <tr><td>MOYENNE GÉNÉRALE</td><td class="${moy>=10?'good':'bad'}">${moy.toFixed(2)}/20</td><td>${totalCoeff}</td><td>${totalPts.toFixed(2)}</td></tr>
+  </table>
+  <div class="footer">
+    <div class="sig"><div class="sig-line">Directeur(trice)</div></div>
+    <div class="sig"><div class="sig-line">Enseignant(e) référent(e)</div></div>
+    <div class="sig"><div class="sig-line">Parent / Tuteur</div></div>
+  </div>
+  <p style="text-align:center;margin-top:2rem;font-size:10px;color:#9ca3af">Document généré par EduLink — ${new Date().toLocaleDateString('fr-FR')}</p>
+  </body></html>`);
   w.document.close(); w.print();
 }
 
