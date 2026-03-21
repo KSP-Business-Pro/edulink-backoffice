@@ -298,7 +298,7 @@ body{font-family:'Poppins',sans-serif;background:var(--bg);min-height:100vh;colo
           <div class="phone-flag">
             <span class="flag">🇧🇯</span>
             <span class="prefix">+229</span>
-            <input type="tel" id="otp-phone" placeholder="97 00 00 00" maxlength="10"
+            <input type="tel" id="otp-phone" placeholder="01 97 09 81 17" maxlength="10"
               oninput="this.value=this.value.replace(/\D/g,'')"
               onkeypress="if(event.key==='Enter')envoyerOTP()">
           </div>
@@ -942,7 +942,7 @@ function showOTPError(step, msg) {
 
 async function envoyerOTP() {
   const phone = document.getElementById('otp-phone').value.trim();
-  if (!phone || phone.length < 8) { showOTPError(1, 'Entrez un numéro valide (8 chiffres min.)'); return; }
+  if (!phone || phone.length < 8) { showOTPError(1, 'Entrez un numéro valide (8 à 10 chiffres)'); return; }
   const tel = '+229' + phone;
   otpTelephone = tel;
   const btn = document.getElementById('btn-envoyer-otp');
