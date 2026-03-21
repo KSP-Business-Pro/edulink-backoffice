@@ -10,6 +10,8 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="EduLink Famille">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.6.0/jspdf.plugin.autotable.min.js"></script>
 <style>
@@ -338,6 +340,28 @@ body{font-family:'Poppins',sans-serif;background:var(--bg);min-height:100vh;colo
 }
 .exam-filter-btn.active{background:#0f6e56;border-color:#0f6e56;color:#fff;}
 
+
+/* ══ NOTIF PUSH PORTAIL ★ JOUR 15 ══ */
+.push-banner{
+  background:linear-gradient(135deg,#1e3a5f,#2d5a8e);
+  border-radius:14px;padding:1rem 1.2rem;margin:1rem 1rem 0;
+  display:flex;align-items:center;gap:.85rem;
+  animation:fadeUp .3s ease;
+}
+.push-banner .pb-ico{font-size:28px;flex-shrink:0}
+.push-banner .pb-body{flex:1}
+.push-banner .pb-title{font-size:13px;font-weight:700;color:#fff;margin-bottom:3px}
+.push-banner .pb-sub{font-size:11.5px;color:rgba(255,255,255,.75)}
+.push-banner .pb-btn{
+  background:#c97c1a;color:#fff;border:none;padding:7px 14px;
+  border-radius:8px;font-size:12px;font-weight:700;cursor:pointer;
+  font-family:'Poppins',sans-serif;white-space:nowrap;flex-shrink:0;
+}
+.push-banner .pb-close{
+  background:none;border:none;color:rgba(255,255,255,.6);
+  font-size:18px;cursor:pointer;padding:0 0 0 8px;flex-shrink:0;
+}
+
 /* ══ EMPTY STATES ══ */
 .empty{text-align:center;padding:2.5rem 1rem;color:#9ca3af}
 .empty .e-ico{font-size:40px;margin-bottom:.75rem}
@@ -462,6 +486,7 @@ body{font-family:'Poppins',sans-serif;background:var(--bg);min-height:100vh;colo
   </div>
 
   <!-- Pages -->
+  <div id="push-permission-banner"></div>
   <div class="page active" id="page-accueil"></div>
   <div class="page" id="page-notes"></div>
   <div class="page" id="page-absences"></div>
@@ -617,6 +642,8 @@ function lancerApp() {
       `<div class="student-pill">👨‍🎓 ${currentEtudiant.nom} ${currentEtudiant.prenom} · ${currentEtudiant.filiere} ${currentEtudiant.niveau}</div>`;
   }
   chargerTout();
+  // Initialiser FCM après connexion
+  setTimeout(initFCMPortail, 1500);
 }
 
 async function chargerTout() {
@@ -1645,6 +1672,134 @@ async function telechargerBulletinPDFPortail(periode) {
   doc.save(filename);
   showToast('✅ Bulletin PDF téléchargé !', 'success');
 }
+
+// ══ FCM PORTAIL FAMILLE  ★ JOUR 15 ══════════════════════════════════
+
+let fcmPortailMessaging = null;
+let fcmPortailToken     = null;
+
+// Initialisation FCM côté portail famille
+async function initFCMPortail() {
+  if (typeof firebase === 'undefined') return;
+  try {
+    // Récupérer config Firebase depuis Supabase
+    const { data } = await db.from('parametres')
+      .select('firebase_config')
+      .eq('ecole_id', currentEcoleId)
+      .maybeSingle();
+    if (!data?.firebase_config) return;
+
+    if (!firebase.apps.length) firebase.initializeApp(data.firebase_config);
+
+    fcmPortailMessaging = firebase.messaging();
+
+    // Écoute messages en premier plan
+    fcmPortailMessaging.onMessage(function(payload) {
+      const notif = payload.notification || {};
+      afficherBanniereNotif(
+        notif.title || 'EduLink',
+        notif.body  || ''
+      );
+    });
+
+    // Afficher la bannière de permission si pas encore accordée
+    if (Notification.permission === 'default') {
+      afficherBannierePermission();
+    } else if (Notification.permission === 'granted') {
+      await abonnerFCMPortail();
+    }
+  } catch(err) {
+    console.warn('[FCM Portail] Erreur init:', err.message);
+  }
+}
+
+// Demander permission et s'abonner
+async function demanderPermissionPush() {
+  try {
+    const permission = await Notification.requestPermission();
+    masquerBannierePermission();
+    if (permission === 'granted') {
+      await abonnerFCMPortail();
+      afficherBanniereNotif('🔔 Notifications activées !', 'Vous recevrez les alertes en temps réel.');
+    }
+  } catch(err) {
+    console.warn('[FCM Portail] Permission error:', err);
+  }
+}
+
+async function abonnerFCMPortail() {
+  try {
+    // Récupérer VAPID key depuis Supabase
+    const { data } = await db.from('parametres')
+      .select('vapid_key').eq('ecole_id', currentEcoleId).maybeSingle();
+    const vapidKey = data?.vapid_key || localStorage.getItem('edulink_vapid_key');
+    if (!vapidKey || !fcmPortailMessaging) return;
+
+    const token = await fcmPortailMessaging.getToken({ vapidKey });
+    if (!token) return;
+    fcmPortailToken = token;
+
+    // Déterminer le rôle
+    const role = currentProfile?.role || 'parent';
+
+    // Sauvegarder en base
+    await db.from('push_tokens').upsert({
+      ecole_id:   currentEcoleId,
+      token,
+      role,
+      etudiant_id: currentEtudiant?.id || null,
+      user_agent:  navigator.userAgent.slice(0, 200),
+      updated_at:  new Date().toISOString()
+    }, { onConflict: 'token' });
+
+    console.log('[FCM Portail] Abonné avec token:', token.slice(0,20)+'...');
+  } catch(err) {
+    console.warn('[FCM Portail] Erreur abonnement:', err.message);
+  }
+}
+
+// ── Bannière permission ──
+function afficherBannierePermission() {
+  const el = document.getElementById('push-permission-banner');
+  if (!el) return;
+  el.innerHTML = `
+    <div class="push-banner">
+      <div class="pb-ico">🔔</div>
+      <div class="pb-body">
+        <div class="pb-title">Activez les notifications push</div>
+        <div class="pb-sub">Recevez les alertes d'absence, notes et examens en temps réel</div>
+      </div>
+      <button class="pb-btn" onclick="demanderPermissionPush()">Activer</button>
+      <button class="pb-close" onclick="masquerBannierePermission()">✕</button>
+    </div>`;
+}
+
+function masquerBannierePermission() {
+  const el = document.getElementById('push-permission-banner');
+  if (el) el.innerHTML = '';
+}
+
+// ── Bannière notification reçue ──
+function afficherBanniereNotif(titre, message) {
+  showToast('🔔 ' + titre + (message ? ' — ' + message : ''), 'info');
+  // Also show as system notification if in background
+  if (document.hidden && Notification.permission === 'granted') {
+    new Notification(titre, {
+      body: message,
+      icon: '/icon-192.png',
+      badge: '/icon-72.png'
+    });
+  }
+}
+
+// ── Désinscription ──
+async function desabonnerFCMPortail() {
+  if (!fcmPortailToken) return;
+  await db.from('push_tokens').delete().eq('token', fcmPortailToken);
+  fcmPortailToken = null;
+  showToast('Notifications désactivées', 'info');
+}
+
 // ══ INIT ══
 (async function() {
   const { data: { session } } = await db.auth.getSession();

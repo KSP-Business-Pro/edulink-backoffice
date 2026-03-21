@@ -18,6 +18,9 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.6.0/jspdf.plugin.autotable.min.js"></script>
+<!-- Firebase SDK ★ JOUR 15 -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js"></script>
 <script data-cfasync="false" src="edulink-auth.js" defer></script>
 <script data-cfasync="false" src="edulink-notif.js" defer></script>
 <style>
@@ -1329,11 +1332,34 @@ button:hover { background:#a86615; transform:translateY(-1px); }
       <a href="edulink-portail.html" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:6px;background:#1e3a5f;color:#fff;padding:9px;border-radius:8px;text-decoration:none;font-size:13px;font-weight:600">🌐 Ouvrir le portail</a>
     </div>
 
-    <!-- Notifications -->
+    <!-- Notifications Email -->
     <div style="background:#fff;border-radius:14px;border:1px solid #e5e7eb;padding:1.2rem">
       <div style="font-size:13px;font-weight:700;color:#374151;margin-bottom:1rem;padding-bottom:.6rem;border-bottom:1px solid #f3f4f6">📧 Notifications Email</div>
       <div id="brevo-status" style="background:#f9fafb;border-radius:10px;padding:.9rem;margin-bottom:1rem;font-size:12.5px;color:#374151">Chargement...</div>
       <button onclick="ouvrirConfigNotif()" style="width:100%;background:#f3f4f6;color:#374151;border:1px solid #e5e7eb;padding:9px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif">⚙️ Configurer Brevo</button>
+    </div>
+
+    <!-- Push Notifications FCM ★ JOUR 15 -->
+    <div style="background:#fff;border-radius:14px;border:1px solid #e5e7eb;padding:1.2rem">
+      <div style="font-size:13px;font-weight:700;color:#374151;margin-bottom:1rem;padding-bottom:.6rem;border-bottom:1px solid #f3f4f6">🔔 Notifications Push (FCM)</div>
+      <div id="fcm-admin-status" style="background:#f9fafb;border-radius:10px;padding:.9rem;margin-bottom:1rem;font-size:12.5px;color:#374151">
+        <div style="font-weight:600;margin-bottom:.5rem">Configuration Firebase</div>
+        <div id="fcm-config-state" style="color:#6b7280">Non configuré</div>
+      </div>
+      <div class="form-group"><label>Clé VAPID publique</label>
+        <input type="text" id="input-vapid-key" placeholder="BxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxAE" style="font-size:11px;font-family:monospace">
+      </div>
+      <div class="form-group"><label>Server Key FCM (pour Edge Function)</label>
+        <input type="text" id="input-fcm-server-key" placeholder="AAAA..." style="font-size:11px;font-family:monospace">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+        <button onclick="sauvegarderConfigFCM()" style="background:#1e3a5f;color:#fff;border:none;padding:9px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif">💾 Sauvegarder</button>
+        <button onclick="testerNotifPush()" style="background:#059669;color:#fff;border:none;padding:9px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif">🧪 Tester Push</button>
+      </div>
+      <div style="margin-top:1rem;padding:.75rem;background:#eff6ff;border-radius:8px;font-size:12px;color:#1d4ed8">
+        <strong>📋 Tokens abonnés :</strong> <span id="fcm-tokens-count">0</span> appareil(s)
+        <button onclick="envoyerNotifATous()" style="float:right;background:#1d4ed8;color:#fff;border:none;padding:4px 10px;border-radius:6px;font-size:11px;cursor:pointer;font-family:'Poppins',sans-serif">📣 Notifier tous</button>
+      </div>
     </div>
 
   </div>
@@ -1892,6 +1918,43 @@ button:hover { background:#a86615; transform:translateY(-1px); }
   </div>
 </div>
 
+
+<!-- ═══════════════════ MODAL PUSH NOTIFICATION ★ JOUR 15 ══════════════════ -->
+<div class="modal-overlay" id="modal-push-notif">
+  <div class="modal">
+    <h3>🔔 Envoyer une notification Push</h3>
+    <div class="form-group"><label>Titre *</label>
+      <input type="text" id="input-push-titre" placeholder="Ex: Absence signalée" maxlength="50">
+    </div>
+    <div class="form-group"><label>Message *</label>
+      <textarea rows="3" id="input-push-body" placeholder="Votre enfant a été absent aujourd'hui..."></textarea>
+    </div>
+    <div class="form-group"><label>Destinataires</label>
+      <select id="input-push-dest">
+        <option value="tous">Tous les appareils abonnés</option>
+        <option value="parents">Parents uniquement</option>
+        <option value="etudiants">Étudiants uniquement</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Lien (optionnel)</label>
+      <input type="text" id="input-push-url" placeholder="/edulink-portail.html">
+    </div>
+    <div class="form-group"><label>Priorité</label>
+      <select id="input-push-priority">
+        <option value="normal">Normale</option>
+        <option value="high">Haute (urgent)</option>
+      </select>
+    </div>
+    <div id="push-send-progress" style="display:none;background:#f9fafb;border-radius:8px;padding:.75rem;font-size:12.5px;color:#374151;margin-bottom:.5rem">
+      <div id="push-send-log"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="fermerModal('modal-push-notif')">Annuler</button>
+      <button onclick="envoyerPushNotification()" id="btn-send-push">🔔 Envoyer</button>
+    </div>
+  </div>
+</div>
+
 <!-- ═══════════════════ MODAL CONFIG NOTIFICATIONS ══════════════════ -->
 <div class="modal-overlay" id="modal-notif-config">
   <div class="modal">
@@ -2032,7 +2095,7 @@ function showPage(p) {
     documents:    chargerDocuments,
     rapports:     () => afficherRapport('effectifs'),
     utilisateurs: () => { if (typeof chargerUtilisateurs === 'function') chargerUtilisateurs(); },
-    parametres:   chargerParametres,
+    parametres:   () => { chargerParametres(); chargerConfigFCM(); },
     examens:      chargerExamens,
     enseignants:  chargerEnseignants,
   };
@@ -4511,6 +4574,332 @@ async function telechargerTousBulletins() {
   if (first) { showToast('Aucun bulletin à générer pour cette période', 'error'); return; }
   doc.save(`EduLink_Bulletins_${periode}_${new Date().toISOString().split('T')[0]}.pdf`);
   showToast('✅ Tous les bulletins PDF téléchargés !', 'success');
+}
+
+
+// ══ NOTIFICATIONS PUSH FCM  ★ JOUR 15 ══════════════════════════════
+
+// ── Configuration FCM (chargée depuis localStorage) ──
+let fcmMessaging = null;
+let fcmVapidKey  = null;
+let fcmAdminToken = null; // Token admin pour envoyer
+
+function chargerConfigFCM() {
+  fcmVapidKey = localStorage.getItem('edulink_vapid_key') || '';
+  const serverKey = localStorage.getItem('edulink_fcm_server_key') || '';
+  const el1 = document.getElementById('input-vapid-key');
+  const el2 = document.getElementById('input-fcm-server-key');
+  if (el1) el1.value = fcmVapidKey;
+  if (el2) el2.value = serverKey;
+  mettreAJourStatutFCM();
+  compterTokensFCM();
+}
+
+function sauvegarderConfigFCM() {
+  const vapid = document.getElementById('input-vapid-key')?.value.trim();
+  const server = document.getElementById('input-fcm-server-key')?.value.trim();
+  if (!vapid) { showToast('Clé VAPID obligatoire', 'error'); return; }
+  localStorage.setItem('edulink_vapid_key', vapid);
+  localStorage.setItem('edulink_fcm_server_key', server);
+  fcmVapidKey = vapid;
+  showToast('✅ Config FCM sauvegardée !', 'success');
+  mettreAJourStatutFCM();
+  initFCM();
+}
+
+function mettreAJourStatutFCM() {
+  const el = document.getElementById('fcm-config-state');
+  if (!el) return;
+  if (fcmVapidKey) {
+    el.innerHTML = '<span style="color:#059669;font-weight:600">✅ Clé VAPID configurée</span>';
+  } else {
+    el.innerHTML = '<span style="color:#dc2626">❌ Non configuré — Voir instructions ci-dessous</span>';
+  }
+}
+
+// ── Initialisation Firebase + FCM ──
+async function initFCM() {
+  const vapid = localStorage.getItem('edulink_vapid_key');
+  if (!vapid) return;
+
+  // Vérifier si Firebase est chargé
+  if (typeof firebase === 'undefined') {
+    console.warn('[FCM] Firebase SDK non chargé');
+    return;
+  }
+
+  // Récupérer config Firebase depuis Supabase (table parametres)
+  try {
+    const { data } = await db.from('parametres')
+      .select('firebase_config')
+      .eq('ecole_id', currentEcoleId)
+      .maybeSingle();
+
+    const fbConfig = data?.firebase_config;
+    if (!fbConfig) {
+      console.warn('[FCM] Config Firebase non trouvée dans parametres');
+      return;
+    }
+
+    // Init Firebase si pas encore fait
+    if (!firebase.apps.length) {
+      firebase.initializeApp(fbConfig);
+    }
+
+    fcmMessaging = firebase.messaging();
+
+    // Demander permission
+    const permission = await Notification.requestPermission();
+    if (permission !== 'granted') {
+      console.warn('[FCM] Permission refusée');
+      return;
+    }
+
+    // Obtenir token FCM
+    const token = await fcmMessaging.getToken({ vapidKey: vapid });
+    if (token) {
+      fcmAdminToken = token;
+      await sauvegarderTokenFCM(token, 'admin');
+      console.log('[FCM] Token admin enregistré');
+    }
+
+    // Écoute messages en premier plan
+    fcmMessaging.onMessage(function(payload) {
+      console.log('[FCM] Message reçu:', payload);
+      const notif = payload.notification || {};
+      ajouterNotifLocale(
+        notif.title || 'EduLink',
+        notif.body  || '',
+        '🔔'
+      );
+      showToast('🔔 ' + (notif.title || 'Nouvelle notification'), 'info');
+    });
+
+  } catch(err) {
+    console.warn('[FCM] Erreur init:', err.message);
+  }
+}
+
+// ── Sauvegarde token en base ──
+async function sauvegarderTokenFCM(token, role = 'parent') {
+  if (!token || !currentEcoleId) return;
+  // Upsert du token
+  const { error } = await db.from('push_tokens').upsert({
+    ecole_id:   currentEcoleId,
+    token:      token,
+    role:       role,
+    user_agent: navigator.userAgent.slice(0, 200),
+    updated_at: new Date().toISOString()
+  }, { onConflict: 'token' });
+  if (error) console.warn('[FCM] Erreur save token:', error.message);
+}
+
+async function compterTokensFCM() {
+  if (!currentEcoleId) return;
+  const { count } = await db.from('push_tokens')
+    .select('*', { count: 'exact', head: true })
+    .eq('ecole_id', currentEcoleId);
+  const el = document.getElementById('fcm-tokens-count');
+  if (el) el.textContent = count || 0;
+}
+
+// ── Envoi notification depuis back-office ──
+async function envoyerPushNotification() {
+  const titre  = document.getElementById('input-push-titre')?.value.trim();
+  const body   = document.getElementById('input-push-body')?.value.trim();
+  const dest   = document.getElementById('input-push-dest')?.value || 'tous';
+  const url    = document.getElementById('input-push-url')?.value.trim() || '/edulink-portail.html';
+  const prio   = document.getElementById('input-push-priority')?.value || 'normal';
+
+  if (!titre || !body) { showToast('Titre et message obligatoires', 'error'); return; }
+
+  const serverKey = localStorage.getItem('edulink_fcm_server_key');
+  if (!serverKey) { showToast('Clé Server FCM manquante dans Paramètres', 'error'); return; }
+
+  const btn = document.getElementById('btn-send-push');
+  btn.disabled = true; btn.textContent = 'Envoi...';
+  document.getElementById('push-send-progress').style.display = 'block';
+  document.getElementById('push-send-log').innerHTML = '⏳ Chargement des tokens...';
+
+  // Récupérer tokens
+  let q = db.from('push_tokens').select('token, role').eq('ecole_id', currentEcoleId);
+  if (dest === 'parents')   q = q.eq('role', 'parent');
+  if (dest === 'etudiants') q = q.eq('role', 'etudiant');
+  const { data: tokens } = await q;
+
+  if (!tokens?.length) {
+    document.getElementById('push-send-log').innerHTML = '⚠️ Aucun appareil abonné.';
+    btn.disabled = false; btn.textContent = '🔔 Envoyer';
+    return;
+  }
+
+  document.getElementById('push-send-log').innerHTML = `📱 ${tokens.length} appareil(s) trouvé(s)...`;
+
+  // Envoi via FCM Legacy HTTP API
+  let succes = 0, echecs = 0;
+  const BATCH = 500; // FCM limite 500 tokens par requête
+
+  for (let i = 0; i < tokens.length; i += BATCH) {
+    const batchTokens = tokens.slice(i, i + BATCH).map(t => t.token);
+    try {
+      const resp = await fetch('https://fcm.googleapis.com/fcm/send', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'key=' + serverKey
+        },
+        body: JSON.stringify({
+          registration_ids: batchTokens,
+          notification: {
+            title: titre,
+            body:  body,
+            icon:  '/icon-192.png',
+            badge: '/icon-72.png',
+            click_action: url
+          },
+          data: {
+            title, body, url,
+            tag:       'edulink-' + Date.now(),
+            important: prio === 'high' ? 'true' : 'false',
+            ecole_id:  currentEcoleId
+          },
+          priority: prio === 'high' ? 'high' : 'normal',
+          android: { priority: prio === 'high' ? 'high' : 'normal' },
+          apns: { headers: { 'apns-priority': prio === 'high' ? '10' : '5' } }
+        })
+      });
+      const result = await resp.json();
+      succes += result.success || 0;
+      echecs += result.failure || 0;
+      document.getElementById('push-send-log').innerHTML =
+        `✅ ${succes} envoyé(s) · ❌ ${echecs} échoué(s)`;
+    } catch(err) {
+      echecs += batchTokens.length;
+      document.getElementById('push-send-log').innerHTML = '❌ Erreur : ' + err.message;
+    }
+  }
+
+  btn.disabled = false; btn.textContent = '🔔 Envoyer';
+  setTimeout(() => fermerModal('modal-push-notif'), 2000);
+  showToast(`✅ ${succes} notification(s) envoyée(s)`, succes > 0 ? 'success' : 'error');
+
+  // Sauvegarder dans l'historique des notifications
+  await db.from('notifications_historique').insert([{
+    ecole_id:     currentEcoleId,
+    titre,
+    body,
+    destinataires: dest,
+    nb_envoyes:   succes,
+    nb_echecs:    echecs,
+    envoyee_par:  'admin'
+  }]).then(() => {}).catch(() => {});
+}
+
+function envoyerNotifATous() {
+  ouvrirModal('modal-push-notif');
+  document.getElementById('input-push-dest').value = 'tous';
+}
+
+// ── Test notification ──
+async function testerNotifPush() {
+  if (Notification.permission !== 'granted') {
+    const perm = await Notification.requestPermission();
+    if (perm !== 'granted') { showToast('Permission refusée', 'error'); return; }
+  }
+  new Notification('🎓 EduLink — Test Push', {
+    body:  'Les notifications push fonctionnent correctement !',
+    icon:  '/icon-192.png',
+    badge: '/icon-72.png'
+  });
+  showToast('🔔 Notification test envoyée !', 'success');
+}
+
+// ── Notifications automatiques (triggers) ──
+
+// Notif push automatique lors d'une absence
+async function envoyerPushAbsence(etudiant, matiere, date) {
+  const serverKey = localStorage.getItem('edulink_fcm_server_key');
+  if (!serverKey || !etudiant?.parent_tel) return;
+  // Récupérer le token du parent
+  const { data: tokens } = await db.from('push_tokens')
+    .select('token').eq('ecole_id', currentEcoleId).eq('role', 'parent').limit(50);
+  if (!tokens?.length) return;
+  const titre = 'Absence signalée — ' + etudiant.nom + ' ' + etudiant.prenom;
+  const body  = matiere + ' · ' + new Date(date).toLocaleDateString('fr-FR');
+  await envoyerPushGroupe(tokens.map(t=>t.token), titre, body, serverKey);
+}
+
+// Notif push lors de la saisie d'une note
+async function envoyerPushNote(etudiant, matiere, note) {
+  const serverKey = localStorage.getItem('edulink_fcm_server_key');
+  if (!serverKey) return;
+  const { data: tokens } = await db.from('push_tokens')
+    .select('token').eq('ecole_id', currentEcoleId).limit(50);
+  if (!tokens?.length) return;
+  const titre = '📊 Nouvelle note disponible';
+  const body  = etudiant.nom + ' ' + etudiant.prenom + ' · ' + matiere + ' : ' + note + '/20';
+  await envoyerPushGroupe(tokens.map(t=>t.token), titre, body, serverKey);
+}
+
+// Notif push lors d'un nouvel examen planifié
+async function envoyerPushExamen(examen) {
+  const serverKey = localStorage.getItem('edulink_fcm_server_key');
+  if (!serverKey) return;
+  const { data: tokens } = await db.from('push_tokens')
+    .select('token').eq('ecole_id', currentEcoleId).limit(500);
+  if (!tokens?.length) return;
+  const titre = '📝 Examen planifié : ' + examen.matiere;
+  const jours = Math.ceil((new Date(examen.date_examen)-new Date())/86400000);
+  const body  = (examen.type_examen||'Examen') + ' le ' + new Date(examen.date_examen).toLocaleDateString('fr-FR') + (jours>0?' (J-'+jours+')':'');
+  await envoyerPushGroupe(tokens.map(t=>t.token), titre, body, serverKey);
+}
+
+// Helper envoi groupe
+async function envoyerPushGroupe(tokens, titre, body, serverKey) {
+  if (!tokens.length) return;
+  try {
+    await fetch('https://fcm.googleapis.com/fcm/send', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'key=' + serverKey
+      },
+      body: JSON.stringify({
+        registration_ids: tokens.slice(0, 500),
+        notification: { title: titre, body, icon:'/icon-192.png', badge:'/icon-72.png' },
+        data: { title: titre, body, url: '/edulink-portail.html', tag: 'edulink-auto' },
+        priority: 'high'
+      })
+    });
+  } catch(err) {
+    console.warn('[FCM] Erreur envoi groupe:', err.message);
+  }
+}
+
+// ── Notifications in-app (panneau local) ──
+function ajouterNotifLocale(titre, message, icone = '🔔') {
+  const list = document.getElementById('notif-list');
+  if (!list) return;
+  const empty = list.querySelector('.notif-empty');
+  if (empty) empty.remove();
+  const item = document.createElement('div');
+  item.className = 'notif-item unread';
+  item.innerHTML = `
+    <div class="ni-ico">${icone}</div>
+    <div class="ni-body">
+      <div class="ni-title">${titre}</div>
+      <div style="font-size:12px;color:#6b7280;margin-top:2px">${message}</div>
+      <div style="font-size:10.5px;color:#9ca3af;margin-top:3px">${new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'})}</div>
+    </div>`;
+  item.onclick = () => item.classList.remove('unread');
+  list.prepend(item);
+  // Mettre à jour badge
+  const badge = document.getElementById('notif-badge');
+  if (badge) {
+    const count = (parseInt(badge.textContent)||0) + 1;
+    badge.textContent = count;
+    badge.style.display = 'flex';
+  }
 }
 
 // PWA Service Worker
