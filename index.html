@@ -820,7 +820,7 @@ button:hover { background:#a86615; transform:translateY(-1px); }
   <div id="tab-bulletins" style="display:none">
     <div class="bulletin-select">
       <span class="filter-label">Étudiant :</span>
-      <select id="select-bulletin-etudiant" onchange="chargerBulletin()" style="padding:7px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:13px;font-family:'Poppins',sans-serif;outline:none;min-width:220px;">
+      <select id="select-bulletin-etudiant" onchange="mettreAJourPeriodesBulletin(this.value).then(chargerBulletin)" style="padding:7px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:13px;font-family:'Poppins',sans-serif;outline:none;min-width:220px;">
         <option value="">— Sélectionner un étudiant —</option>
       </select>
       <select id="select-bulletin-periode" onchange="chargerBulletin()" style="padding:7px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:13px;font-family:'Poppins',sans-serif;outline:none;">
@@ -2297,10 +2297,46 @@ async function supprimerNote(id) {
   await db.from('notes').delete().eq('id',id);
   showToast('Note supprimée.','success'); chargerNotes(); chargerDashboard();
 }
+function labelPeriodeBulletin(p) {
+  if (!p) return 'Toutes périodes';
+  if (p === 'S1') return 'Semestre 1';
+  if (p === 'S2') return 'Semestre 2';
+  if (p === 'T1') return 'Trimestre 1';
+  if (p === 'T2') return 'Trimestre 2';
+  if (p === 'T3') return 'Trimestre 3';
+  if (p.startsWith('EXAM-')) return '📝 Examen';
+  return p;
+}
+
 async function remplirSelectBulletin() {
-  if (!tousLesEtudiants.length) await remplirSelect('input-absence-etudiant'); // charge le cache
+  if (!tousLesEtudiants.length) await remplirSelect('input-absence-etudiant');
   const sel = document.getElementById('select-bulletin-etudiant');
   sel.innerHTML = '<option value="">— Sélectionner un étudiant —</option>' + tousLesEtudiants.map(e=>`<option value="${e.id}">${e.nom} ${e.prenom}</option>`).join('');
+}
+
+async function mettreAJourPeriodesBulletin(etudiantId) {
+  if (!etudiantId) return;
+  // Charger toutes les périodes réelles de cet étudiant
+  const { data } = await db.from('notes').select('periode').eq('etudiant_id', etudiantId);
+  const periodes = [...new Set((data||[]).map(n => n.periode))].filter(Boolean);
+  // Trier : S1/S2/T1 avant EXAM-xxx
+  periodes.sort((a,b) => {
+    if (a.startsWith('EXAM-') && !b.startsWith('EXAM-')) return 1;
+    if (!a.startsWith('EXAM-') && b.startsWith('EXAM-')) return -1;
+    return a.localeCompare(b);
+  });
+  const sel = document.getElementById('select-bulletin-periode');
+  const standard = ['S1','S2','T1','T2','T3'];
+  // Merge standard + real periods (avoid duplicates)
+  const toutes = [...new Set([...standard, ...periodes])];
+  toutes.sort((a,b) => {
+    if (a.startsWith('EXAM-') && !b.startsWith('EXAM-')) return 1;
+    if (!a.startsWith('EXAM-') && b.startsWith('EXAM-')) return -1;
+    return a.localeCompare(b);
+  });
+  sel.innerHTML = toutes.map(p => `<option value="${p}">${labelPeriodeBulletin(p)}</option>`).join('');
+  // Sélectionner la 1ère période réelle si disponible
+  if (periodes.length) sel.value = periodes[0];
 }
 async function chargerBulletin() {
   const etudiantId = document.getElementById('select-bulletin-etudiant').value;
@@ -2316,7 +2352,7 @@ async function chargerBulletin() {
   const moy = totalCoeff>0?(totalPts/totalCoeff):0;
   const app = getApp(moy);
   container.innerHTML = `<div class="bulletin-wrap" id="bulletin-print">
-    <div class="bulletin-header"><h3>Bulletin de Notes — ${etudiant?.nom||''} ${etudiant?.prenom||''}</h3><p>${periode} · Édité le ${fmtDate(new Date())}</p></div>
+    <div class="bulletin-header"><h3>Bulletin de Notes — ${etudiant?.nom||''} ${etudiant?.prenom||''}</h3><p>${labelPeriodeBulletin(periode)} · Édité le ${fmtDate(new Date())}</p></div>
     <div class="bulletin-stats">
       <div class="bstat"><div class="val">${moy.toFixed(2)}/20</div><div class="lbl">Moyenne générale</div></div>
       <div class="bstat"><div class="val">${notes.length}</div><div class="lbl">Matières évaluées</div></div>
