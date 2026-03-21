@@ -819,8 +819,32 @@ function afficherNotes() {
   const page = document.getElementById('page-notes');
   if (!currentEtudiant) { page.innerHTML = '<div class="empty"><div class="e-ico">📊</div><p>Aucun étudiant lié à ce compte.</p></div>'; return; }
 
+  // Toutes les périodes y compris EXAM-xxx
   const periodes = [...new Set(toutesNotes.map(n => n.periode))].sort();
-  let periodeActive = periodes[0] || 'S1';
+  // Trier : S1/S2/T1... en premier, EXAM-xxx à la fin
+  periodes.sort((a,b) => {
+    const aExam = a.startsWith('EXAM-');
+    const bExam = b.startsWith('EXAM-');
+    if (aExam && !bExam) return 1;
+    if (!aExam && bExam) return -1;
+    return a.localeCompare(b);
+  });
+
+  // Libellé lisible pour les périodes
+  function labelPeriode(p) {
+    if (!p) return 'Toutes';
+    if (p === 'S1') return 'Semestre 1';
+    if (p === 'S2') return 'Semestre 2';
+    if (p === 'T1') return 'Trimestre 1';
+    if (p === 'T2') return 'Trimestre 2';
+    if (p === 'T3') return 'Trimestre 3';
+    if (p.startsWith('EXAM-')) return '📝 Examen';
+    return p;
+  }
+
+  // Ajouter "Toutes" si plusieurs périodes
+  const periodesAvecTout = periodes.length > 1 ? ['', ...periodes] : periodes;
+  let periodeActive = periodes[0] || '';
 
   function renderNotes(periode) {
     const notes = periode ? toutesNotes.filter(n => n.periode === periode) : toutesNotes;
@@ -834,7 +858,7 @@ function afficherNotes() {
       <div class="bulletin-card">
         <div class="bulletin-top">
           <h3>${currentEtudiant.nom} ${currentEtudiant.prenom}</h3>
-          <p>${currentEtudiant.filiere} · ${currentEtudiant.niveau} · ${periode||'Toutes périodes'}</p>
+          <p>${currentEtudiant.filiere} · ${currentEtudiant.niveau} · ${labelPeriode(periode)||'Toutes périodes'}</p>
           <div class="bulletin-moy">${moy.toFixed(2)}/20</div>
           <span class="badge ${app.cls}">${app.label}</span>
           <div style="margin-top:8px">
@@ -868,15 +892,15 @@ function afficherNotes() {
 
   page.innerHTML = `<div class="page-pad">
     <div class="section-title">📊 Notes & Bulletins</div>
-    ${periodes.length > 1 ? `<div class="periode-sel" id="periode-sel">
-      ${periodes.map(p => `<button class="periode-btn ${p===periodeActive?'active':''}" onclick="changerPeriode('${p}')">${p}</button>`).join('')}
+    ${periodesAvecTout.length > 1 ? `<div class="periode-sel" id="periode-sel">
+      ${periodesAvecTout.map(p => `<button class="periode-btn ${p===periodeActive?'active':''}" onclick="changerPeriode('${p}')">${labelPeriode(p)||'Toutes'}</button>`).join('')}
     </div>` : ''}
     <div id="notes-container">${renderNotes(periodeActive)}</div>
   </div>`;
 
   window.changerPeriode = function(p) {
     periodeActive = p;
-    document.querySelectorAll('.periode-btn').forEach(b => b.classList.toggle('active', b.textContent===p));
+    document.querySelectorAll('.periode-btn').forEach(b => b.classList.toggle('active', b.textContent===(labelPeriode(p)||'Toutes')));
     document.getElementById('notes-container').innerHTML = renderNotes(p);
   };
 }
