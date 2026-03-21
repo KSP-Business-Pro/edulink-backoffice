@@ -270,6 +270,73 @@ button:hover { background:#a86615; transform:translateY(-1px); }
 .doc-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:1rem; margin-top:1rem; }
 .doc-card { background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:1.2rem; text-align:center; transition:all .15s; cursor:pointer; }
 .doc-card:hover { box-shadow:0 4px 14px rgba(0,0,0,.08); transform:translateY(-2px); }
+
+/* ══════════════════════════════════════════════
+   EXAMENS & PLANNING  ★ JOUR 12
+══════════════════════════════════════════════ */
+.exam-stat-bar { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:1.5rem; }
+.exam-stat { background:#fff; border-radius:14px; padding:1.1rem; border:1px solid #e5e7eb; }
+.exam-stat .es-ico { font-size:18px; }
+.exam-stat .es-val { font-size:22px; font-weight:700; margin:4px 0 2px; }
+.exam-stat .es-lbl { font-size:11px; color:#6b7280; font-weight:500; }
+
+/* Bannière prochain examen */
+.next-exam-banner { background:linear-gradient(135deg,#1e3a5f 0%,#2d5a8e 100%); border-radius:14px; padding:1.2rem 1.5rem; color:#fff; margin-bottom:1.5rem; display:flex; align-items:center; gap:1.5rem; position:relative; overflow:hidden; }
+.next-exam-banner::after { content:'📝'; position:absolute; right:1.5rem; top:50%; transform:translateY(-50%); font-size:60px; opacity:.1; }
+.neb-icon { font-size:32px; flex-shrink:0; }
+.neb-info { flex:1; }
+.neb-mat { font-size:17px; font-weight:700; margin-bottom:4px; }
+.neb-meta { font-size:12px; opacity:.75; display:flex; gap:12px; flex-wrap:wrap; }
+.neb-countdown { text-align:center; flex-shrink:0; background:rgba(255,255,255,.15); border-radius:12px; padding:10px 16px; }
+.neb-days { font-size:32px; font-weight:800; line-height:1; }
+.neb-days-lbl { font-size:10px; opacity:.7; font-weight:600; text-transform:uppercase; letter-spacing:.05em; }
+
+/* Cartes examens */
+.exam-card { background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:1rem 1.2rem; margin-bottom:.75rem; display:flex; gap:1rem; align-items:flex-start; transition:all .15s; }
+.exam-card:hover { box-shadow:0 4px 12px rgba(0,0,0,.07); transform:translateY(-1px); }
+.exam-card-date { width:52px; text-align:center; flex-shrink:0; background:#f0f4ff; border-radius:10px; padding:6px 4px; }
+.exam-card-date .ec-day { font-size:22px; font-weight:800; color:#1e3a5f; line-height:1; }
+.exam-card-date .ec-mon { font-size:10px; font-weight:700; color:#6b7280; text-transform:uppercase; }
+.exam-card-body { flex:1; }
+.exam-card-body .ec-mat { font-size:14px; font-weight:700; color:#111827; margin-bottom:4px; }
+.exam-card-body .ec-meta { font-size:12px; color:#6b7280; display:flex; gap:10px; flex-wrap:wrap; margin-bottom:4px; }
+.exam-card-body .ec-info { font-size:12px; color:#374151; background:#f9fafb; border-radius:6px; padding:4px 8px; display:inline-block; }
+.exam-card-right { text-align:right; flex-shrink:0; display:flex; flex-direction:column; gap:6px; align-items:flex-end; }
+.exam-countdown-pill { background:#1e3a5f; color:#fff; border-radius:20px; padding:3px 10px; font-size:11px; font-weight:700; }
+.exam-countdown-pill.soon { background:#dc2626; }
+.exam-countdown-pill.done { background:#059669; }
+
+/* Planning hebdomadaire */
+.planning-outer { background:#fff; border-radius:14px; border:1px solid #e5e7eb; overflow:hidden; margin-bottom:1rem; }
+.planning-nav { display:flex; align-items:center; justify-content:space-between; padding:.75rem 1rem; border-bottom:1px solid #e5e7eb; }
+.planning-nav h3 { font-size:14px; font-weight:700; color:#111827; }
+.planning-grid-wrap { overflow-x:auto; }
+.planning-grid { width:100%; min-width:700px; border-collapse:collapse; }
+.planning-grid th { background:#1e3a5f; color:#fff; padding:9px 8px; font-size:11px; font-weight:600; text-align:center; border-right:1px solid rgba(255,255,255,.1); }
+.planning-grid th:first-child { width:65px; border-radius:14px 0 0 0; }
+.planning-grid th.today-col { background:#c97c1a; }
+.planning-grid td { padding:3px 4px; border-right:1px solid #f3f4f6; border-bottom:1px solid #f3f4f6; vertical-align:top; height:48px; }
+.planning-grid td.time-col { background:#f9fafb; text-align:center; font-size:10.5px; font-weight:600; color:#6b7280; vertical-align:middle; border-right:1px solid #e5e7eb; }
+.planning-grid td.today-col { background:#fffbf0; }
+.planning-grid tr:last-child td { border-bottom:none; }
+.plan-slot { border-radius:6px; padding:4px 6px; font-size:11px; line-height:1.3; cursor:pointer; margin-bottom:2px; }
+.plan-slot:hover { opacity:.85; }
+.plan-slot .ps-mat { font-weight:700; }
+.plan-partiel { background:#dbeafe; color:#1d4ed8; }
+.plan-final { background:#fee2e2; color:#dc2626; }
+.plan-rattrapage { background:#fef9c3; color:#d97706; }
+.plan-controle { background:#dcfce7; color:#059669; }
+.plan-soutenance { background:#ede9fe; color:#7c3aed; }
+
+/* Type legend */
+.type-legend { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:1rem; align-items:center; }
+.type-legend-item { display:flex; align-items:center; gap:4px; font-size:11.5px; color:#374151; }
+.type-dot { width:10px; height:10px; border-radius:3px; }
+
+/* Résultats PV */
+.pv-table tr td:nth-child(3) { font-weight:700; }
+.pv-score-input { width:60px; padding:4px 6px; border:1px solid #e5e7eb; border-radius:6px; font-size:12px; font-family:'Poppins',sans-serif; text-align:center; outline:none; }
+.pv-score-input:focus { border-color:#1e3a5f; }
 .doc-card .dc-ico { font-size:36px; margin-bottom:.6rem; }
 .doc-card .dc-nom { font-size:13px; font-weight:600; color:#111827; margin-bottom:3px; word-break:break-word; }
 .doc-card .dc-meta { font-size:11px; color:#9ca3af; }
@@ -507,6 +574,7 @@ button:hover { background:#a86615; transform:translateY(-1px); }
   <a onclick="showPage('presences')" id="nav-presences"><span class="ico">✅</span> Présences</a>
   <a onclick="showPage('notes')" id="nav-notes"><span class="ico">📊</span> Notes & Bulletins</a>
   <a onclick="showPage('emploi')" id="nav-emploi"><span class="ico">📅</span> Emploi du temps</a>
+  <a onclick="showPage('examens')" id="nav-examens"><span class="ico">📝</span> Examens <span id="badge-examens" style="margin-left:auto;background:#7c3aed;color:#fff;border-radius:10px;padding:1px 6px;font-size:10px;display:none"></span></a>
 
   <div class="nav-section">Communication</div>
   <a onclick="showPage('messages')" id="nav-messages"><span class="ico">✉️</span> Messagerie <span id="badge-msg" style="margin-left:auto;background:#c97c1a;color:#fff;border-radius:10px;padding:1px 6px;font-size:10px;display:none"></span></a>
@@ -699,6 +767,96 @@ button:hover { background:#a86615; transform:translateY(-1px); }
         <th>Jeudi</th><th>Vendredi</th><th>Samedi</th>
       </tr>
     </table>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     EXAMENS & PLANNING  ★ JOUR 12
+═══════════════════════════════════════ -->
+<div class="page" id="page-examens">
+  <div class="top">
+    <div>
+      <h2>📝 Examens & Épreuves</h2>
+      <p class="page-subtitle">Planification et suivi des sessions d'examens</p>
+    </div>
+    <div class="top-actions">
+      <button class="btn-outline" onclick="exporterExamensCSV()">&#11015; Export CSV</button>
+      <button onclick="ouvrirModal('modal-examen')">+ Planifier un examen</button>
+    </div>
+  </div>
+
+  <div class="exam-stat-bar">
+    <div class="exam-stat"><div class="es-ico">📅</div><div class="es-val" style="color:#1e3a5f" id="stat-exam-total">…</div><div class="es-lbl">Examens planifiés</div></div>
+    <div class="exam-stat"><div class="es-ico">🔴</div><div class="es-val" style="color:#dc2626" id="stat-exam-today">…</div><div class="es-lbl">Épreuves aujourd'hui</div></div>
+    <div class="exam-stat"><div class="es-ico">⏳</div><div class="es-val" style="color:#d97706" id="stat-exam-week">…</div><div class="es-lbl">Cette semaine</div></div>
+    <div class="exam-stat"><div class="es-ico">✅</div><div class="es-val" style="color:#059669" id="stat-exam-done">…</div><div class="es-lbl">Terminés</div></div>
+  </div>
+
+  <div id="next-exam-banner-wrap"></div>
+
+  <div class="tabs">
+    <button class="tab active" id="tab-exam-planning-btn" onclick="showTab('exam','tab-exam-planning')">📅 Planning</button>
+    <button class="tab" id="tab-exam-liste-btn" onclick="showTab('exam','tab-exam-liste')">&#128203; Liste</button>
+    <button class="tab" id="tab-exam-resultats-btn" onclick="showTab('exam','tab-exam-resultats')">&#128202; Résultats / PV</button>
+  </div>
+
+  <div id="tab-exam-planning">
+    <div class="type-legend">
+      <span style="font-size:12px;color:#6b7280;font-weight:600">Types :</span>
+      <span class="type-legend-item"><span class="type-dot" style="background:#3b82f6"></span> Contrôle</span>
+      <span class="type-legend-item"><span class="type-dot" style="background:#dc2626"></span> Partiel</span>
+      <span class="type-legend-item"><span class="type-dot" style="background:#d97706"></span> Rattrapage</span>
+      <span class="type-legend-item"><span class="type-dot" style="background:#7c3aed"></span> Soutenance</span>
+      <span class="type-legend-item"><span class="type-dot" style="background:#059669"></span> Final</span>
+    </div>
+    <div class="planning-outer">
+      <div class="planning-nav">
+        <button class="btn-ghost btn-sm" onclick="naviguerSemaine(-1)">← Semaine préc.</button>
+        <h3 id="planning-semaine-titre">Semaine en cours</h3>
+        <button class="btn-ghost btn-sm" onclick="naviguerSemaine(1)">Semaine suiv. →</button>
+      </div>
+      <div class="planning-grid-wrap">
+        <table class="planning-grid" id="planning-exam-table"></table>
+      </div>
+    </div>
+    <div id="exam-planning-vide" style="display:none" class="empty-state">
+      <div class="icon">📅</div>
+      <h3>Aucun examen cette semaine</h3>
+      <p>Planifiez des épreuves via le bouton ci-dessus.</p>
+    </div>
+  </div>
+
+  <div id="tab-exam-liste" style="display:none">
+    <div class="filters">
+      <span class="filter-label">Filtrer :</span>
+      <select id="filter-exam-type" onchange="filtrerExamens()">
+        <option value="">Tous types</option>
+        <option value="controle">Contrôle continu</option>
+        <option value="partiel">Partiel</option>
+        <option value="final">Examen final</option>
+        <option value="rattrapage">Rattrapage</option>
+        <option value="soutenance">Soutenance</option>
+      </select>
+      <select id="filter-exam-statut" onchange="filtrerExamens()">
+        <option value="">Tous statuts</option>
+        <option value="planifie">Planifié</option>
+        <option value="en_cours">En cours</option>
+        <option value="termine">Terminé</option>
+        <option value="annule">Annulé</option>
+      </select>
+      <select id="filter-exam-classe" onchange="filtrerExamens()">
+        <option value="">Toutes classes</option>
+        <option>L1</option><option>L2</option><option>L3</option><option>M1</option><option>M2</option>
+      </select>
+    </div>
+    <div id="exam-liste-container"><div class="loading">Chargement...</div></div>
+  </div>
+
+  <div id="tab-exam-resultats" style="display:none">
+    <div style="background:#eff6ff;border-radius:10px;padding:.85rem 1rem;margin-bottom:1rem;font-size:12.5px;color:#1d4ed8">
+      <strong>📋 Procès-verbaux</strong> — Sélectionnez un examen terminé pour saisir les résultats.
+    </div>
+    <div id="exam-resultats-container"><div class="loading">Chargement...</div></div>
   </div>
 </div>
 
@@ -1012,7 +1170,7 @@ button:hover { background:#a86615; transform:translateY(-1px); }
       <div style="text-align:center;background:#f9fafb;border-radius:10px;padding:.9rem;border:1px solid #f3f4f6"><div style="font-size:22px;font-weight:700;color:#1e3a5f" id="sys-ecoles">—</div><div style="font-size:11px;color:#6b7280">Établissements</div></div>
       <div style="text-align:center;background:#f9fafb;border-radius:10px;padding:.9rem;border:1px solid #f3f4f6"><div style="font-size:22px;font-weight:700;color:#059669" id="sys-etudiants">—</div><div style="font-size:11px;color:#6b7280">Étudiants</div></div>
       <div style="text-align:center;background:#f9fafb;border-radius:10px;padding:.9rem;border:1px solid #f3f4f6"><div style="font-size:22px;font-weight:700;color:#c97c1a" id="sys-users">—</div><div style="font-size:11px;color:#6b7280">Utilisateurs</div></div>
-      <div style="text-align:center;background:#f9fafb;border-radius:10px;padding:.9rem;border:1px solid #f3f4f6"><div style="font-size:13px;font-weight:700;color:#1e3a5f">Jour 7</div><div style="font-size:11px;color:#6b7280">Version EduLink</div></div>
+      <div style="text-align:center;background:#f9fafb;border-radius:10px;padding:.9rem;border:1px solid #f3f4f6"><div style="font-size:13px;font-weight:700;color:#1e3a5f">Jour 12</div><div style="font-size:11px;color:#6b7280">Version EduLink</div></div>
     </div>
   </div>
 </div>
@@ -1368,6 +1526,83 @@ button:hover { background:#a86615; transform:translateY(-1px); }
   </div>
 </div>
 
+<!-- ═══════════════════ MODAL EXAMEN ★ JOUR 12 ══════════════════ -->
+<div class="modal-overlay" id="modal-examen">
+  <div class="modal modal-lg">
+    <h3 id="modal-examen-titre">📝 Planifier un examen</h3>
+    <input type="hidden" id="input-exam-id">
+    <div class="form-grid">
+      <div class="form-group"><label>Matière *</label><input type="text" id="input-exam-matiere" placeholder="Ex: Algorithmique"></div>
+      <div class="form-group"><label>Type d'examen *</label>
+        <select id="input-exam-type">
+          <option value="controle">Contrôle continu</option>
+          <option value="partiel">Partiel</option>
+          <option value="final">Examen final</option>
+          <option value="rattrapage">Rattrapage</option>
+          <option value="soutenance">Soutenance</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Date *</label><input type="date" id="input-exam-date"></div>
+      <div class="form-group"><label>Durée (minutes)</label><input type="number" id="input-exam-duree" value="120" min="30" max="480"></div>
+      <div class="form-group"><label>Heure de début *</label><input type="time" id="input-exam-heure-debut" value="08:00"></div>
+      <div class="form-group"><label>Heure de fin</label><input type="time" id="input-exam-heure-fin" value="10:00"></div>
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><label>Filière</label>
+        <select id="input-exam-filiere">
+          <option value="">Toutes les filières</option>
+          <option>Informatique</option><option>Gestion</option><option>Droit</option>
+          <option>Médecine</option><option>Finance</option><option>Lettres</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Niveau</label>
+        <select id="input-exam-niveau">
+          <option value="">Tous niveaux</option>
+          <option>L1</option><option>L2</option><option>L3</option><option>M1</option><option>M2</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Salle / Lieu</label><input type="text" id="input-exam-salle" placeholder="Ex: Amphi A, Salle 101"></div>
+      <div class="form-group"><label>Surveillant</label><input type="text" id="input-exam-surveillant" placeholder="Nom du surveillant"></div>
+    </div>
+    <div class="form-group"><label>Instructions aux étudiants</label>
+      <textarea rows="3" id="input-exam-instructions" placeholder="Documents autorisés, matériels requis, consignes spéciales..."></textarea>
+    </div>
+    <div class="form-group"><label>Statut</label>
+      <select id="input-exam-statut">
+        <option value="planifie">Planifié</option>
+        <option value="en_cours">En cours</option>
+        <option value="termine">Terminé</option>
+        <option value="annule">Annulé</option>
+      </select>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="fermerModal('modal-examen')">Annuler</button>
+      <button onclick="sauvegarderExamen()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ MODAL PV EXAMEN ★ JOUR 12 ══════════════════ -->
+<div class="modal-overlay" id="modal-pv-examen">
+  <div class="modal modal-lg">
+    <h3>📋 Procès-verbal — <span id="pv-exam-titre"></span></h3>
+    <input type="hidden" id="pv-exam-id">
+    <div style="background:#f9fafb;border-radius:10px;padding:.85rem;font-size:12.5px;color:#374151;margin-bottom:1rem;display:flex;gap:1.5rem;flex-wrap:wrap" id="pv-exam-info"></div>
+    <div style="font-size:12px;font-weight:600;color:#374151;margin-bottom:.75rem">Saisir les notes des étudiants (sur 20) :</div>
+    <div style="max-height:360px;overflow-y:auto">
+      <table>
+        <thead><tr><th>Matricule</th><th>Nom complet</th><th>Note /20</th><th>Appréciation</th></tr></thead>
+        <tbody id="pv-tbody"></tbody>
+      </table>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="fermerModal('modal-pv-examen')">Fermer</button>
+      <button class="btn-outline" onclick="imprimerPV()">&#128438; Imprimer PV</button>
+      <button class="btn-green" onclick="sauvegarderPV()">Enregistrer les notes</button>
+    </div>
+  </div>
+</div>
+
 <!-- ═══════════════════ MODAL CONFIG NOTIFICATIONS ══════════════════ -->
 <div class="modal-overlay" id="modal-notif-config">
   <div class="modal">
@@ -1449,6 +1684,8 @@ let toutesLesFactures= [];
 let tousLesDocuments = [];
 let selectedMsgId    = null;
 let rapportChartInst = null;
+let tousLesExamens   = [];
+let planningOffset   = 0; // semaine courante +/- n
 
 // ══ UTILS ══════════════════════════════════════
 function showToast(msg, type='') {
@@ -1503,6 +1740,7 @@ function showPage(p) {
     rapports:     () => afficherRapport('effectifs'),
     utilisateurs: () => { if (typeof chargerUtilisateurs === 'function') chargerUtilisateurs(); },
     parametres:   chargerParametres,
+    examens:      chargerExamens,
   };
   if (loaders[p]) loaders[p]();
 }
@@ -1512,13 +1750,17 @@ function showTab(page, tabId) {
     notes: { tabs:['tab-saisie','tab-bulletins'], btns:['tab-saisie-btn','tab-bulletins-btn'] },
     pay:   { tabs:['tab-pay-liste','tab-pay-historique'], btns:['tab-pay-liste-btn','tab-pay-historique-btn'] },
     docs:  { tabs:['tab-docs-galerie','tab-docs-liste'], btns:['tab-docs-galerie-btn','tab-docs-liste-btn'] },
+    exam:  { tabs:['tab-exam-planning','tab-exam-liste','tab-exam-resultats'], btns:['tab-exam-planning-btn','tab-exam-liste-btn','tab-exam-resultats-btn'] },
   };
   const m = maps[page];
-  m.tabs.forEach(id => document.getElementById(id).style.display = 'none');
-  m.btns.forEach(id => document.getElementById(id).classList.remove('active'));
-  document.getElementById(tabId).style.display = 'block';
-  document.getElementById(tabId + '-btn').classList.add('active');
+  m.tabs.forEach(id => { const el = document.getElementById(id); if(el) el.style.display = 'none'; });
+  m.btns.forEach(id => { const el = document.getElementById(id); if(el) el.classList.remove('active'); });
+  const activeEl = document.getElementById(tabId); if(activeEl) activeEl.style.display = 'block';
+  const activeBtn = document.getElementById(tabId + '-btn'); if(activeBtn) activeBtn.classList.add('active');
   if (tabId === 'tab-bulletins') remplirSelectBulletin();
+  if (tabId === 'tab-exam-planning') afficherPlanningExamens();
+  if (tabId === 'tab-exam-liste') filtrerExamens();
+  if (tabId === 'tab-exam-resultats') afficherResultatsExamens();
   if (tabId === 'tab-pay-historique') chargerHistoriquePaiements();
   if (tabId === 'tab-docs-liste') afficherDocumentsListe();
 }
@@ -1531,6 +1773,7 @@ function ouvrirModal(id) {
   if (id === 'modal-facture')  { remplirSelect('input-fac-etudiant'); document.getElementById('input-fac-echeance').value = new Date(Date.now()+30*864e5).toISOString().split('T')[0]; }
   if (id === 'modal-incident') { remplirSelect('input-inc-etudiant'); document.getElementById('input-inc-date').value = new Date().toISOString().split('T')[0]; }
   if (id === 'modal-document') remplirSelect('input-doc-etudiant', true);
+  if (id === 'modal-examen') { initModalExamen(); }
 }
 function fermerModal(id) { document.getElementById(id).classList.remove('open'); }
 document.querySelectorAll('.modal-overlay').forEach(o => {
@@ -2593,6 +2836,449 @@ async function confirmerImportCSV() {
   showToast(`✅ ${succes} étudiant(s) importé(s)${echecs?` · ${echecs} erreur(s)`:''}`, succes > 0 ? 'success' : 'error');
   chargerEtudiants();
   chargerDashboard();
+}
+
+
+// ══ EXAMENS & PLANNING  ★ JOUR 12 ═══════════════════════════════════
+
+async function chargerExamens() {
+  let q = db.from('examens').select('*').order('date_examen', {ascending: true});
+  if (currentEcoleId) q = q.eq('ecole_id', currentEcoleId);
+  const { data } = await q;
+  tousLesExamens = data || [];
+  mettreAJourStatsExamens();
+  afficherBanniereProchainExamen();
+  afficherPlanningExamens();
+  filtrerExamens();
+  afficherResultatsExamens();
+}
+
+function mettreAJourStatsExamens() {
+  const today = new Date().toISOString().split('T')[0];
+  const debutSem = getLundiSemaine(new Date());
+  const finSem   = new Date(debutSem); finSem.setDate(finSem.getDate()+6);
+  const fSem = finSem.toISOString().split('T')[0];
+  const dSem = debutSem.toISOString().split('T')[0];
+
+  document.getElementById('stat-exam-total').textContent = tousLesExamens.length;
+  document.getElementById('stat-exam-today').textContent = tousLesExamens.filter(e => e.date_examen === today).length;
+  document.getElementById('stat-exam-week').textContent  = tousLesExamens.filter(e => e.date_examen >= dSem && e.date_examen <= fSem).length;
+  document.getElementById('stat-exam-done').textContent  = tousLesExamens.filter(e => e.statut === 'termine').length;
+
+  // Badge nav
+  const aVenir = tousLesExamens.filter(e => e.date_examen >= today && e.statut === 'planifie').length;
+  const bd = document.getElementById('badge-examens');
+  if (aVenir > 0) { bd.textContent = aVenir; bd.style.display = 'inline'; }
+  else bd.style.display = 'none';
+}
+
+function afficherBanniereProchainExamen() {
+  const today = new Date().toISOString().split('T')[0];
+  const prochain = tousLesExamens.find(e => e.date_examen >= today && e.statut !== 'annule' && e.statut !== 'termine');
+  const wrap = document.getElementById('next-exam-banner-wrap');
+  if (!prochain) { wrap.innerHTML = ''; return; }
+  const jours = Math.ceil((new Date(prochain.date_examen) - new Date(today)) / 86400000);
+  const typeLabels = { controle:'Contrôle continu', partiel:'Partiel', final:'Examen final', rattrapage:'Rattrapage', soutenance:'Soutenance' };
+  wrap.innerHTML = `
+    <div class="next-exam-banner">
+      <div class="neb-icon">📝</div>
+      <div class="neb-info">
+        <div class="neb-mat">${prochain.matiere}</div>
+        <div class="neb-meta">
+          <span>📅 ${fmtDate(prochain.date_examen)}</span>
+          ${prochain.heure_debut ? `<span>🕐 ${prochain.heure_debut}${prochain.heure_fin?'–'+prochain.heure_fin:''}</span>`:''}
+          ${prochain.salle ? `<span>📍 ${prochain.salle}</span>`:''}
+          ${prochain.niveau || prochain.filiere ? `<span>🎓 ${[prochain.filiere,prochain.niveau].filter(Boolean).join(' ')}</span>`:''}
+          <span class="badge purple">${typeLabels[prochain.type_examen]||prochain.type_examen}</span>
+        </div>
+        ${prochain.instructions ? `<div style="margin-top:6px;font-size:11.5px;opacity:.8;background:rgba(255,255,255,.1);border-radius:8px;padding:5px 10px">${prochain.instructions}</div>` : ''}
+      </div>
+      <div class="neb-countdown">
+        <div class="neb-days">${jours === 0 ? '🔴' : jours}</div>
+        <div class="neb-days-lbl">${jours === 0 ? 'Aujourd\'hui' : jours === 1 ? 'Demain' : 'Jours restants'}</div>
+      </div>
+    </div>`;
+}
+
+// ── Planning hebdomadaire ──
+function getLundiSemaine(date) {
+  const d = new Date(date);
+  const day = d.getDay();
+  const diff = day === 0 ? -6 : 1 - day;
+  d.setDate(d.getDate() + diff);
+  d.setHours(0,0,0,0);
+  return d;
+}
+
+function afficherPlanningExamens() {
+  const base = getLundiSemaine(new Date());
+  base.setDate(base.getDate() + planningOffset * 7);
+  const jours = [];
+  for (let i = 0; i < 6; i++) {
+    const d = new Date(base); d.setDate(d.getDate() + i);
+    jours.push(d);
+  }
+  const today = new Date().toISOString().split('T')[0];
+  const joursFr = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+  const moisFr  = ['jan','fév','mar','avr','mai','jun','jul','aoû','sep','oct','nov','déc'];
+
+  // Titre semaine
+  const deb = jours[0], fin = jours[5];
+  document.getElementById('planning-semaine-titre').textContent =
+    `${deb.getDate()} ${moisFr[deb.getMonth()]} – ${fin.getDate()} ${moisFr[fin.getMonth()]} ${fin.getFullYear()}`;
+
+  // Headers
+  const th_ids = ['ph-lun','ph-mar','ph-mer','ph-jeu','ph-ven','ph-sam'];
+  jours.forEach((d, i) => {
+    const el = document.getElementById(th_ids[i]);
+    const iso = d.toISOString().split('T')[0];
+    if (el) {
+      el.textContent = joursFr[i] + ' ' + d.getDate();
+      el.className = iso === today ? 'today-col' : '';
+    }
+  });
+
+  // Créneaux horaires
+  const creneaux = ['07:00','08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00'];
+  const table = document.getElementById('planning-exam-table');
+  // Rebuild header
+  const theadRow = table.rows[0];
+  theadRow.cells[0].textContent = 'Heure';
+  jours.forEach((d, i) => {
+    if (theadRow.cells[i+1]) {
+      const iso = d.toISOString().split('T')[0];
+      theadRow.cells[i+1].textContent = joursFr[i] + ' ' + d.getDate();
+      theadRow.cells[i+1].className = iso === today ? 'today-col' : '';
+    }
+  });
+
+  // Remove old body rows
+  while (table.rows.length > 1) table.deleteRow(1);
+
+  let hasExam = false;
+  creneaux.forEach(h => {
+    const tr = table.insertRow();
+    const td0 = tr.insertCell(); td0.className = 'time-col'; td0.textContent = h;
+    jours.forEach(d => {
+      const iso = d.toISOString().split('T')[0];
+      const td = tr.insertCell();
+      if (iso === today) td.className = 'today-col';
+      // Examens de ce jour et de ce créneau
+      const examsDuJour = tousLesExamens.filter(e => {
+        if (e.date_examen !== iso) return false;
+        const hdeb = e.heure_debut || '00:00';
+        return hdeb.slice(0,5) === h.slice(0,5);
+      });
+      examsDuJour.forEach(ex => {
+        hasExam = true;
+        const typeColors = { controle:'plan-controle', partiel:'plan-partiel', final:'plan-final', rattrapage:'plan-rattrapage', soutenance:'plan-soutenance' };
+        const cls = typeColors[ex.type_examen] || 'plan-controle';
+        const slot = document.createElement('div');
+        slot.className = `plan-slot ${cls}`;
+        slot.innerHTML = `<div class="ps-mat">${ex.matiere}</div><div style="font-size:10px;opacity:.8">${ex.heure_debut||''}${ex.heure_fin?'–'+ex.heure_fin:''} ${ex.salle?'· '+ex.salle:''}</div>`;
+        slot.onclick = () => editerExamen(ex.id);
+        td.appendChild(slot);
+      });
+    });
+  });
+
+  document.getElementById('exam-planning-vide').style.display = hasExam ? 'none' : 'block';
+}
+
+function naviguerSemaine(dir) {
+  planningOffset += dir;
+  afficherPlanningExamens();
+}
+
+// ── Liste des examens ──
+function filtrerExamens() {
+  const fType   = document.getElementById('filter-exam-type')?.value || '';
+  const fStatut = document.getElementById('filter-exam-statut')?.value || '';
+  const fClasse = document.getElementById('filter-exam-classe')?.value || '';
+  let liste = tousLesExamens;
+  if (fType)   liste = liste.filter(e => e.type_examen === fType);
+  if (fStatut) liste = liste.filter(e => e.statut === fStatut);
+  if (fClasse) liste = liste.filter(e => e.niveau === fClasse);
+  afficherListeExamens(liste);
+}
+
+function afficherListeExamens(liste) {
+  const container = document.getElementById('exam-liste-container');
+  if (!liste.length) {
+    container.innerHTML = '<div class="empty-state"><div class="icon">📭</div><h3>Aucun examen</h3><p>Planifiez des épreuves via le bouton ci-dessus.</p></div>';
+    return;
+  }
+  const today = new Date().toISOString().split('T')[0];
+  const typeLabels = { controle:'Contrôle continu', partiel:'Partiel', final:'Examen final', rattrapage:'Rattrapage', soutenance:'Soutenance' };
+  const statutClass = { planifie:'blue', en_cours:'amber', termine:'green', annule:'gray' };
+  container.innerHTML = liste.map(ex => {
+    const d = new Date(ex.date_examen);
+    const day = d.getDate().toString().padStart(2,'0');
+    const moisFr = ['JAN','FÉV','MAR','AVR','MAI','JUN','JUL','AOÛ','SEP','OCT','NOV','DÉC'];
+    const mon = moisFr[d.getMonth()];
+    const jours = Math.ceil((new Date(ex.date_examen) - new Date(today)) / 86400000);
+    let pillTxt = '', pillCls = '';
+    if (ex.statut === 'termine') { pillTxt = '✅ Terminé'; pillCls = 'done'; }
+    else if (ex.statut === 'annule') { pillTxt = '❌ Annulé'; pillCls = 'done'; }
+    else if (jours === 0) { pillTxt = '🔴 Aujourd\'hui'; pillCls = 'soon'; }
+    else if (jours < 0) { pillTxt = 'Passé'; pillCls = 'done'; }
+    else if (jours <= 3) { pillTxt = `⚡ J-${jours}`; pillCls = 'soon'; }
+    else { pillTxt = `J-${jours}`; pillCls = ''; }
+    return `<div class="exam-card">
+      <div class="exam-card-date"><div class="ec-day">${day}</div><div class="ec-mon">${mon}</div></div>
+      <div class="exam-card-body">
+        <div class="ec-mat">${ex.matiere}</div>
+        <div class="ec-meta">
+          ${ex.heure_debut ? `<span>🕐 ${ex.heure_debut}${ex.heure_fin?'–'+ex.heure_fin:''}</span>`:''}
+          ${ex.salle ? `<span>📍 ${ex.salle}</span>`:''}
+          ${ex.surveillant ? `<span>👤 ${ex.surveillant}</span>`:''}
+          ${ex.filiere || ex.niveau ? `<span>🎓 ${[ex.filiere,ex.niveau].filter(Boolean).join(' ')}</span>`:''}
+        </div>
+        ${ex.instructions ? `<div class="ec-info">${ex.instructions.slice(0,80)}${ex.instructions.length>80?'…':''}</div>`:''}
+      </div>
+      <div class="exam-card-right">
+        <span class="badge ${statutClass[ex.statut]||'gray'}">${ex.statut||'planifié'}</span>
+        <span class="badge purple">${typeLabels[ex.type_examen]||ex.type_examen}</span>
+        ${pillTxt ? `<span class="exam-countdown-pill ${pillCls}">${pillTxt}</span>` : ''}
+        <button class="btn-sm btn-blue" onclick="editerExamen('${ex.id}')">✏️ Éditer</button>
+        ${ex.statut === 'termine' ? `<button class="btn-sm btn-green" onclick="ouvrirPV('${ex.id}')">📋 PV</button>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Résultats / PV ──
+function afficherResultatsExamens() {
+  const container = document.getElementById('exam-resultats-container');
+  const termines = tousLesExamens.filter(e => e.statut === 'termine');
+  if (!termines.length) {
+    container.innerHTML = '<div class="empty-state"><div class="icon">📋</div><h3>Aucun examen terminé</h3><p>Les procès-verbaux apparaissent ici après la fin d\'un examen.</p></div>';
+    return;
+  }
+  const typeLabels = { controle:'Contrôle continu', partiel:'Partiel', final:'Examen final', rattrapage:'Rattrapage', soutenance:'Soutenance' };
+  container.innerHTML = `<table>
+    <tr><th>Matière</th><th>Type</th><th>Date</th><th>Classe</th><th>Salle</th><th>Actions</th></tr>
+    ${termines.map(ex => `<tr>
+      <td><strong>${ex.matiere}</strong></td>
+      <td><span class="badge purple">${typeLabels[ex.type_examen]||ex.type_examen}</span></td>
+      <td>${fmtDate(ex.date_examen)}</td>
+      <td>${[ex.filiere,ex.niveau].filter(Boolean).join(' ')||'—'}</td>
+      <td>${ex.salle||'—'}</td>
+      <td>
+        <button class="btn-sm btn-green" onclick="ouvrirPV('${ex.id}')">📋 Saisir PV</button>
+        <button class="btn-sm btn-outline" onclick="imprimerPVDirect('${ex.id}')">🖨️</button>
+      </td>
+    </tr>`).join('')}
+  </table>`;
+}
+
+// ── PV Modal ──
+async function ouvrirPV(examId) {
+  const examen = tousLesExamens.find(e => e.id === examId);
+  if (!examen) return;
+  document.getElementById('pv-exam-titre').textContent = examen.matiere;
+  document.getElementById('pv-exam-id').value = examId;
+  document.getElementById('pv-exam-info').innerHTML = `
+    <span>📅 ${fmtDate(examen.date_examen)}</span>
+    <span>🕐 ${examen.heure_debut||'—'}${examen.heure_fin?'–'+examen.heure_fin:''}</span>
+    <span>📍 ${examen.salle||'—'}</span>
+    <span>🎓 ${[examen.filiere,examen.niveau].filter(Boolean).join(' ')||'Toutes classes'}</span>`;
+
+  // Charger les étudiants concernés
+  let q = db.from('etudiants').select('*').order('nom');
+  if (currentEcoleId) q = q.eq('ecole_id', currentEcoleId);
+  if (examen.filiere) q = q.eq('filiere', examen.filiere);
+  if (examen.niveau)  q = q.eq('niveau', examen.niveau);
+  const { data: etudiants } = await q;
+
+  // Charger notes existantes pour cet examen (stored as matiere + periode)
+  const { data: notesEx } = await db.from('notes').select('*')
+    .eq('ecole_id', currentEcoleId || '')
+    .eq('matiere', examen.matiere)
+    .eq('periode', 'EXAM-' + examId);
+
+  const notesMap = {};
+  (notesEx || []).forEach(n => { notesMap[n.etudiant_id] = n.note; });
+
+  document.getElementById('pv-tbody').innerHTML = (etudiants||[]).map(et => {
+    const noteVal = notesMap[et.id] !== undefined ? notesMap[et.id] : '';
+    const app = noteVal !== '' ? getApp(noteVal) : null;
+    return `<tr>
+      <td><code style="font-size:10px;background:#f3f4f6;padding:1px 5px;border-radius:4px">${et.matricule}</code></td>
+      <td><strong>${et.nom} ${et.prenom}</strong></td>
+      <td><input type="number" class="pv-score-input" id="pv-note-${et.id}" value="${noteVal}" min="0" max="20" step="0.25" placeholder="—" oninput="rafraichirMentionPV('${et.id}')"></td>
+      <td id="pv-mention-${et.id}">${app ? `<span class="badge ${app.cls}">${app.label}</span>` : '—'}</td>
+    </tr>`;
+  }).join('');
+
+  ouvrirModal('modal-pv-examen');
+}
+
+function rafraichirMentionPV(etudiantId) {
+  const val = parseFloat(document.getElementById('pv-note-'+etudiantId)?.value);
+  const cell = document.getElementById('pv-mention-'+etudiantId);
+  if (cell) {
+    if (!isNaN(val) && val >= 0 && val <= 20) {
+      const a = getApp(val);
+      cell.innerHTML = `<span class="badge ${a.cls}">${a.label}</span>`;
+    } else {
+      cell.textContent = '—';
+    }
+  }
+}
+
+async function sauvegarderPV() {
+  const examId = document.getElementById('pv-exam-id').value;
+  const examen = tousLesExamens.find(e => e.id === examId);
+  if (!examen) return;
+  const inputs = document.querySelectorAll('[id^="pv-note-"]');
+  const periode = 'EXAM-' + examId;
+  let nb = 0, errs = 0;
+  for (const inp of inputs) {
+    const etudiantId = inp.id.replace('pv-note-','');
+    const val = parseFloat(inp.value);
+    if (isNaN(val) || inp.value === '') continue;
+    // Upsert
+    const { error } = await db.from('notes').upsert({
+      ecole_id: currentEcoleId,
+      etudiant_id: etudiantId,
+      matiere: examen.matiere,
+      note: val,
+      coefficient: 1,
+      periode: periode,
+    }, { onConflict: 'ecole_id,etudiant_id,matiere,periode' });
+    if (error) errs++; else nb++;
+  }
+  fermerModal('modal-pv-examen');
+  showToast(`✅ ${nb} note(s) enregistrée(s)${errs?` · ${errs} erreur(s)`:''}`, nb > 0 ? 'success' : 'error');
+  chargerExamens();
+}
+
+function imprimerPV() {
+  const examId = document.getElementById('pv-exam-id').value;
+  imprimerPVDirect(examId);
+}
+
+function imprimerPVDirect(examId) {
+  const examen = tousLesExamens.find(e => e.id === examId);
+  if (!examen) return;
+  const rows = document.querySelectorAll('#pv-tbody tr');
+  let lignes = '';
+  rows.forEach(tr => {
+    const mat = tr.cells[0]?.textContent?.trim() || '';
+    const nom = tr.cells[1]?.textContent?.trim() || '';
+    const note = tr.querySelector('input')?.value || '—';
+    const mention = tr.cells[3]?.textContent?.trim() || '—';
+    lignes += `<tr><td>${mat}</td><td>${nom}</td><td>${note}/20</td><td>${mention}</td></tr>`;
+  });
+  const typeLabels = { controle:'Contrôle continu', partiel:'Partiel', final:'Examen final', rattrapage:'Rattrapage', soutenance:'Soutenance' };
+  const w = window.open('','_blank');
+  w.document.write(`<html><head><title>PV — ${examen.matiere}</title>
+  <style>*{font-family:Arial,sans-serif;margin:0;box-sizing:border-box}body{padding:2rem}
+  .header{background:#1e3a5f;color:#fff;padding:1.2rem;border-radius:8px;margin-bottom:1.5rem}
+  h1{font-size:17px;margin-bottom:4px}p{font-size:12px;opacity:.8}
+  table{width:100%;border-collapse:collapse;margin-top:1rem}
+  th,td{border:1px solid #e5e7eb;padding:8px 12px;font-size:12px;text-align:left}
+  th{background:#f3f4f6;font-weight:700}
+  .footer{margin-top:3rem;display:flex;justify-content:space-between;font-size:12px}
+  .sig{text-align:center;border-top:1px solid #374151;padding-top:8px;width:200px}
+  </style></head><body>
+  <div class="header">
+    <h1>Procès-Verbal — ${examen.matiere}</h1>
+    <p>${typeLabels[examen.type_examen]||examen.type_examen} · ${fmtDate(examen.date_examen)} · ${examen.heure_debut||''}${examen.heure_fin?'–'+examen.heure_fin:''} · Salle: ${examen.salle||'—'}</p>
+    <p>Classe: ${[examen.filiere,examen.niveau].filter(Boolean).join(' ')||'—'} · Surveillant: ${examen.surveillant||'—'}</p>
+  </div>
+  <table><tr><th>Matricule</th><th>Nom & Prénom</th><th>Note /20</th><th>Mention</th></tr>${lignes}</table>
+  <div class="footer">
+    <div class="sig">Signature Surveillant</div>
+    <div class="sig">Cachet & Signature Direction</div>
+  </div>
+  </body></html>`);
+  w.document.close(); w.print();
+}
+
+// ── CRUD Examen ──
+function initModalExamen() {
+  document.getElementById('modal-examen-titre').textContent = '📝 Planifier un examen';
+  document.getElementById('input-exam-id').value = '';
+  document.getElementById('input-exam-matiere').value = '';
+  document.getElementById('input-exam-type').value = 'controle';
+  document.getElementById('input-exam-date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('input-exam-duree').value = '120';
+  document.getElementById('input-exam-heure-debut').value = '08:00';
+  document.getElementById('input-exam-heure-fin').value = '10:00';
+  document.getElementById('input-exam-filiere').value = '';
+  document.getElementById('input-exam-niveau').value = '';
+  document.getElementById('input-exam-salle').value = '';
+  document.getElementById('input-exam-surveillant').value = '';
+  document.getElementById('input-exam-instructions').value = '';
+  document.getElementById('input-exam-statut').value = 'planifie';
+}
+
+function editerExamen(examId) {
+  const ex = tousLesExamens.find(e => e.id === examId);
+  if (!ex) return;
+  document.getElementById('modal-examen-titre').textContent = '✏️ Modifier l\'examen';
+  document.getElementById('input-exam-id').value = ex.id;
+  document.getElementById('input-exam-matiere').value = ex.matiere || '';
+  document.getElementById('input-exam-type').value = ex.type_examen || 'controle';
+  document.getElementById('input-exam-date').value = ex.date_examen || '';
+  document.getElementById('input-exam-duree').value = ex.duree || 120;
+  document.getElementById('input-exam-heure-debut').value = ex.heure_debut || '08:00';
+  document.getElementById('input-exam-heure-fin').value = ex.heure_fin || '10:00';
+  document.getElementById('input-exam-filiere').value = ex.filiere || '';
+  document.getElementById('input-exam-niveau').value = ex.niveau || '';
+  document.getElementById('input-exam-salle').value = ex.salle || '';
+  document.getElementById('input-exam-surveillant').value = ex.surveillant || '';
+  document.getElementById('input-exam-instructions').value = ex.instructions || '';
+  document.getElementById('input-exam-statut').value = ex.statut || 'planifie';
+  ouvrirModal('modal-examen');
+}
+
+async function sauvegarderExamen() {
+  const matiere = document.getElementById('input-exam-matiere').value.trim();
+  const date    = document.getElementById('input-exam-date').value;
+  if (!matiere || !date) { showToast('Matière et date obligatoires', 'error'); return; }
+  const id = document.getElementById('input-exam-id').value;
+  const payload = {
+    ecole_id:       currentEcoleId,
+    matiere,
+    type_examen:    document.getElementById('input-exam-type').value,
+    date_examen:    date,
+    duree:          parseInt(document.getElementById('input-exam-duree').value) || 120,
+    heure_debut:    document.getElementById('input-exam-heure-debut').value,
+    heure_fin:      document.getElementById('input-exam-heure-fin').value,
+    filiere:        document.getElementById('input-exam-filiere').value || null,
+    niveau:         document.getElementById('input-exam-niveau').value || null,
+    salle:          document.getElementById('input-exam-salle').value.trim() || null,
+    surveillant:    document.getElementById('input-exam-surveillant').value.trim() || null,
+    instructions:   document.getElementById('input-exam-instructions').value.trim() || null,
+    statut:         document.getElementById('input-exam-statut').value,
+  };
+  let error;
+  if (id) {
+    ({ error } = await db.from('examens').update(payload).eq('id', id));
+  } else {
+    ({ error } = await db.from('examens').insert([payload]));
+  }
+  if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
+  fermerModal('modal-examen');
+  showToast(id ? '✅ Examen modifié !' : '✅ Examen planifié !', 'success');
+  chargerExamens();
+}
+
+function exporterExamensCSV() {
+  if (!tousLesExamens.length) { showToast('Aucun examen à exporter','error'); return; }
+  const header = 'matiere,type,date,heure_debut,heure_fin,salle,filiere,niveau,surveillant,statut';
+  const rows = tousLesExamens.map(e =>
+    [e.matiere,e.type_examen,e.date_examen,e.heure_debut||'',e.heure_fin||'',e.salle||'',e.filiere||'',e.niveau||'',e.surveillant||'',e.statut].join(',')
+  );
+  const blob = new Blob([header + '\n' + rows.join('\n')], { type:'text/csv;charset=utf-8;' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'edulink_examens.csv';
+  a.click();
+  showToast('Export CSV téléchargé !','success');
 }
 
 // PWA Service Worker

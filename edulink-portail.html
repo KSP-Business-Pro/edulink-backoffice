@@ -249,6 +249,54 @@ body{font-family:'Poppins',sans-serif;background:var(--bg);min-height:100vh;colo
 .pay-fill{height:100%;border-radius:5px;background:linear-gradient(90deg,#059669,#1d9e75);transition:width .8s}
 .pay-amounts{display:flex;justify-content:space-between;font-size:11px;color:#6b7280;margin-top:4px}
 
+
+/* ══ EXAMENS PORTAIL ★ JOUR 12 ══ */
+.next-exam-card{
+  background:linear-gradient(135deg,#0f6e56,#1e3a5f);
+  border-radius:16px;padding:1.2rem;color:#fff;margin-bottom:1rem;
+  position:relative;overflow:hidden;
+}
+.next-exam-card::after{content:'📝';position:absolute;right:1rem;top:50%;transform:translateY(-50%);font-size:52px;opacity:.1;}
+.nec-countdown{
+  display:inline-flex;align-items:center;gap:6px;
+  background:rgba(255,255,255,.15);border-radius:20px;
+  padding:4px 12px;font-size:12px;font-weight:700;margin-bottom:8px;
+}
+.nec-mat{font-size:17px;font-weight:700;margin-bottom:4px;}
+.nec-meta{font-size:12px;opacity:.75;display:flex;gap:12px;flex-wrap:wrap;}
+.exam-item{
+  padding:.9rem 1rem;border-bottom:1px solid #f3f4f6;
+  display:flex;align-items:flex-start;gap:.75rem;
+}
+.exam-item:last-child{border-bottom:none}
+.exam-date-box{
+  width:46px;flex-shrink:0;text-align:center;
+  background:#f0f7f4;border-radius:10px;padding:6px 4px;
+}
+.exam-date-box .ed-day{font-size:20px;font-weight:800;color:#0f6e56;font-family:'Nunito',sans-serif;line-height:1;}
+.exam-date-box .ed-mon{font-size:9px;font-weight:700;color:#6b7280;text-transform:uppercase;}
+.exam-body{flex:1;min-width:0;}
+.exam-body .eb-mat{font-size:13px;font-weight:700;color:#111827;margin-bottom:2px;}
+.exam-body .eb-meta{font-size:11.5px;color:#6b7280;display:flex;gap:8px;flex-wrap:wrap;}
+.exam-body .eb-note{font-size:11.5px;margin-top:4px;background:#f0f7f4;border-radius:6px;padding:3px 8px;display:inline-block;color:#0f6e56;font-weight:600;}
+.exam-pill{
+  padding:3px 10px;border-radius:20px;font-size:10.5px;font-weight:700;white-space:nowrap;
+  flex-shrink:0;align-self:center;
+}
+.ep-partiel{background:#fee2e2;color:#dc2626;}
+.ep-controle{background:#dbeafe;color:#1d4ed8;}
+.ep-final{background:#fee2e2;color:#dc2626;}
+.ep-rattrapage{background:#fef9c3;color:#d97706;}
+.ep-soutenance{background:#ede9fe;color:#7c3aed;}
+.ep-soon{background:#dc2626;color:#fff;}
+.exam-filter-bar{display:flex;gap:6px;margin-bottom:1rem;flex-wrap:wrap;}
+.exam-filter-btn{
+  padding:5px 12px;border-radius:20px;font-size:11.5px;font-weight:600;
+  border:1.5px solid #e5e7eb;background:#fff;color:#6b7280;
+  cursor:pointer;font-family:'Poppins',sans-serif;transition:all .15s;
+}
+.exam-filter-btn.active{background:#0f6e56;border-color:#0f6e56;color:#fff;}
+
 /* ══ EMPTY STATES ══ */
 .empty{text-align:center;padding:2.5rem 1rem;color:#9ca3af}
 .empty .e-ico{font-size:40px;margin-bottom:.75rem}
@@ -379,6 +427,8 @@ body{font-family:'Poppins',sans-serif;background:var(--bg);min-height:100vh;colo
   <div class="page" id="page-paiements"></div>
   <div class="page" id="page-messages"></div>
 
+  <div class="page" id="page-examens"></div>
+
   <!-- Navigation bas -->
   <nav class="bottom-nav">
     <button class="nav-item active" id="nav-accueil" onclick="showPage('accueil')">
@@ -396,6 +446,11 @@ body{font-family:'Poppins',sans-serif;background:var(--bg);min-height:100vh;colo
     <button class="nav-item" id="nav-paiements" onclick="showPage('paiements')">
       <span class="nav-ico">💳</span>
       <span class="nav-lbl">Paiements</span>
+    </button>
+    <button class="nav-item" id="nav-examens" onclick="showPage('examens')">
+      <span class="nav-ico">📝</span>
+      <span class="nav-lbl">Examens</span>
+      <span class="nav-badge" id="nav-exam-badge"></span>
     </button>
     <button class="nav-item" id="nav-messages" onclick="showPage('messages')">
       <span class="nav-ico">✉️</span>
@@ -424,6 +479,8 @@ let toutesNotes = [];
 let toutesAbsences = [];
 let toutesFactures = [];
 let tousMessages = [];
+let tousExamens = [];
+let examFilterActif = 'tous';
 
 // ══ UTILS ══
 function showToast(msg, type='') {
@@ -514,7 +571,7 @@ function lancerApp() {
 }
 
 async function chargerTout() {
-  await Promise.all([chargerNotes(), chargerAbsences(), chargerFactures(), chargerMessages()]);
+  await Promise.all([chargerNotes(), chargerAbsences(), chargerFactures(), chargerMessages(), chargerExamensPortail()]);
   afficherAccueil();
 }
 
@@ -565,6 +622,7 @@ function showPage(p) {
     absences: afficherAbsences,
     paiements: afficherPaiements,
     messages: afficherMessages,
+    examens: afficherExamensPortail,
   };
   if (renderers[p]) renderers[p]();
 }
@@ -610,11 +668,11 @@ function afficherAccueil() {
             <div class="stat-lbl">${restant>0?fmtMontant(restant):'Paiements'}</div>
           </div>
         </div>
-        <div class="stat-card" onclick="showPage('messages')">
-          <div class="stat-ico blue">✉️</div>
+        <div class="stat-card" onclick="showPage('examens')">
+          <div class="stat-ico blue">📝</div>
           <div>
-            <div class="stat-val" style="color:#1d4ed8">${nonLusMsgs || tousMessages.length}</div>
-            <div class="stat-lbl">${nonLusMsgs>0?'Non lus':'Messages'}</div>
+            <div class="stat-val" style="color:#7c3aed">${(()=>{const t=new Date().toISOString().split('T')[0];return tousExamens.filter(e=>e.date_examen>=t&&e.statut!=='annule').length;})()||0}</div>
+            <div class="stat-lbl">Examens à venir</div>
           </div>
         </div>
       </div>
@@ -682,6 +740,25 @@ function afficherAccueil() {
             </div>
           </div>`).join('')}
       </div>` : ''}
+
+      ${(function(){
+        const today = new Date().toISOString().split('T')[0];
+        const prochain = tousExamens.find(function(e){ return e.date_examen >= today && e.statut !== 'annule' && e.statut !== 'termine'; });
+        if (!prochain) return '';
+        const jours = Math.ceil((new Date(prochain.date_examen) - new Date(today)) / 86400000);
+        const typeLabels = { controle:'Contrôle', partiel:'Partiel', final:'Final', rattrapage:'Rattrapage', soutenance:'Soutenance' };
+        return '<div class="card" onclick="showPage(\'examens\')" style="cursor:pointer">' +
+          '<div class="card-header"><div class="card-title">📝 Prochain examen</div><span class="card-link">Voir tout</span></div>' +
+          '<div class="list-item">' +
+          '<div class="li-ico" style="background:#ede9fe">📝</div>' +
+          '<div class="li-body"><div class="li-title">' + prochain.matiere + '</div>' +
+          '<div class="li-sub">' + (prochain.heure_debut||'') + (prochain.salle?' · '+prochain.salle:'') + '</div></div>' +
+          '<div class="li-right">' +
+          '<div style="font-size:14px;font-weight:800;color:#7c3aed">' + (jours===0?'Aujourd\'hui':jours===1?'Demain':'J-'+jours) + '</div>' +
+          '<div style="font-size:10px;color:#9ca3af">' + new Date(prochain.date_examen).toLocaleDateString('fr-FR') + '</div>' +
+          '<span class="badge" style="background:#ede9fe;color:#7c3aed">' + (typeLabels[prochain.type_examen]||prochain.type_examen) + '</span>' +
+          '</div></div></div>';
+      })()}
 
       ${!currentEtudiant ? `<div class="empty"><div class="e-ico">👤</div><p>Votre compte n'est pas encore lié à un étudiant.<br>Contactez l'administration.</p></div>` : ''}
     </div>`;
@@ -1049,6 +1126,154 @@ function retourStep1() {
   const btn = document.getElementById('btn-envoyer-otp');
   btn.disabled = false; btn.textContent = '📱 Recevoir le code SMS →';
   [0,1,2,3,4,5].forEach(i => { const d = document.getElementById('d'+i); if(d){d.value='';d.classList.remove('filled');} });
+}
+
+
+// ══ EXAMENS PORTAIL ★ JOUR 12 ═══════════════════════════════
+
+async function chargerExamensPortail() {
+  if (!currentEcoleId) { tousExamens = []; return; }
+  let q = db.from('examens').select('*').eq('ecole_id', currentEcoleId).order('date_examen', {ascending: true});
+  // Filtrer par filière/niveau de l'étudiant
+  if (currentEtudiant?.filiere) q = q.or(`filiere.is.null,filiere.eq.${currentEtudiant.filiere}`);
+  if (currentEtudiant?.niveau)  q = q.or(`niveau.is.null,niveau.eq.${currentEtudiant.niveau}`);
+  const { data } = await q;
+  tousExamens = data || [];
+
+  // Badge nav
+  const today = new Date().toISOString().split('T')[0];
+  const aVenir = tousExamens.filter(e => e.date_examen >= today && e.statut !== 'annule').length;
+  const b = document.getElementById('nav-exam-badge');
+  if (b) { if (aVenir > 0) { b.style.display='flex'; b.textContent=aVenir; } else b.style.display='none'; }
+}
+
+function afficherExamensPortail() {
+  const page = document.getElementById('page-examens');
+  const today = new Date().toISOString().split('T')[0];
+
+  // Prochain examen
+  const prochain = tousExamens.find(e => e.date_examen >= today && e.statut !== 'annule' && e.statut !== 'termine');
+  let bannerHtml = '';
+  if (prochain) {
+    const jours = Math.ceil((new Date(prochain.date_examen) - new Date(today)) / 86400000);
+    const typeLabels = { controle:'Contrôle', partiel:'Partiel', final:'Examen final', rattrapage:'Rattrapage', soutenance:'Soutenance' };
+    bannerHtml = `
+    <div class="next-exam-card">
+      <div class="nec-countdown">
+        ${jours === 0 ? '🔴 Aujourd\'hui !' : jours === 1 ? '⏳ Demain' : `⏳ Dans ${jours} jours`}
+      </div>
+      <div class="nec-mat">${prochain.matiere}</div>
+      <div class="nec-meta">
+        ${prochain.heure_debut ? `<span>🕐 ${prochain.heure_debut}${prochain.heure_fin?'–'+prochain.heure_fin:''}</span>`:'' }
+        ${prochain.salle ? `<span>📍 ${prochain.salle}</span>`:'' }
+        <span class="badge teal">${typeLabels[prochain.type_examen]||prochain.type_examen}</span>
+      </div>
+      ${prochain.instructions ? `<div style="margin-top:8px;font-size:11.5px;opacity:.8;background:rgba(255,255,255,.1);border-radius:8px;padding:6px 10px">📋 ${prochain.instructions}</div>` : ''}
+    </div>`;
+  }
+
+  if (!tousExamens.length) {
+    page.innerHTML = `<div class="page-pad">
+      <div class="section-title">📝 Mes Examens</div>
+      <div class="empty"><div class="e-ico">📅</div><p>Aucun examen planifié pour le moment.</p></div>
+    </div>`;
+    return;
+  }
+
+  // Filtres
+  const filterHtml = `
+    <div class="exam-filter-bar" id="exam-filter-bar">
+      <button class="exam-filter-btn ${examFilterActif==='tous'?'active':''}" onclick="filtrerExamensPortail('tous')">Tous</button>
+      <button class="exam-filter-btn ${examFilterActif==='avenir'?'active':''}" onclick="filtrerExamensPortail('avenir')">À venir</button>
+      <button class="exam-filter-btn ${examFilterActif==='passe'?'active':''}" onclick="filtrerExamensPortail('passe')">Passés</button>
+    </div>`;
+
+  page.innerHTML = `<div class="page-pad">
+    <div class="section-title">📝 Mes Examens</div>
+    ${bannerHtml}
+    ${filterHtml}
+    <div class="card" id="exam-liste-portail"></div>
+  </div>`;
+
+  rendreListeExamensPortail();
+}
+
+function filtrerExamensPortail(filtre) {
+  examFilterActif = filtre;
+  document.querySelectorAll('.exam-filter-btn').forEach(b => {
+    b.classList.toggle('active', b.textContent.toLowerCase().includes(
+      filtre === 'tous' ? 'tous' : filtre === 'avenir' ? 'à venir' : 'passés'
+    ));
+  });
+  rendreListeExamensPortail();
+}
+
+async function rendreListeExamensPortail() {
+  const container = document.getElementById('exam-liste-portail');
+  if (!container) return;
+  const today = new Date().toISOString().split('T')[0];
+
+  let liste = [...tousExamens];
+  if (examFilterActif === 'avenir') liste = liste.filter(e => e.date_examen >= today && e.statut !== 'annule');
+  else if (examFilterActif === 'passe') liste = liste.filter(e => e.date_examen < today || e.statut === 'termine');
+
+  if (!liste.length) {
+    container.innerHTML = '<div class="empty"><div class="e-ico">📭</div><p>Aucun examen dans cette catégorie.</p></div>';
+    return;
+  }
+
+  const typeLabels = { controle:'Contrôle continu', partiel:'Partiel', final:'Examen final', rattrapage:'Rattrapage', soutenance:'Soutenance' };
+  const typeClass  = { controle:'ep-controle', partiel:'ep-partiel', final:'ep-final', rattrapage:'ep-rattrapage', soutenance:'ep-soutenance' };
+  const moisFr = ['JAN','FÉV','MAR','AVR','MAI','JUN','JUL','AOÛ','SEP','OCT','NOV','DÉC'];
+
+  // Charger les notes de l'étudiant pour les examens terminés
+  let notesMap = {};
+  if (currentEtudiant) {
+    const examinesTermines = liste.filter(e => e.statut === 'termine').map(e => 'EXAM-' + e.id);
+    if (examinesTermines.length) {
+      const { data: notesEx } = await db.from('notes').select('*')
+        .eq('etudiant_id', currentEtudiant.id)
+        .in('periode', examinesTermines);
+      (notesEx || []).forEach(n => {
+        const examId = n.periode.replace('EXAM-', '');
+        notesMap[examId] = n.note;
+      });
+    }
+  }
+
+  container.innerHTML = liste.map(ex => {
+    const d = new Date(ex.date_examen);
+    const day = d.getDate().toString().padStart(2,'0');
+    const mon = moisFr[d.getMonth()];
+    const jours = Math.ceil((new Date(ex.date_examen) - new Date(today)) / 86400000);
+    const isPasse = ex.date_examen < today || ex.statut === 'termine';
+    const note = notesMap[ex.id];
+    let pillHtml = '';
+    if (ex.statut === 'annule') pillHtml = `<span class="exam-pill" style="background:#f3f4f6;color:#6b7280">Annulé</span>`;
+    else if (isPasse && note !== undefined) pillHtml = `<span class="exam-pill" style="background:${note>=10?'#dcfce7':'#fee2e2'};color:${note>=10?'#059669':'#dc2626'}">${note}/20</span>`;
+    else if (!isPasse && jours <= 3) pillHtml = `<span class="exam-pill ep-soon">${jours===0?'Auj.':'J-'+jours}</span>`;
+    else if (!isPasse) pillHtml = `<span class="exam-pill" style="background:#e1f5ee;color:#0f6e56">J-${jours}</span>`;
+
+    return `<div class="exam-item">
+      <div class="exam-date-box">
+        <div class="ed-day">${day}</div>
+        <div class="ed-mon">${mon}</div>
+      </div>
+      <div class="exam-body">
+        <div class="eb-mat">${ex.matiere}</div>
+        <div class="eb-meta">
+          ${ex.heure_debut ? `<span>🕐 ${ex.heure_debut}${ex.heure_fin?'–'+ex.heure_fin:''}</span>`:''}
+          ${ex.salle ? `<span>📍 ${ex.salle}</span>`:''}
+          ${ex.surveillant ? `<span>👤 ${ex.surveillant}</span>`:''}
+        </div>
+        ${ex.instructions ? `<div class="eb-note">📋 ${ex.instructions.slice(0,60)}${ex.instructions.length>60?'…':''}</div>` : ''}
+      </div>
+      <div style="display:flex;flex-direction:column;gap:5px;align-items:flex-end;flex-shrink:0">
+        <span class="exam-pill ${typeClass[ex.type_examen]||'ep-controle'}">${typeLabels[ex.type_examen]||ex.type_examen}</span>
+        ${pillHtml}
+      </div>
+    </div>`;
+  }).join('');
 }
 
 // ══ INIT ══
