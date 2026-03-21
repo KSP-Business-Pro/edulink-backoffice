@@ -2298,6 +2298,18 @@ async function supprimerNote(id) {
   showToast('Note supprimée.','success'); chargerNotes(); chargerDashboard();
 }
 function labelPeriodeBulletin(p) {
+  if (!p) return 'Toutes periodes';
+  if (p === 'S1') return 'Semestre 1';
+  if (p === 'S2') return 'Semestre 2';
+  if (p === 'T1') return 'Trimestre 1';
+  if (p === 'T2') return 'Trimestre 2';
+  if (p === 'T3') return 'Trimestre 3';
+  if (p.startsWith('EXAM-')) return 'Examen';
+  return p;
+}
+
+// Version avec accents pour l'affichage HTML (non-PDF)
+function labelPeriodeHTML(p) {
   if (!p) return 'Toutes périodes';
   if (p === 'S1') return 'Semestre 1';
   if (p === 'S2') return 'Semestre 2';
@@ -2306,6 +2318,25 @@ function labelPeriodeBulletin(p) {
   if (p === 'T3') return 'Trimestre 3';
   if (p.startsWith('EXAM-')) return '📝 Examen';
   return p;
+}
+
+// Convertit les caractères accentués en ASCII pour jsPDF
+function pdfSafe(str) {
+  if (!str) return '';
+  return str
+    .replace(/é|è|ê|ë/g, 'e')
+    .replace(/à|â|ä/g, 'a')
+    .replace(/î|ï/g, 'i')
+    .replace(/ô|ö/g, 'o')
+    .replace(/ù|û|ü/g, 'u')
+    .replace(/ç/g, 'c')
+    .replace(/É|È|Ê|Ë/g, 'E')
+    .replace(/À|Â|Ä/g, 'A')
+    .replace(/Î|Ï/g, 'I')
+    .replace(/Ô|Ö/g, 'O')
+    .replace(/Ù|Û|Ü/g, 'U')
+    .replace(/Ç/g, 'C')
+    .replace(/[^ -]/g, ''); // Supprime tout autre char non-ASCII (emojis...)
 }
 
 async function remplirSelectBulletin() {
@@ -2358,7 +2389,7 @@ async function chargerBulletin() {
   const moy = totalCoeff>0?(totalPts/totalCoeff):0;
   const app = getApp(moy);
   container.innerHTML = `<div class="bulletin-wrap" id="bulletin-print">
-    <div class="bulletin-header"><h3>Bulletin de Notes — ${etudiant?.nom||''} ${etudiant?.prenom||''}</h3><p>${labelPeriodeBulletin(periode)} · Édité le ${fmtDate(new Date())}</p></div>
+    <div class="bulletin-header"><h3>Bulletin de Notes — ${etudiant?.nom||''} ${etudiant?.prenom||''}</h3><p>${labelPeriodeHTML(periode)} · Edité le ${fmtDate(new Date())}</p></div>
     <div class="bulletin-stats">
       <div class="bstat"><div class="val">${moy.toFixed(2)}/20</div><div class="lbl">Moyenne générale</div></div>
       <div class="bstat"><div class="val">${notes.length}</div><div class="lbl">Matières évaluées</div></div>
@@ -3952,7 +3983,7 @@ function pdfMentionColor(note) {
   return PDF_RED;
 }
 function pdfMentionLabel(note) {
-  if (note >= 16) return 'Très bien';
+  if (note >= 16) return 'Tres bien';
   if (note >= 14) return 'Bien';
   if (note >= 12) return 'Assez bien';
   if (note >= 10) return 'Passable';
@@ -3976,24 +4007,24 @@ function pdfDrawHeader(doc, ecoleNom, ecoleType, titre, sousTitre) {
   // Nom école
   doc.setFontSize(10);
   doc.setFont('helvetica', 'normal');
-  doc.text(ecoleNom || 'Établissement', 14, 24);
+  doc.text(pdfSafe(ecoleNom || 'Etablissement'), 14, 24);
   doc.setTextColor(200, 200, 200);
   doc.setFontSize(9);
-  doc.text(ecoleType || '', 14, 31);
+  doc.text(pdfSafe(ecoleType || ''), 14, 31);
   // Titre document (droite)
   doc.setTextColor(255, 255, 255);
   doc.setFontSize(13);
   doc.setFont('helvetica', 'bold');
-  doc.text(titre, pw - 14, 16, { align: 'right' });
+  doc.text(pdfSafe(titre), pw - 14, 16, { align: 'right' });
   if (sousTitre) {
     doc.setFontSize(9);
     doc.setFont('helvetica', 'normal');
-    doc.text(sousTitre, pw - 14, 24, { align: 'right' });
+    doc.text(pdfSafe(sousTitre), pw - 14, 24, { align: 'right' });
   }
   // Date édition
   doc.setTextColor(180, 180, 180);
   doc.setFontSize(8);
-  doc.text('Édité le ' + new Date().toLocaleDateString('fr-FR'), pw - 14, 31, { align: 'right' });
+  doc.text('Edite le ' + new Date().toLocaleDateString('fr-FR'), pw - 14, 31, { align: 'right' });
   return 48; // y de départ après l'entête
 }
 
@@ -4006,7 +4037,7 @@ function pdfDrawFooter(doc) {
   doc.setTextColor(...PDF_GRAY);
   doc.setFontSize(7.5);
   doc.setFont('helvetica', 'normal');
-  doc.text('Document généré par EduLink — Plateforme de gestion scolaire', 14, ph - 5);
+  doc.text('Document genere par EduLink — Plateforme de gestion scolaire', 14, ph - 5);
   doc.text(`Page ${doc.internal.getCurrentPageInfo().pageNumber}`, pw - 14, ph - 5, { align: 'right' });
 }
 
@@ -4044,7 +4075,7 @@ async function telechargerBulletinPDF() {
 
   const doc = new JsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const pw  = doc.internal.pageSize.getWidth();
-  let y     = pdfDrawHeader(doc, ecoleNom, ecoleType, 'BULLETIN DE NOTES', `Année scolaire ${annee}`);
+  let y     = pdfDrawHeader(doc, ecoleNom, ecoleType, 'BULLETIN DE NOTES', 'Annee scolaire ' + annee);
 
   // Bloc infos étudiant
   y += 5;
@@ -4057,13 +4088,13 @@ async function telechargerBulletinPDF() {
   doc.setTextColor(...PDF_NAVY);
   doc.setFontSize(13);
   doc.setFont('helvetica', 'bold');
-  doc.text((etudiant?.nom || '') + ' ' + (etudiant?.prenom || ''), 22, y + 9);
+  doc.text(pdfSafe((etudiant?.nom || '') + ' ' + (etudiant?.prenom || '')), 22, y + 9);
 
   doc.setFontSize(9);
   doc.setFont('helvetica', 'normal');
   doc.setTextColor(...PDF_GRAY);
-  doc.text('Matricule : ' + (etudiant?.matricule || '—'), 22, y + 16);
-  doc.text('Filière : ' + (etudiant?.filiere || '—') + '  |  Niveau : ' + (etudiant?.niveau || '—'), 22, y + 22);
+  doc.text(pdfSafe('Matricule : ' + (etudiant?.matricule || '-')), 22, y + 16);
+  doc.text(pdfSafe('Filiere : ' + (etudiant?.filiere || '-') + '  |  Niveau : ' + (etudiant?.niveau || '-')), 22, y + 22);
 
   // Moyenne côté droit
   doc.setFillColor(...(moy >= 10 ? PDF_GREEN : PDF_RED));
@@ -4082,7 +4113,7 @@ async function telechargerBulletinPDF() {
   doc.setTextColor(...PDF_NAVY);
   doc.setFontSize(10);
   doc.setFont('helvetica', 'bold');
-  doc.text('Relevé de notes — ' + labelPeriodeBulletin(periode), 14, y);
+  doc.text(pdfSafe('Releve de notes — ' + labelPeriodeBulletin(periode)), 14, y);
   y += 6;
 
   // Tableau notes
@@ -4196,7 +4227,7 @@ async function exporterRapportPDF() {
   const ecoleNom = ecole?.nom || 'Établissement';
   const ecoleType = ecole?.type || '';
 
-  const titres = { effectifs:'EFFECTIFS PAR FILIÈRE', absences:'TAUX D\'ABSENTÉISME', moyennes:'MOYENNES PAR MATIÈRE', paiements:'ÉTAT DES PAIEMENTS', discipline:'RAPPORT DISCIPLINAIRE' };
+  const titres = { effectifs:'EFFECTIFS PAR FILIÈRE', absences:'TAUX D\'ABSENTEISME', moyennes:'MOYENNES PAR MATIERE', paiements:'ÉTAT DES PAIEMENTS', discipline:'RAPPORT DISCIPLINAIRE' };
   const titre = titres[type] || 'RAPPORT';
 
   const doc = new JsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
@@ -4219,12 +4250,12 @@ async function exporterRapportPDF() {
     doc.setTextColor(...PDF_NAVY); doc.setFontSize(22); doc.setFont('helvetica','bold');
     doc.text(String(data?.length||0), pw/2, y+13, { align:'center' });
     doc.setFontSize(9); doc.setFont('helvetica','normal'); doc.setTextColor(...PDF_GRAY);
-    doc.text('étudiants inscrits au total', pw/2, y+19, { align:'center' });
+    doc.text('etudiants inscrits au total', pw/2, y+19, { align:'center' });
     y += 26;
 
     // Table filières
     doc.setTextColor(...PDF_NAVY); doc.setFontSize(10); doc.setFont('helvetica','bold');
-    doc.text('Répartition par filière', 14, y); y += 5;
+    doc.text('Repartition par filiere', 14, y); y += 5;
     doc.autoTable({
       startY: y,
       head: [['Filière', 'Effectif', '% du total']],
@@ -4237,7 +4268,7 @@ async function exporterRapportPDF() {
     y = doc.lastAutoTable.finalY + 10;
     // Table niveaux
     doc.setTextColor(...PDF_NAVY); doc.setFontSize(10); doc.setFont('helvetica','bold');
-    doc.text('Répartition par niveau', 14, y); y += 5;
+    doc.text('Repartition par niveau', 14, y); y += 5;
     doc.autoTable({
       startY: y,
       head: [['Niveau', 'Effectif']],
@@ -4273,7 +4304,7 @@ async function exporterRapportPDF() {
     y += 24;
 
     doc.setTextColor(...PDF_NAVY); doc.setFontSize(10); doc.setFont('helvetica','bold');
-    doc.text('Détail des absences', 14, y); y += 5;
+    doc.text('Detail des absences', 14, y); y += 5;
     doc.autoTable({
       startY: y,
       head: [['Étudiant', 'Matière', 'Date', 'Statut', 'Justification']],
@@ -4305,7 +4336,7 @@ async function exporterRapportPDF() {
     const moyMat = Object.entries(matieres).map(([m,v]) => ({ matiere:m, moy:v.coeff>0?v.pts/v.coeff:0, nb:v.nb })).sort((a,b)=>b.moy-a.moy);
 
     doc.setTextColor(...PDF_NAVY); doc.setFontSize(10); doc.setFont('helvetica','bold');
-    doc.text('Moyennes par matière', 14, y); y += 5;
+    doc.text('Moyennes par matiere', 14, y); y += 5;
     doc.autoTable({
       startY: y,
       head: [['Matière', 'Moyenne /20', 'Nb notes', 'Mention']],
@@ -4348,7 +4379,7 @@ async function exporterRapportPDF() {
     y += 24;
 
     doc.setTextColor(...PDF_NAVY); doc.setFontSize(10); doc.setFont('helvetica','bold');
-    doc.text('Détail des factures', 14, y); y += 5;
+    doc.text('Detail des factures', 14, y); y += 5;
     doc.autoTable({
       startY: y,
       head: [['Étudiant', 'Référence', 'Total', 'Payé', 'Statut', 'Échéance']],
@@ -4452,7 +4483,7 @@ async function telechargerTousBulletins() {
     y += 34;
 
     doc.setTextColor(...PDF_NAVY); doc.setFontSize(10); doc.setFont('helvetica','bold');
-    doc.text('Relevé — '+labelPeriodeBulletin(periode), 14, y); y += 5;
+    doc.text(pdfSafe('Releve — '+labelPeriodeBulletin(periode)), 14, y); y += 5;
 
     const rows = notes.map(n => [n.matiere, n.note+'/20', n.coefficient||1, (n.note*(n.coefficient||1)).toFixed(2), pdfMentionLabel(n.note)]);
     rows.push(['MOYENNE', { content:moy.toFixed(2)+'/20', styles:{fontStyle:'bold',textColor:pdfMentionColor(moy)} }, totalCoeff, totalPts.toFixed(2), { content:pdfMentionLabel(moy), styles:{fontStyle:'bold'} }]);
