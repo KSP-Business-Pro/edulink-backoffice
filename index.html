@@ -271,6 +271,97 @@ button:hover { background:#a86615; transform:translateY(-1px); }
 .doc-card { background:#fff; border-radius:12px; border:1px solid #e5e7eb; padding:1.2rem; text-align:center; transition:all .15s; cursor:pointer; }
 .doc-card:hover { box-shadow:0 4px 14px rgba(0,0,0,.08); transform:translateY(-2px); }
 
+
+/* ══════════════════════════════════════════════
+   ENSEIGNANTS  ★ JOUR 13
+══════════════════════════════════════════════ */
+.ens-stat-bar { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:1.5rem; }
+.ens-stat { background:#fff; border-radius:14px; padding:1.1rem; border:1px solid #e5e7eb; }
+.ens-stat .ess-ico { font-size:18px; }
+.ens-stat .ess-val { font-size:22px; font-weight:700; margin:4px 0 2px; }
+.ens-stat .ess-lbl { font-size:11px; color:#6b7280; font-weight:500; }
+
+/* Carte enseignant */
+.ens-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(280px,1fr)); gap:1rem; margin-top:1rem; }
+.ens-card {
+  background:#fff; border-radius:14px; border:1px solid #e5e7eb;
+  padding:1.2rem; transition:all .2s; position:relative; overflow:hidden;
+}
+.ens-card:hover { box-shadow:0 6px 20px rgba(0,0,0,.09); transform:translateY(-2px); }
+.ens-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:4px;
+  background:linear-gradient(90deg,#1e3a5f,#c97c1a);
+}
+.ens-avatar {
+  width:52px; height:52px; border-radius:50%; background:linear-gradient(135deg,#1e3a5f,#2d5a8e);
+  display:flex; align-items:center; justify-content:center;
+  font-size:20px; font-weight:700; color:#fff; margin-bottom:.85rem; flex-shrink:0;
+}
+.ens-card-top { display:flex; align-items:center; gap:.85rem; margin-bottom:.85rem; }
+.ens-card-info .ec-nom { font-size:14px; font-weight:700; color:#111827; margin-bottom:2px; }
+.ens-card-info .ec-spec { font-size:12px; color:#6b7280; }
+.ens-card-matieres { display:flex; flex-wrap:wrap; gap:5px; margin-bottom:.85rem; }
+.ens-matiere-pill {
+  background:#eff6ff; color:#1e3a5f; border-radius:20px;
+  padding:2px 10px; font-size:11px; font-weight:600;
+}
+.ens-card-stats { display:grid; grid-template-columns:1fr 1fr 1fr; gap:.5rem; }
+.ens-mini-stat { background:#f9fafb; border-radius:8px; padding:.5rem; text-align:center; border:1px solid #f3f4f6; }
+.ens-mini-stat .ms-val { font-size:16px; font-weight:700; color:#1e3a5f; }
+.ens-mini-stat .ms-lbl { font-size:9.5px; color:#9ca3af; font-weight:500; }
+.ens-card-actions { display:flex; gap:6px; margin-top:.85rem; padding-top:.75rem; border-top:1px solid #f3f4f6; }
+
+/* Fiche enseignant (modal) */
+.fiche-ens-header {
+  background:linear-gradient(135deg,#1e3a5f,#2d5a8e);
+  color:#fff; padding:1.5rem 1.5rem 1.2rem;
+  margin:-1.5rem -1.5rem 1.2rem; border-radius:16px 16px 0 0;
+  display:flex; align-items:center; gap:1rem;
+}
+.fiche-ens-avatar {
+  width:56px; height:56px; border-radius:50%;
+  background:rgba(255,255,255,.2); border:2px solid rgba(255,255,255,.4);
+  display:flex; align-items:center; justify-content:center;
+  font-size:22px; font-weight:700; color:#fff; flex-shrink:0;
+}
+.fiche-ens-tabs { display:flex; gap:4px; margin-bottom:1.2rem; background:#f3f4f6; border-radius:10px; padding:4px; }
+.fiche-ens-tab {
+  flex:1; padding:7px; border-radius:7px; font-size:12px; font-weight:600;
+  cursor:pointer; color:#6b7280; transition:all .15s; border:none;
+  background:transparent; font-family:'Poppins',sans-serif; text-align:center;
+}
+.fiche-ens-tab.active { background:#fff; color:#1e3a5f; box-shadow:0 1px 4px rgba(0,0,0,.1); }
+
+/* Attribution matière */
+.matiere-assign-row {
+  display:flex; align-items:center; gap:.75rem; padding:.75rem;
+  background:#f9fafb; border-radius:10px; margin-bottom:.5rem;
+  border:1px solid #f3f4f6;
+}
+.matiere-assign-row .mar-name { flex:1; font-size:13px; font-weight:600; color:#111827; }
+.matiere-assign-row .mar-meta { font-size:11.5px; color:#6b7280; }
+
+/* Planning enseignant */
+.ens-planning-wrap { overflow-x:auto; }
+.ens-planning-grid { width:100%; min-width:600px; border-collapse:collapse; }
+.ens-planning-grid th {
+  background:#1e3a5f; color:#fff; padding:8px; font-size:11px;
+  font-weight:600; text-align:center; border-right:1px solid rgba(255,255,255,.1);
+}
+.ens-planning-grid td {
+  padding:3px 4px; border-right:1px solid #f3f4f6;
+  border-bottom:1px solid #f3f4f6; vertical-align:top; height:44px;
+}
+.ens-planning-grid td.time-col {
+  background:#f9fafb; text-align:center; font-size:10.5px;
+  font-weight:600; color:#6b7280; vertical-align:middle; width:60px;
+}
+.ens-slot { border-radius:6px; padding:4px 6px; font-size:11px; line-height:1.3; }
+.ens-slot-blue   { background:#dbeafe; color:#1d4ed8; }
+.ens-slot-green  { background:#dcfce7; color:#059669; }
+.ens-slot-purple { background:#ede9fe; color:#7c3aed; }
+.ens-slot-amber  { background:#fef9c3; color:#d97706; }
+
 /* ══════════════════════════════════════════════
    EXAMENS & PLANNING  ★ JOUR 12
 ══════════════════════════════════════════════ */
@@ -576,6 +667,8 @@ button:hover { background:#a86615; transform:translateY(-1px); }
   <a onclick="showPage('emploi')" id="nav-emploi"><span class="ico">📅</span> Emploi du temps</a>
   <a onclick="showPage('examens')" id="nav-examens"><span class="ico">📝</span> Examens <span id="badge-examens" style="margin-left:auto;background:#7c3aed;color:#fff;border-radius:10px;padding:1px 6px;font-size:10px;display:none"></span></a>
 
+  <a onclick="showPage('enseignants')" id="nav-enseignants"><span class="ico">👨‍🏫</span> Enseignants <span id="badge-ens" style="margin-left:auto;background:#059669;color:#fff;border-radius:10px;padding:1px 6px;font-size:10px;display:none"></span></a>
+
   <div class="nav-section">Communication</div>
   <a onclick="showPage('messages')" id="nav-messages"><span class="ico">✉️</span> Messagerie <span id="badge-msg" style="margin-left:auto;background:#c97c1a;color:#fff;border-radius:10px;padding:1px 6px;font-size:10px;display:none"></span></a>
   <a onclick="showPage('discipline')" id="nav-discipline"><span class="ico">⚠️</span> Discipline <span id="badge-disc" style="margin-left:auto;background:#dc2626;color:#fff;border-radius:10px;padding:1px 6px;font-size:10px;display:none"></span></a>
@@ -868,6 +961,72 @@ button:hover { background:#a86615; transform:translateY(-1px); }
       <strong>📋 Procès-verbaux</strong> — Sélectionnez un examen terminé pour saisir les résultats.
     </div>
     <div id="exam-resultats-container"><div class="loading">Chargement...</div></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     ENSEIGNANTS  ★ JOUR 13
+═══════════════════════════════════════ -->
+<div class="page" id="page-enseignants">
+  <div class="top">
+    <div>
+      <h2>👨‍🏫 Enseignants</h2>
+      <p class="page-subtitle">Gestion du corps professoral — <span id="sub-ens-ecole"></span></p>
+    </div>
+    <div class="top-actions">
+      <button class="btn-outline" onclick="exporterEnseignantsCSV()">⬇️ Export CSV</button>
+      <button onclick="ouvrirModal('modal-enseignant')">+ Ajouter enseignant</button>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="ens-stat-bar">
+    <div class="ens-stat"><div class="ess-ico">👨‍🏫</div><div class="ess-val" style="color:#1e3a5f" id="stat-ens-total">…</div><div class="ess-lbl">Enseignants actifs</div></div>
+    <div class="ens-stat"><div class="ess-ico">📚</div><div class="ess-val" style="color:#c97c1a" id="stat-ens-matieres">…</div><div class="ess-lbl">Matières enseignées</div></div>
+    <div class="ens-stat"><div class="ess-ico">🕐</div><div class="ess-val" style="color:#7c3aed" id="stat-ens-heures">…</div><div class="ess-lbl">Heures / semaine</div></div>
+    <div class="ens-stat"><div class="ess-ico">📊</div><div class="ess-val" style="color:#059669" id="stat-ens-notes">…</div><div class="ess-lbl">Notes saisies</div></div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button class="tab active" id="tab-ens-liste-btn" onclick="showTab('ens','tab-ens-liste')">👥 Fiches</button>
+    <button class="tab" id="tab-ens-matieres-btn" onclick="showTab('ens','tab-ens-matieres')">📚 Matières</button>
+    <button class="tab" id="tab-ens-planning-btn" onclick="showTab('ens','tab-ens-planning')">📅 Planning</button>
+  </div>
+
+  <!-- TAB : Fiches enseignants -->
+  <div id="tab-ens-liste">
+    <div class="search-bar">
+      <input type="text" id="search-ens" placeholder="🔍 Rechercher un enseignant..." oninput="filtrerEnseignants()">
+    </div>
+    <div id="ens-grid-container" class="ens-grid">
+      <div class="loading">Chargement des enseignants...</div>
+    </div>
+  </div>
+
+  <!-- TAB : Matières & Attributions -->
+  <div id="tab-ens-matieres" style="display:none">
+    <div class="top" style="margin-bottom:1rem">
+      <div></div>
+      <button onclick="ouvrirModal('modal-matiere')">+ Nouvelle matière</button>
+    </div>
+    <table>
+      <tr><th>Matière</th><th>Enseignant(s)</th><th>Filière</th><th>Niveau</th><th>Coefficient</th><th>Heures/sem.</th><th>Actions</th></tr>
+      <tbody id="tbody-matieres"><tr><td colspan="7" class="loading">Chargement...</td></tr></tbody>
+    </table>
+  </div>
+
+  <!-- TAB : Planning global -->
+  <div id="tab-ens-planning" style="display:none">
+    <div class="filters" style="margin-bottom:1rem">
+      <span class="filter-label">Enseignant :</span>
+      <select id="filter-ens-planning" onchange="afficherPlanningEnseignant()">
+        <option value="">— Sélectionner —</option>
+      </select>
+    </div>
+    <div id="ens-planning-container">
+      <div class="empty-state"><div class="icon">📅</div><h3>Sélectionnez un enseignant</h3><p>Son emploi du temps s'affichera ici.</p></div>
+    </div>
   </div>
 </div>
 
@@ -1181,7 +1340,7 @@ button:hover { background:#a86615; transform:translateY(-1px); }
       <div style="text-align:center;background:#f9fafb;border-radius:10px;padding:.9rem;border:1px solid #f3f4f6"><div style="font-size:22px;font-weight:700;color:#1e3a5f" id="sys-ecoles">—</div><div style="font-size:11px;color:#6b7280">Établissements</div></div>
       <div style="text-align:center;background:#f9fafb;border-radius:10px;padding:.9rem;border:1px solid #f3f4f6"><div style="font-size:22px;font-weight:700;color:#059669" id="sys-etudiants">—</div><div style="font-size:11px;color:#6b7280">Étudiants</div></div>
       <div style="text-align:center;background:#f9fafb;border-radius:10px;padding:.9rem;border:1px solid #f3f4f6"><div style="font-size:22px;font-weight:700;color:#c97c1a" id="sys-users">—</div><div style="font-size:11px;color:#6b7280">Utilisateurs</div></div>
-      <div style="text-align:center;background:#f9fafb;border-radius:10px;padding:.9rem;border:1px solid #f3f4f6"><div style="font-size:13px;font-weight:700;color:#1e3a5f">Jour 12</div><div style="font-size:11px;color:#6b7280">Version EduLink</div></div>
+      <div style="text-align:center;background:#f9fafb;border-radius:10px;padding:.9rem;border:1px solid #f3f4f6"><div style="font-size:13px;font-weight:700;color:#1e3a5f">Jour 13</div><div style="font-size:11px;color:#6b7280">Version EduLink</div></div>
     </div>
   </div>
 </div>
@@ -1614,6 +1773,120 @@ button:hover { background:#a86615; transform:translateY(-1px); }
   </div>
 </div>
 
+<!-- ═══════════════════ MODAL ENSEIGNANT ★ JOUR 13 ══════════════════ -->
+<div class="modal-overlay" id="modal-enseignant">
+  <div class="modal modal-lg">
+    <h3 id="modal-ens-titre">👨‍🏫 Ajouter un enseignant</h3>
+    <input type="hidden" id="input-ens-id">
+    <div class="form-grid">
+      <div class="form-group"><label>Nom *</label><input type="text" id="input-ens-nom" placeholder="Nom de famille"></div>
+      <div class="form-group"><label>Prénom *</label><input type="text" id="input-ens-prenom" placeholder="Prénom"></div>
+      <div class="form-group"><label>Email *</label><input type="email" id="input-ens-email" placeholder="prof@ecole.bj"></div>
+      <div class="form-group"><label>Téléphone</label><input type="text" id="input-ens-tel" placeholder="+229 97 00 00 00"></div>
+      <div class="form-group"><label>Spécialité *</label><input type="text" id="input-ens-specialite" placeholder="Ex: Informatique, Mathématiques..."></div>
+      <div class="form-group"><label>Grade</label>
+        <select id="input-ens-grade">
+          <option value="vacataire">Vacataire</option>
+          <option value="contractuel">Contractuel</option>
+          <option value="permanent">Permanent</option>
+          <option value="charge_cours">Chargé de cours</option>
+          <option value="maitre_conf">Maître de conférences</option>
+          <option value="professeur">Professeur titulaire</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Heures / semaine</label><input type="number" id="input-ens-heures" value="12" min="1" max="40"></div>
+      <div class="form-group"><label>Statut</label>
+        <select id="input-ens-statut">
+          <option value="actif">Actif</option>
+          <option value="inactif">Inactif</option>
+          <option value="conge">En congé</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group"><label>Matières enseignées (séparées par virgule)</label>
+      <input type="text" id="input-ens-matieres" placeholder="Ex: Algorithmique, Base de données, Réseaux">
+    </div>
+    <div class="form-group"><label>Bio / Notes</label>
+      <textarea rows="2" id="input-ens-bio" placeholder="Informations complémentaires..."></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="fermerModal('modal-enseignant')">Annuler</button>
+      <button onclick="sauvegarderEnseignant()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ MODAL MATIÈRE ★ JOUR 13 ══════════════════ -->
+<div class="modal-overlay" id="modal-matiere">
+  <div class="modal">
+    <h3 id="modal-mat-titre">📚 Nouvelle matière</h3>
+    <input type="hidden" id="input-mat-id">
+    <div class="form-group"><label>Nom de la matière *</label>
+      <input type="text" id="input-mat-nom" placeholder="Ex: Algorithmique avancée">
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><label>Filière</label>
+        <select id="input-mat-filiere">
+          <option value="">Toutes</option>
+          <option>Informatique</option><option>Gestion</option><option>Droit</option>
+          <option>Médecine</option><option>Finance</option><option>Lettres</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Niveau</label>
+        <select id="input-mat-niveau">
+          <option value="">Tous</option>
+          <option>L1</option><option>L2</option><option>L3</option><option>M1</option><option>M2</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Coefficient</label>
+        <input type="number" id="input-mat-coef" value="2" min="1" max="10">
+      </div>
+      <div class="form-group"><label>Heures / semaine</label>
+        <input type="number" id="input-mat-heures" value="3" min="1" max="20">
+      </div>
+    </div>
+    <div class="form-group"><label>Enseignant responsable</label>
+      <select id="input-mat-enseignant"><option value="">— Assigner un enseignant —</option></select>
+    </div>
+    <div class="form-group"><label>Description</label>
+      <textarea rows="2" id="input-mat-desc" placeholder="Objectifs du cours..."></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="fermerModal('modal-matiere')">Annuler</button>
+      <button onclick="sauvegarderMatiere()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ MODAL FICHE ENSEIGNANT ★ JOUR 13 ══════════════════ -->
+<div class="modal-overlay" id="modal-fiche-enseignant">
+  <div class="modal modal-lg">
+    <div class="fiche-ens-header">
+      <div class="fiche-ens-avatar" id="fiche-ens-avatar">?</div>
+      <div style="flex:1">
+        <div style="font-size:18px;font-weight:700;margin-bottom:2px" id="fiche-ens-nom">—</div>
+        <div style="font-size:12px;opacity:.75" id="fiche-ens-meta">—</div>
+      </div>
+      <button onclick="fermerModal('modal-fiche-enseignant')" style="background:rgba(255,255,255,.15);color:#fff;font-size:16px;padding:4px 10px;border-radius:6px;border:none;cursor:pointer">✕</button>
+    </div>
+
+    <!-- Tabs fiche -->
+    <div class="fiche-ens-tabs">
+      <button class="fiche-ens-tab active" onclick="showFicheEnsTab('info')">ℹ️ Infos</button>
+      <button class="fiche-ens-tab" onclick="showFicheEnsTab('matieres')">📚 Matières</button>
+      <button class="fiche-ens-tab" onclick="showFicheEnsTab('notes')">📊 Notes saisies</button>
+      <button class="fiche-ens-tab" onclick="showFicheEnsTab('planning')">📅 Planning</button>
+    </div>
+
+    <div id="fiche-ens-content"></div>
+
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="fermerModal('modal-fiche-enseignant')">Fermer</button>
+      <button class="btn-blue" id="btn-edit-ens" onclick="">✏️ Modifier</button>
+    </div>
+  </div>
+</div>
+
 <!-- ═══════════════════ MODAL CONFIG NOTIFICATIONS ══════════════════ -->
 <div class="modal-overlay" id="modal-notif-config">
   <div class="modal">
@@ -1696,7 +1969,11 @@ let tousLesDocuments = [];
 let selectedMsgId    = null;
 let rapportChartInst = null;
 let tousLesExamens   = [];
-let planningOffset   = 0; // semaine courante +/- n
+let planningOffset   = 0;
+let tousLesEnseignants = [];
+let toutesMatieres     = [];
+let ficheEnsActif      = null;
+let tousLesEnseignants = []; // semaine courante +/- n
 
 // ══ UTILS ══════════════════════════════════════
 function showToast(msg, type='') {
@@ -1752,6 +2029,8 @@ function showPage(p) {
     utilisateurs: () => { if (typeof chargerUtilisateurs === 'function') chargerUtilisateurs(); },
     parametres:   chargerParametres,
     examens:      chargerExamens,
+    enseignants:  chargerEnseignants,
+    enseignants:  chargerEnseignants,
   };
   if (loaders[p]) loaders[p]();
 }
@@ -1762,6 +2041,8 @@ function showTab(page, tabId) {
     pay:   { tabs:['tab-pay-liste','tab-pay-historique'], btns:['tab-pay-liste-btn','tab-pay-historique-btn'] },
     docs:  { tabs:['tab-docs-galerie','tab-docs-liste'], btns:['tab-docs-galerie-btn','tab-docs-liste-btn'] },
     exam:  { tabs:['tab-exam-planning','tab-exam-liste','tab-exam-resultats'], btns:['tab-exam-planning-btn','tab-exam-liste-btn','tab-exam-resultats-btn'] },
+    ens:   { tabs:['tab-ens-liste','tab-ens-matieres','tab-ens-planning'], btns:['tab-ens-liste-btn','tab-ens-matieres-btn','tab-ens-planning-btn'] },
+    prof:  { tabs:['tab-prof-liste','tab-prof-cours'], btns:['tab-prof-liste-btn','tab-prof-cours-btn'] },
   };
   const m = maps[page];
   m.tabs.forEach(id => { const el = document.getElementById(id); if(el) el.style.display = 'none'; });
@@ -1770,8 +2051,11 @@ function showTab(page, tabId) {
   const activeBtn = document.getElementById(tabId + '-btn'); if(activeBtn) activeBtn.classList.add('active');
   if (tabId === 'tab-bulletins') remplirSelectBulletin();
   if (tabId === 'tab-exam-planning') afficherPlanningExamens();
+  if (tabId === 'tab-ens-matieres') chargerMatieres();
+  if (tabId === 'tab-ens-planning') remplirSelectEnsPlanning();
   if (tabId === 'tab-exam-liste') filtrerExamens();
   if (tabId === 'tab-exam-resultats') afficherResultatsExamens();
+  if (tabId === 'tab-prof-cours') afficherAttributions();
   if (tabId === 'tab-pay-historique') chargerHistoriquePaiements();
   if (tabId === 'tab-docs-liste') afficherDocumentsListe();
 }
@@ -1785,6 +2069,9 @@ function ouvrirModal(id) {
   if (id === 'modal-incident') { remplirSelect('input-inc-etudiant'); document.getElementById('input-inc-date').value = new Date().toISOString().split('T')[0]; }
   if (id === 'modal-document') remplirSelect('input-doc-etudiant', true);
   if (id === 'modal-examen') { initModalExamen(); }
+  if (id === 'modal-enseignant') { initModalEnseignant(); }
+  if (id === 'modal-matiere') { remplirSelectEnsModal(); }
+  if (id === 'modal-enseignant') { initModalEnseignant(); }
 }
 function fermerModal(id) { document.getElementById(id).classList.remove('open'); }
 document.querySelectorAll('.modal-overlay').forEach(o => {
@@ -2850,6 +3137,241 @@ async function confirmerImportCSV() {
 }
 
 
+
+// ══ ENSEIGNANTS  ★ JOUR 13 ═══════════════════════════════════════════════
+
+async function chargerEnseignants() {
+  let q = db.from('enseignants').select('*').order('nom');
+  if (currentEcoleId) q = q.eq('ecole_id', currentEcoleId);
+  const { data } = await q;
+  tousLesEnseignants = data || [];
+  mettreAJourStatsEnseignants();
+  filtrerEnseignants();
+  afficherAttributions();
+}
+
+async function mettreAJourStatsEnseignants() {
+  const actifs = tousLesEnseignants.filter(e => e.statut === 'actif');
+  // Matières uniques
+  const matieres = new Set();
+  tousLesEnseignants.forEach(e => { (e.matieres||[]).forEach(m => matieres.add(m)); });
+  // Classes uniques
+  const classes = new Set();
+  tousLesEnseignants.forEach(e => { (e.classes||[]).forEach(cl => classes.add(cl)); });
+  document.getElementById('stat-prof-total').textContent   = actifs.length;
+  document.getElementById('stat-prof-matieres').textContent = matieres.size;
+  document.getElementById('stat-prof-classes').textContent  = classes.size;
+  // Notes saisies (via table notes liées aux matières enseignées)
+  let qN = db.from('notes').select('*',{count:'exact',head:true});
+  if (currentEcoleId) qN = qN.eq('ecole_id', currentEcoleId);
+  const { count: nbNotes } = await qN;
+  document.getElementById('stat-prof-notes').textContent = nbNotes || 0;
+}
+
+// ── Liste ──
+function filtrerEnseignants() {
+  const q      = (document.getElementById('search-enseignants')?.value || '').toLowerCase();
+  const fStat  = document.getElementById('filter-prof-statut')?.value || '';
+  const fSpec  = document.getElementById('filter-prof-spec')?.value || '';
+  let liste = tousLesEnseignants;
+  if (q)     liste = liste.filter(e => (e.nom+' '+e.prenom+' '+(e.specialite||'')).toLowerCase().includes(q));
+  if (fStat) liste = liste.filter(e => e.statut === fStat);
+  if (fSpec) liste = liste.filter(e => e.specialite === fSpec);
+  afficherListeEnseignants(liste);
+}
+
+function afficherListeEnseignants(liste) {
+  const container = document.getElementById('prof-liste-container');
+  if (!liste.length) {
+    container.innerHTML = '<div class="empty-state"><div class="icon">👨‍🏫</div><h3>Aucun enseignant</h3><p>Ajoutez des enseignants via le bouton ci-dessus.</p></div>';
+    return;
+  }
+  const statutCls = { actif:'green', inactif:'gray', conge:'amber' };
+  container.innerHTML = liste.map(p => {
+    const initiales = ((p.prenom?.[0]||'')+(p.nom?.[0]||'')).toUpperCase();
+    const mats = (p.matieres||[]).slice(0,3);
+    const cls  = (p.classes||[]).slice(0,3);
+    return `<div class="prof-card">
+      <div class="prof-avatar">${initiales||'👤'}</div>
+      <div class="prof-body">
+        <div class="pb-nom">${p.nom} ${p.prenom}</div>
+        <div class="pb-spec">
+          ${p.grade ? `<strong>${p.grade}</strong> · ` : ''}${p.specialite||'—'}
+          ${p.email ? ` · <span style="color:#6b7280">${p.email}</span>` : ''}
+          ${p.telephone ? ` · <span style="color:#6b7280">📞 ${p.telephone}</span>` : ''}
+        </div>
+        <div class="pb-tags">
+          ${mats.map(m => `<span class="prof-tag">${m}</span>`).join('')}
+          ${cls.map(cl => `<span class="prof-tag purple">${cl}</span>`).join('')}
+          ${(p.matieres||[]).length > 3 ? `<span class="prof-tag" style="background:#f3f4f6;color:#6b7280">+${p.matieres.length-3}</span>` : ''}
+        </div>
+      </div>
+      <div class="prof-actions">
+        <span class="badge ${statutCls[p.statut]||'gray'}">${p.statut||'actif'}</span>
+        <button class="btn-sm btn-blue" onclick="voirFicheEnseignant('${p.id}')">👁 Fiche</button>
+        <button class="btn-sm btn-secondary" onclick="editerEnseignant('${p.id}')">✏️ Éditer</button>
+        <button class="btn-sm btn-red" onclick="supprimerEnseignant('${p.id}')">🗑</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── Tableau attributions ──
+function afficherAttributions() {
+  const container = document.getElementById('prof-attributions-container');
+  if (!tousLesEnseignants.length) {
+    container.innerHTML = '<div class="empty-state"><div class="icon">📚</div><h3>Aucune attribution</h3><p>Ajoutez des enseignants avec leurs matières et classes.</p></div>';
+    return;
+  }
+  const actifs = tousLesEnseignants.filter(e => e.statut !== 'inactif');
+  container.innerHTML = `<table>
+    <thead><tr><th>Enseignant</th><th>Spécialité</th><th>Matières</th><th>Classes</th><th>Statut</th></tr></thead>
+    <tbody>${actifs.map(p => `<tr>
+      <td><strong>${p.nom} ${p.prenom}</strong>${p.grade?`<br><span style="font-size:10.5px;color:#6b7280">${p.grade}</span>`:''}</td>
+      <td><span class="badge blue">${p.specialite||'—'}</span></td>
+      <td>${(p.matieres||[]).map(m=>`<span class="badge gray" style="margin:1px">${m}</span>`).join('')||'—'}</td>
+      <td>${(p.classes||[]).map(cl=>`<span class="badge purple" style="margin:1px">${cl}</span>`).join('')||'—'}</td>
+      <td><span class="badge ${p.statut==='actif'?'green':p.statut==='conge'?'amber':'gray'}">${p.statut||'actif'}</span></td>
+    </tr>`).join('')}
+    </tbody>
+  </table>`;
+}
+
+// ── Fiche enseignant ──
+async function voirFicheEnseignant(id) {
+  const p = tousLesEnseignants.find(e => e.id === id);
+  if (!p) return;
+  const initiales = ((p.prenom?.[0]||'')+(p.nom?.[0]||'')).toUpperCase();
+  document.getElementById('fiche-prof-avatar').textContent = initiales || '👤';
+  document.getElementById('fiche-prof-nom').textContent   = p.nom + ' ' + p.prenom;
+  document.getElementById('fiche-prof-meta').textContent  = (p.grade||'') + (p.grade&&p.specialite?' · ':'') + (p.specialite||'') + (p.email?' · '+p.email:'');
+
+  // Compter notes saisies pour les matières de cet enseignant
+  let nbNotes = 0;
+  if ((p.matieres||[]).length && currentEcoleId) {
+    const { count } = await db.from('notes').select('*',{count:'exact',head:true})
+      .eq('ecole_id', currentEcoleId).in('matiere', p.matieres);
+    nbNotes = count || 0;
+  }
+
+  document.getElementById('fiche-prof-stats').innerHTML = `
+    <div class="pfs-item"><div class="pfs-val" style="color:#1e3a5f">${(p.matieres||[]).length}</div><div class="pfs-lbl">Matières</div></div>
+    <div class="pfs-item"><div class="pfs-val" style="color:#059669">${(p.classes||[]).length}</div><div class="pfs-lbl">Classes</div></div>
+    <div class="pfs-item"><div class="pfs-val" style="color:#c97c1a">${nbNotes}</div><div class="pfs-lbl">Notes saisies</div></div>`;
+
+  document.getElementById('fiche-prof-body').innerHTML = `
+    <div class="info-grid" style="margin-bottom:1.2rem">
+      <div class="info-item"><div class="ii-label">Email</div><div class="ii-val">${p.email||'—'}</div></div>
+      <div class="info-item"><div class="ii-label">Téléphone</div><div class="ii-val">${p.telephone||'—'}</div></div>
+      <div class="info-item"><div class="ii-label">Spécialité</div><div class="ii-val">${p.specialite||'—'}</div></div>
+      <div class="info-item"><div class="ii-label">Grade</div><div class="ii-val">${p.grade||'—'}</div></div>
+      <div class="info-item"><div class="ii-label">Date d'embauche</div><div class="ii-val">${p.date_embauche?fmtDate(p.date_embauche):'—'}</div></div>
+      <div class="info-item"><div class="ii-label">Statut</div><div class="ii-val"><span class="badge ${p.statut==='actif'?'green':p.statut==='conge'?'amber':'gray'}">${p.statut||'actif'}</span></div></div>
+    </div>
+    ${(p.matieres||[]).length ? `
+    <div class="section-label">📚 Matières enseignées</div>
+    <div class="cours-grid">
+      ${(p.matieres||[]).map(m => `<div class="cours-card"><div class="cc-mat">${m}</div></div>`).join('')}
+    </div>` : ''}
+    ${(p.classes||[]).length ? `
+    <div class="section-label">🏫 Classes assignées</div>
+    <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:.5rem">
+      ${(p.classes||[]).map(cl => `<span class="badge purple" style="font-size:12px;padding:4px 12px">${cl}</span>`).join('')}
+    </div>` : ''}
+    <div style="display:flex;gap:8px;margin-top:1.2rem">
+      <button class="btn-blue btn-sm" onclick="fermerModal('modal-fiche-enseignant');editerEnseignant('${p.id}')">✏️ Modifier</button>
+      <button class="btn-sm btn-red" onclick="fermerModal('modal-fiche-enseignant');supprimerEnseignant('${p.id}')">🗑 Supprimer</button>
+    </div>`;
+
+  ouvrirModal('modal-fiche-enseignant');
+}
+
+// ── CRUD ──
+function initModalEnseignant() {
+  document.getElementById('modal-ens-titre').textContent = '👨‍🏫 Ajouter un enseignant';
+  ['input-ens-id','input-ens-nom','input-ens-prenom','input-ens-email','input-ens-tel','input-ens-matieres','input-ens-classes'].forEach(id => {
+    const el = document.getElementById(id); if(el) el.value = '';
+  });
+  document.getElementById('input-ens-spec').value    = 'Informatique';
+  document.getElementById('input-ens-statut').value  = 'actif';
+  document.getElementById('input-ens-grade').value   = '';
+  document.getElementById('input-ens-embauche').value = '';
+}
+
+function editerEnseignant(id) {
+  const p = tousLesEnseignants.find(e => e.id === id);
+  if (!p) return;
+  document.getElementById('modal-ens-titre').textContent  = '✏️ Modifier l\'enseignant';
+  document.getElementById('input-ens-id').value           = p.id;
+  document.getElementById('input-ens-nom').value          = p.nom || '';
+  document.getElementById('input-ens-prenom').value       = p.prenom || '';
+  document.getElementById('input-ens-email').value        = p.email || '';
+  document.getElementById('input-ens-tel').value          = p.telephone || '';
+  document.getElementById('input-ens-spec').value         = p.specialite || 'Informatique';
+  document.getElementById('input-ens-statut').value       = p.statut || 'actif';
+  document.getElementById('input-ens-grade').value        = p.grade || '';
+  document.getElementById('input-ens-embauche').value     = p.date_embauche || '';
+  document.getElementById('input-ens-matieres').value     = (p.matieres||[]).join(', ');
+  document.getElementById('input-ens-classes').value      = (p.classes||[]).join(', ');
+  ouvrirModal('modal-enseignant');
+}
+
+async function sauvegarderEnseignant() {
+  const nom    = document.getElementById('input-ens-nom').value.trim();
+  const prenom = document.getElementById('input-ens-prenom').value.trim();
+  if (!nom || !prenom) { showToast('Nom et prénom obligatoires', 'error'); return; }
+  const matieresTxt = document.getElementById('input-ens-matieres').value;
+  const classesTxt  = document.getElementById('input-ens-classes').value;
+  const matieres = matieresTxt ? matieresTxt.split(',').map(s=>s.trim()).filter(Boolean) : [];
+  const classes  = classesTxt  ? classesTxt.split(',').map(s=>s.trim()).filter(Boolean) : [];
+  const embauche = document.getElementById('input-ens-embauche').value;
+  const id = document.getElementById('input-ens-id').value;
+  const payload = {
+    ecole_id:      currentEcoleId,
+    nom, prenom,
+    email:         document.getElementById('input-ens-email').value.trim() || null,
+    telephone:     document.getElementById('input-ens-tel').value.trim() || null,
+    specialite:    document.getElementById('input-ens-spec').value,
+    statut:        document.getElementById('input-ens-statut').value,
+    grade:         document.getElementById('input-ens-grade').value || null,
+    date_embauche: embauche || null,
+    matieres, classes,
+  };
+  let error;
+  if (id) {
+    ({ error } = await db.from('enseignants').update(payload).eq('id', id));
+  } else {
+    ({ error } = await db.from('enseignants').insert([payload]));
+  }
+  if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
+  fermerModal('modal-enseignant');
+  showToast(id ? '✅ Enseignant modifié !' : '✅ Enseignant ajouté !', 'success');
+  chargerEnseignants();
+}
+
+async function supprimerEnseignant(id) {
+  if (!confirm('Supprimer cet enseignant ?')) return;
+  const { error } = await db.from('enseignants').delete().eq('id', id);
+  if (error) { showToast('Erreur : ' + error.message, 'error'); return; }
+  showToast('✅ Enseignant supprimé', 'success');
+  chargerEnseignants();
+}
+
+function exporterEnseignantsCSV() {
+  if (!tousLesEnseignants.length) { showToast('Aucun enseignant à exporter', 'error'); return; }
+  const header = 'nom,prenom,email,telephone,specialite,grade,statut,matieres,classes';
+  const rows = tousLesEnseignants.map(p =>
+    [p.nom,p.prenom,p.email||'',p.telephone||'',p.specialite||'',p.grade||'',p.statut||'',
+     (p.matieres||[]).join('|'),(p.classes||[]).join('|')].join(',')
+  );
+  const blob = new Blob([header+'\n'+rows.join('\n')], {type:'text/csv;charset=utf-8;'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'edulink_enseignants.csv';
+  a.click();
+  showToast('Export CSV téléchargé !', 'success');
+}
+
 // ══ EXAMENS & PLANNING  ★ JOUR 12 ═══════════════════════════════════
 
 async function chargerExamens() {
@@ -3307,6 +3829,395 @@ function exporterExamensCSV() {
   a.href = URL.createObjectURL(blob);
   a.download = 'edulink_examens.csv';
   a.click();
+  showToast('Export CSV téléchargé !','success');
+}
+
+
+// ══ ENSEIGNANTS  ★ JOUR 13 ═══════════════════════════════════════════
+
+async function chargerEnseignants() {
+  let q = db.from('enseignants').select('*').order('nom');
+  if (currentEcoleId) q = q.eq('ecole_id', currentEcoleId);
+  const { data } = await q;
+  tousLesEnseignants = data || [];
+
+  // Stats
+  const nbMat = [...new Set(tousLesEnseignants.flatMap(e => (e.matieres||[]) ))].length;
+  const totalH = tousLesEnseignants.reduce((s,e) => s+(e.heures_semaine||0), 0);
+  document.getElementById('stat-ens-total').textContent    = tousLesEnseignants.filter(e=>e.statut==='actif').length;
+  document.getElementById('stat-ens-matieres').textContent = nbMat;
+  document.getElementById('stat-ens-heures').textContent   = totalH;
+
+  // Notes saisies par les profs
+  let qN = db.from('notes').select('*',{count:'exact',head:true});
+  if (currentEcoleId) qN = qN.eq('ecole_id', currentEcoleId);
+  const { count: nbNotes } = await qN;
+  document.getElementById('stat-ens-notes').textContent = nbNotes || 0;
+
+  // Sub-ecole nom
+  const ecole = tousLesEcoles?.find(e=>e.id===currentEcoleId);
+  if (ecole) document.getElementById('sub-ens-ecole').textContent = ecole.nom;
+
+  afficherEnseignants(tousLesEnseignants);
+  remplirSelectEnsPlanning();
+}
+
+function afficherEnseignants(liste) {
+  const container = document.getElementById('ens-grid-container');
+  if (!liste.length) {
+    container.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="icon">👨‍🏫</div><h3>Aucun enseignant</h3><p>Ajoutez des enseignants via le bouton ci-dessus.</p></div>';
+    return;
+  }
+  const gradeLabels = {
+    vacataire:'Vacataire', contractuel:'Contractuel', permanent:'Permanent',
+    charge_cours:'Chargé de cours', maitre_conf:'Maître de conf.', professeur:'Professeur'
+  };
+  const statutCls = { actif:'green', inactif:'gray', conge:'amber' };
+  container.innerHTML = liste.map(ens => {
+    const initiales = ((ens.prenom||'')[0]||(ens.nom||'')[0]||'?').toUpperCase() + ((ens.nom||'')[0]||'').toUpperCase();
+    const matieres = Array.isArray(ens.matieres) ? ens.matieres : (ens.matieres ? ens.matieres.split(',').map(m=>m.trim()) : []);
+    return `<div class="ens-card">
+      <div class="ens-card-top">
+        <div class="ens-avatar">${initiales}</div>
+        <div class="ens-card-info">
+          <div class="ec-nom">${ens.nom} ${ens.prenom}</div>
+          <div class="ec-spec">${ens.specialite||'—'}</div>
+          <div style="margin-top:4px"><span class="badge ${statutCls[ens.statut]||'gray'}">${ens.statut||'actif'}</span> <span class="badge gray">${gradeLabels[ens.grade]||ens.grade||'—'}</span></div>
+        </div>
+      </div>
+      ${matieres.length ? `<div class="ens-card-matieres">${matieres.slice(0,4).map(m=>`<span class="ens-matiere-pill">${m}</span>`).join('')}${matieres.length>4?`<span class="ens-matiere-pill">+${matieres.length-4}</span>`:''}</div>` : ''}
+      <div class="ens-card-stats">
+        <div class="ens-mini-stat"><div class="ms-val">${matieres.length}</div><div class="ms-lbl">Matières</div></div>
+        <div class="ens-mini-stat"><div class="ms-val">${ens.heures_semaine||0}h</div><div class="ms-lbl">/ semaine</div></div>
+        <div class="ens-mini-stat"><div class="ms-val">${ens.email?'✉️':'—'}</div><div class="ms-lbl">${ens.email?'Email OK':'Sans email'}</div></div>
+      </div>
+      <div class="ens-card-actions">
+        <button class="btn-sm btn-blue" style="flex:1" onclick="voirFicheEnseignant('${ens.id}')">👁️ Voir fiche</button>
+        <button class="btn-sm btn-secondary" onclick="editerEnseignant('${ens.id}')">✏️</button>
+        <button class="btn-sm btn-red" onclick="supprimerEnseignant('${ens.id}')">🗑️</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filtrerEnseignants() {
+  const q = document.getElementById('search-ens')?.value.toLowerCase() || '';
+  const liste = q ? tousLesEnseignants.filter(e =>
+    (e.nom||'').toLowerCase().includes(q) ||
+    (e.prenom||'').toLowerCase().includes(q) ||
+    (e.specialite||'').toLowerCase().includes(q)
+  ) : tousLesEnseignants;
+  afficherEnseignants(liste);
+}
+
+// ── Fiche enseignant ──
+async function voirFicheEnseignant(id) {
+  const ens = tousLesEnseignants.find(e => e.id === id);
+  if (!ens) return;
+  ficheEnsActif = ens;
+  const initiales = ((ens.prenom||'')[0]||'').toUpperCase() + ((ens.nom||'')[0]||'').toUpperCase();
+  document.getElementById('fiche-ens-avatar').textContent = initiales;
+  document.getElementById('fiche-ens-nom').textContent = ens.nom + ' ' + ens.prenom;
+  document.getElementById('fiche-ens-meta').textContent = (ens.specialite||'') + (ens.grade?' · '+ens.grade:'') + (ens.email?' · '+ens.email:'');
+  document.getElementById('btn-edit-ens').onclick = () => { fermerModal('modal-fiche-enseignant'); editerEnseignant(id); };
+  showFicheEnsTab('info');
+  ouvrirModal('modal-fiche-enseignant');
+}
+
+async function showFicheEnsTab(tab) {
+  document.querySelectorAll('.fiche-ens-tab').forEach((b,i) => {
+    b.classList.toggle('active', ['info','matieres','notes','planning'][i] === tab);
+  });
+  const ens = ficheEnsActif;
+  const content = document.getElementById('fiche-ens-content');
+  const gradeLabels = { vacataire:'Vacataire', contractuel:'Contractuel', permanent:'Permanent', charge_cours:'Chargé de cours', maitre_conf:'Maître de conférences', professeur:'Professeur titulaire' };
+  const statutCls = { actif:'green', inactif:'gray', conge:'amber' };
+
+  if (tab === 'info') {
+    content.innerHTML = `
+      <div class="info-grid">
+        <div class="info-item"><div class="ii-label">Spécialité</div><div class="ii-val">${ens.specialite||'—'}</div></div>
+        <div class="info-item"><div class="ii-label">Grade</div><div class="ii-val">${gradeLabels[ens.grade]||ens.grade||'—'}</div></div>
+        <div class="info-item"><div class="ii-label">Email</div><div class="ii-val">${ens.email||'—'}</div></div>
+        <div class="info-item"><div class="ii-label">Téléphone</div><div class="ii-val">${ens.telephone||'—'}</div></div>
+        <div class="info-item"><div class="ii-label">Heures / semaine</div><div class="ii-val">${ens.heures_semaine||0} h</div></div>
+        <div class="info-item"><div class="ii-label">Statut</div><div class="ii-val"><span class="badge ${statutCls[ens.statut]||'gray'}">${ens.statut||'actif'}</span></div></div>
+      </div>
+      ${ens.bio ? `<div style="margin-top:1rem;background:#f9fafb;border-radius:10px;padding:.9rem;font-size:13px;color:#374151;border:1px solid #f3f4f6">${ens.bio}</div>` : ''}`;
+  }
+
+  else if (tab === 'matieres') {
+    const matieres = Array.isArray(ens.matieres) ? ens.matieres : (ens.matieres ? ens.matieres.split(',').map(m=>m.trim()) : []);
+    content.innerHTML = matieres.length
+      ? matieres.map(m => `<div class="matiere-assign-row"><span style="font-size:18px">📚</span><span class="mar-name">${m}</span><span class="ens-matiere-pill">${ens.specialite||''}</span></div>`).join('')
+      : '<div class="empty-state"><div class="icon">📚</div><h3>Aucune matière attribuée</h3></div>';
+  }
+
+  else if (tab === 'notes') {
+    let qN = db.from('notes').select('*, etudiants(nom,prenom)').order('created_at',{ascending:false}).limit(20);
+    if (currentEcoleId) qN = qN.eq('ecole_id', currentEcoleId);
+    // Filtrer par matières de l'enseignant
+    const matieres = Array.isArray(ens.matieres) ? ens.matieres : (ens.matieres||'').split(',').map(m=>m.trim()).filter(Boolean);
+    if (matieres.length) qN = qN.in('matiere', matieres);
+    const { data: notes } = await qN;
+    content.innerHTML = notes?.length ? `
+      <table>
+        <tr><th>Étudiant</th><th>Matière</th><th>Note</th><th>Période</th><th>Appréciation</th></tr>
+        ${notes.map(n => { const a=getApp(n.note); return `<tr>
+          <td>${n.etudiants?n.etudiants.nom+' '+n.etudiants.prenom:'N/A'}</td>
+          <td>${n.matiere}</td>
+          <td><strong style="color:${n.note>=10?'#059669':'#dc2626'}">${n.note}/20</strong></td>
+          <td><span class="badge gray">${n.periode||'—'}</span></td>
+          <td><span class="badge ${a.cls}">${a.label}</span></td>
+        </tr>`; }).join('')}
+      </table>` : '<div class="empty-state"><div class="icon">📊</div><h3>Aucune note saisie</h3></div>';
+  }
+
+  else if (tab === 'planning') {
+    // Afficher les créneaux de l'emploi du temps pour cet enseignant
+    let q = db.from('emploi_du_temps').select('*').order('heure_debut');
+    if (currentEcoleId) q = q.eq('ecole_id', currentEcoleId);
+    const { data: creneaux } = await q;
+    const siens = (creneaux||[]).filter(cr =>
+      (cr.enseignant||'').toLowerCase().includes((ens.nom||'').toLowerCase()) ||
+      (cr.enseignant||'').toLowerCase().includes((ens.prenom||'').toLowerCase())
+    );
+    const jours = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+    const typeColors = { cours:'ens-slot-blue', td:'ens-slot-green', tp:'ens-slot-purple', examen:'ens-slot-amber' };
+    const creneauxHeures = ['07:00','08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00'];
+    content.innerHTML = siens.length ? `
+      <div class="ens-planning-wrap">
+        <table class="ens-planning-grid">
+          <tr><th>Heure</th>${jours.map(j=>`<th>${j}</th>`).join('')}</tr>
+          ${creneauxHeures.map(h => `<tr>
+            <td class="time-col">${h}</td>
+            ${jours.map(j => {
+              const cr = siens.find(c => c.heure_debut?.slice(0,5)===h && c.jour===j);
+              return `<td>${cr?`<div class="ens-slot ${typeColors[cr.type_cours]||'ens-slot-blue'}"><strong>${cr.matiere}</strong><div style="font-size:10px">${cr.salle||''}</div></div>`:''}</td>`;
+            }).join('')}
+          </tr>`).join('')}
+        </table>
+      </div>` : '<div class="empty-state"><div class="icon">📅</div><h3>Aucun créneau trouvé</h3><p>Les créneaux de l'emploi du temps liés à cet enseignant apparaîtront ici.</p></div>';
+  }
+}
+
+// ── CRUD Enseignant ──
+function initModalEnseignant() {
+  document.getElementById('modal-ens-titre').textContent = '👨‍🏫 Ajouter un enseignant';
+  ['ens-id','ens-nom','ens-prenom','ens-email','ens-tel','ens-specialite','ens-bio'].forEach(id => {
+    const el = document.getElementById('input-'+id); if(el) el.value='';
+  });
+  document.getElementById('input-ens-grade').value   = 'vacataire';
+  document.getElementById('input-ens-statut').value  = 'actif';
+  document.getElementById('input-ens-heures').value  = '12';
+  document.getElementById('input-ens-matieres').value = '';
+}
+
+function editerEnseignant(id) {
+  const ens = tousLesEnseignants.find(e=>e.id===id);
+  if (!ens) return;
+  document.getElementById('modal-ens-titre').textContent = '✏️ Modifier l\'enseignant';
+  document.getElementById('input-ens-id').value        = ens.id;
+  document.getElementById('input-ens-nom').value       = ens.nom||'';
+  document.getElementById('input-ens-prenom').value    = ens.prenom||'';
+  document.getElementById('input-ens-email').value     = ens.email||'';
+  document.getElementById('input-ens-tel').value       = ens.telephone||'';
+  document.getElementById('input-ens-specialite').value= ens.specialite||'';
+  document.getElementById('input-ens-grade').value     = ens.grade||'vacataire';
+  document.getElementById('input-ens-statut').value    = ens.statut||'actif';
+  document.getElementById('input-ens-heures').value    = ens.heures_semaine||12;
+  document.getElementById('input-ens-bio').value       = ens.bio||'';
+  const mats = Array.isArray(ens.matieres) ? ens.matieres.join(', ') : (ens.matieres||'');
+  document.getElementById('input-ens-matieres').value  = mats;
+  ouvrirModal('modal-enseignant');
+}
+
+async function sauvegarderEnseignant() {
+  const nom  = document.getElementById('input-ens-nom').value.trim();
+  const prenom = document.getElementById('input-ens-prenom').value.trim();
+  const email  = document.getElementById('input-ens-email').value.trim();
+  if (!nom || !prenom) { showToast('Nom et prénom obligatoires','error'); return; }
+  const matStr = document.getElementById('input-ens-matieres').value.trim();
+  const matieres = matStr ? matStr.split(',').map(m=>m.trim()).filter(Boolean) : [];
+  const id = document.getElementById('input-ens-id').value;
+  const payload = {
+    ecole_id:       currentEcoleId,
+    nom, prenom, email,
+    telephone:      document.getElementById('input-ens-tel').value.trim()||null,
+    specialite:     document.getElementById('input-ens-specialite').value.trim()||null,
+    grade:          document.getElementById('input-ens-grade').value,
+    statut:         document.getElementById('input-ens-statut').value,
+    heures_semaine: parseInt(document.getElementById('input-ens-heures').value)||12,
+    bio:            document.getElementById('input-ens-bio').value.trim()||null,
+    matieres,
+  };
+  let error;
+  if (id) {
+    ({ error } = await db.from('enseignants').update(payload).eq('id', id));
+  } else {
+    ({ error } = await db.from('enseignants').insert([payload]));
+  }
+  if (error) { showToast('Erreur : '+error.message,'error'); return; }
+  fermerModal('modal-enseignant');
+  showToast(id ? '✅ Enseignant modifié !' : '✅ Enseignant ajouté !', 'success');
+  chargerEnseignants();
+}
+
+async function supprimerEnseignant(id) {
+  if (!confirm('Supprimer cet enseignant ?')) return;
+  const { error } = await db.from('enseignants').delete().eq('id', id);
+  if (error) { showToast('Erreur : '+error.message,'error'); return; }
+  showToast('Enseignant supprimé.','success');
+  chargerEnseignants();
+}
+
+// ── Matières ──
+async function chargerMatieres() {
+  let q = db.from('matieres').select('*, enseignants(nom,prenom)').order('nom');
+  if (currentEcoleId) q = q.eq('ecole_id', currentEcoleId);
+  const { data } = await q;
+  toutesMatieres = data || [];
+  afficherMatieres();
+}
+
+function afficherMatieres() {
+  const tbody = document.getElementById('tbody-matieres');
+  if (!toutesMatieres.length) {
+    tbody.innerHTML = '<tr><td colspan="7" class="loading">Aucune matière. Créez-en via le bouton ci-dessus.</td></tr>';
+    return;
+  }
+  tbody.innerHTML = toutesMatieres.map(m => `<tr>
+    <td><strong>${m.nom}</strong>${m.description?`<div style="font-size:11px;color:#9ca3af">${m.description.slice(0,50)}</div>`:''}</td>
+    <td>${m.enseignants?`<span class="badge blue">${m.enseignants.nom} ${m.enseignants.prenom}</span>`:'<span class="badge gray">Non assigné</span>'}</td>
+    <td>${m.filiere||'<span class="badge gray">Toutes</span>'}</td>
+    <td>${m.niveau||'<span class="badge gray">Tous</span>'}</td>
+    <td><span class="badge purple">Coeff. ${m.coefficient||1}</span></td>
+    <td>${m.heures_semaine||'—'} h</td>
+    <td>
+      <button class="btn-sm btn-blue" onclick="editerMatiere('${m.id}')">✏️</button>
+      <button class="btn-sm btn-red" onclick="supprimerMatiere('${m.id}')">🗑️</button>
+    </td>
+  </tr>`).join('');
+}
+
+async function remplirSelectEnsModal() {
+  const sel = document.getElementById('input-mat-enseignant');
+  sel.innerHTML = '<option value="">— Assigner un enseignant —</option>';
+  tousLesEnseignants.forEach(e => {
+    sel.innerHTML += `<option value="${e.id}">${e.nom} ${e.prenom}</option>`;
+  });
+}
+
+function editerMatiere(id) {
+  const m = toutesMatieres.find(x=>x.id===id);
+  if (!m) return;
+  document.getElementById('modal-mat-titre').textContent = '✏️ Modifier la matière';
+  document.getElementById('input-mat-id').value    = m.id;
+  document.getElementById('input-mat-nom').value   = m.nom||'';
+  document.getElementById('input-mat-filiere').value=m.filiere||'';
+  document.getElementById('input-mat-niveau').value = m.niveau||'';
+  document.getElementById('input-mat-coef').value   = m.coefficient||2;
+  document.getElementById('input-mat-heures').value = m.heures_semaine||3;
+  document.getElementById('input-mat-desc').value   = m.description||'';
+  remplirSelectEnsModal().then(() => {
+    document.getElementById('input-mat-enseignant').value = m.enseignant_id||'';
+  });
+  ouvrirModal('modal-matiere');
+}
+
+async function sauvegarderMatiere() {
+  const nom = document.getElementById('input-mat-nom').value.trim();
+  if (!nom) { showToast('Nom de la matière obligatoire','error'); return; }
+  const id = document.getElementById('input-mat-id').value;
+  const payload = {
+    ecole_id:       currentEcoleId,
+    nom,
+    filiere:        document.getElementById('input-mat-filiere').value||null,
+    niveau:         document.getElementById('input-mat-niveau').value||null,
+    coefficient:    parseInt(document.getElementById('input-mat-coef').value)||2,
+    heures_semaine: parseInt(document.getElementById('input-mat-heures').value)||3,
+    description:    document.getElementById('input-mat-desc').value.trim()||null,
+    enseignant_id:  document.getElementById('input-mat-enseignant').value||null,
+  };
+  let error;
+  if (id) {
+    ({ error } = await db.from('matieres').update(payload).eq('id', id));
+  } else {
+    ({ error } = await db.from('matieres').insert([payload]));
+  }
+  if (error) { showToast('Erreur : '+error.message,'error'); return; }
+  fermerModal('modal-matiere');
+  showToast(id ? '✅ Matière modifiée !' : '✅ Matière créée !', 'success');
+  chargerMatieres();
+}
+
+async function supprimerMatiere(id) {
+  if (!confirm('Supprimer cette matière ?')) return;
+  const { error } = await db.from('matieres').delete().eq('id', id);
+  if (error) { showToast('Erreur : '+error.message,'error'); return; }
+  showToast('Matière supprimée.','success');
+  chargerMatieres();
+}
+
+// ── Planning par enseignant ──
+function remplirSelectEnsPlanning() {
+  const sel = document.getElementById('filter-ens-planning');
+  if (!sel) return;
+  sel.innerHTML = '<option value="">— Sélectionner —</option>';
+  tousLesEnseignants.filter(e=>e.statut==='actif').forEach(e => {
+    sel.innerHTML += `<option value="${e.id}">${e.nom} ${e.prenom}</option>`;
+  });
+}
+
+async function afficherPlanningEnseignant() {
+  const id = document.getElementById('filter-ens-planning')?.value;
+  const container = document.getElementById('ens-planning-container');
+  if (!id) {
+    container.innerHTML = '<div class="empty-state"><div class="icon">📅</div><h3>Sélectionnez un enseignant</h3></div>';
+    return;
+  }
+  const ens = tousLesEnseignants.find(e=>e.id===id);
+  if (!ens) return;
+  let q = db.from('emploi_du_temps').select('*').order('heure_debut');
+  if (currentEcoleId) q = q.eq('ecole_id', currentEcoleId);
+  const { data: creneaux } = await q;
+  const siens = (creneaux||[]).filter(cr =>
+    (cr.enseignant||'').toLowerCase().includes((ens.nom||'').toLowerCase())
+  );
+  const jours = ['Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'];
+  const heures = ['07:00','08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00'];
+  const typeColors = { cours:'ens-slot-blue', td:'ens-slot-green', tp:'ens-slot-purple', examen:'ens-slot-amber' };
+  container.innerHTML = `
+    <div style="font-size:13px;font-weight:700;margin-bottom:1rem;color:#374151">
+      📅 Emploi du temps — ${ens.nom} ${ens.prenom}
+      <span class="badge blue" style="margin-left:8px">${siens.length} créneau(x)</span>
+    </div>
+    ${siens.length ? `
+    <div class="ens-planning-wrap">
+      <table class="ens-planning-grid">
+        <tr><th>Heure</th>${jours.map(j=>`<th>${j}</th>`).join('')}</tr>
+        ${heures.map(h => `<tr>
+          <td class="time-col">${h}</td>
+          ${jours.map(j => {
+            const cr = siens.find(c => c.heure_debut?.slice(0,5)===h && c.jour===j);
+            return `<td>${cr?`<div class="ens-slot ${typeColors[cr.type_cours]||'ens-slot-blue'}"><strong>${cr.matiere}</strong><div style="font-size:10px">${cr.classe||''} ${cr.salle?'· '+cr.salle:''}</div></div>`:''}</td>`;
+          }).join('')}
+        </tr>`).join('')}
+      </table>
+    </div>` : '<div class="empty-state"><div class="icon">📅</div><h3>Aucun créneau</h3><p>Ajoutez des créneaux via l\'Emploi du temps.</p></div>'}`;
+}
+
+function exporterEnseignantsCSV() {
+  if (!tousLesEnseignants.length) { showToast('Aucun enseignant à exporter','error'); return; }
+  const header = 'nom,prenom,email,telephone,specialite,grade,heures_semaine,statut,matieres';
+  const rows = tousLesEnseignants.map(e => [
+    e.nom, e.prenom, e.email||'', e.telephone||'', e.specialite||'',
+    e.grade||'', e.heures_semaine||0, e.statut||'',
+    Array.isArray(e.matieres)?e.matieres.join('|'):(e.matieres||'')
+  ].join(','));
+  const blob = new Blob([header+'\n'+rows.join('\n')], {type:'text/csv;charset=utf-8;'});
+  const a = document.createElement('a'); a.href=URL.createObjectURL(blob);
+  a.download='edulink_enseignants.csv'; a.click();
   showToast('Export CSV téléchargé !','success');
 }
 

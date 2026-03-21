@@ -250,6 +250,45 @@ body{font-family:'Poppins',sans-serif;background:var(--bg);min-height:100vh;colo
 .pay-amounts{display:flex;justify-content:space-between;font-size:11px;color:#6b7280;margin-top:4px}
 
 
+
+/* ══ ENSEIGNANTS PORTAIL ★ JOUR 13 ══ */
+.prof-contact-card{
+  background:linear-gradient(135deg,#1e3a5f,#2d5a8e);
+  border-radius:14px;color:#fff;padding:1rem 1.2rem;
+  display:flex;align-items:center;gap:1rem;margin-bottom:.75rem;
+}
+.pcc-avatar{
+  width:44px;height:44px;border-radius:12px;
+  background:rgba(255,255,255,.2);display:flex;
+  align-items:center;justify-content:center;
+  font-size:17px;font-weight:700;flex-shrink:0;
+}
+.pcc-info .pi-nom{font-size:13.5px;font-weight:700;margin-bottom:2px;}
+.pcc-info .pi-spec{font-size:11.5px;opacity:.75;}
+.pcc-info .pi-mat{font-size:11px;opacity:.6;margin-top:2px;}
+
+
+/* ══ ENSEIGNANTS PORTAIL ★ JOUR 13 ══ */
+.prof-card{
+  display:flex;align-items:center;gap:.85rem;
+  padding:.9rem 1rem;border-bottom:1px solid #f3f4f6;
+}
+.prof-card:last-child{border-bottom:none}
+.prof-avatar{
+  width:44px;height:44px;border-radius:50%;flex-shrink:0;
+  background:linear-gradient(135deg,#0f6e56,#1e3a5f);
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;font-weight:700;color:#fff;
+}
+.prof-body{flex:1;min-width:0}
+.prof-nom{font-size:13px;font-weight:700;color:#111827;margin-bottom:2px}
+.prof-spec{font-size:11.5px;color:#6b7280}
+.prof-mats{display:flex;flex-wrap:wrap;gap:4px;margin-top:5px}
+.prof-mat-pill{
+  background:#e1f5ee;color:#0f6e56;border-radius:20px;
+  padding:2px 8px;font-size:10.5px;font-weight:600;
+}
+
 /* ══ EXAMENS PORTAIL ★ JOUR 12 ══ */
 .next-exam-card{
   background:linear-gradient(135deg,#0f6e56,#1e3a5f);
@@ -427,7 +466,9 @@ body{font-family:'Poppins',sans-serif;background:var(--bg);min-height:100vh;colo
   <div class="page" id="page-paiements"></div>
   <div class="page" id="page-messages"></div>
 
+  <div class="page" id="page-enseignants"></div>
   <div class="page" id="page-examens"></div>
+  <div class="page" id="page-enseignants"></div>
 
   <!-- Navigation bas -->
   <nav class="bottom-nav">
@@ -447,10 +488,18 @@ body{font-family:'Poppins',sans-serif;background:var(--bg);min-height:100vh;colo
       <span class="nav-ico">💳</span>
       <span class="nav-lbl">Paiements</span>
     </button>
+    <button class="nav-item" id="nav-enseignants" onclick="showPage('enseignants')">
+      <span class="nav-ico">👨‍🏫</span>
+      <span class="nav-lbl">Profs</span>
+    </button>
     <button class="nav-item" id="nav-examens" onclick="showPage('examens')">
       <span class="nav-ico">📝</span>
       <span class="nav-lbl">Examens</span>
       <span class="nav-badge" id="nav-exam-badge"></span>
+    </button>
+    <button class="nav-item" id="nav-enseignants" onclick="showPage('enseignants')">
+      <span class="nav-ico">👨‍🏫</span>
+      <span class="nav-lbl">Profs</span>
     </button>
     <button class="nav-item" id="nav-messages" onclick="showPage('messages')">
       <span class="nav-ico">✉️</span>
@@ -481,6 +530,8 @@ let toutesFactures = [];
 let tousMessages = [];
 let tousExamens = [];
 let examFilterActif = 'tous';
+let tousEnseignantsPortail = [];
+let tousEnseignantsPortail = [];
 
 // ══ UTILS ══
 function showToast(msg, type='') {
@@ -571,7 +622,7 @@ function lancerApp() {
 }
 
 async function chargerTout() {
-  await Promise.all([chargerNotes(), chargerAbsences(), chargerFactures(), chargerMessages(), chargerExamensPortail()]);
+  await Promise.all([chargerNotes(), chargerAbsences(), chargerFactures(), chargerMessages(), chargerExamensPortail(), chargerEnseignantsPortail()]);
   afficherAccueil();
 }
 
@@ -623,6 +674,7 @@ function showPage(p) {
     paiements: afficherPaiements,
     messages: afficherMessages,
     examens: afficherExamensPortail,
+    enseignants: afficherEnseignantsPortail,
   };
   if (renderers[p]) renderers[p]();
 }
@@ -690,7 +742,7 @@ function afficherAccueil() {
             <div class="li-ico" style="background:${n.note>=10?'#e1f5ee':'#fee2e2'}">${n.note>=10?'✅':'⚠️'}</div>
             <div class="li-body">
               <div class="li-title">${n.matiere}</div>
-              <div class="li-sub">${n.periode} · Coeff. ${n.coefficient||1}</div>
+              <div class="li-sub">${n.periode} · Coeff. ${n.coefficient||1}${(()=>{const pr=getProfPourMatiere(n.matiere);return pr?' · 👨‍🏫 '+pr.nom:'';})()}</div>
             </div>
             <div class="li-right">
               <div class="note-big ${getNoteClass(n.note)}" style="font-size:20px">${n.note}/20</div>
@@ -1276,6 +1328,88 @@ async function rendreListeExamensPortail() {
   }).join('');
 }
 
+
+// ══ ENSEIGNANTS PORTAIL ★ JOUR 13 ══════════════════════════════
+
+async function chargerEnseignantsPortail() {
+  if (!currentEcoleId) { tousEnseignantsPortail = []; return; }
+  const { data } = await db.from('enseignants').select('*')
+    .eq('ecole_id', currentEcoleId).eq('statut','actif');
+  tousEnseignantsPortail = data || [];
+}
+
+function getProfPourMatiere(matiere) {
+  return tousEnseignantsPortail.find(p => (p.matieres||[]).includes(matiere));
+}
+
+function afficherEnseignantsPortail() {
+  const page = document.getElementById('page-enseignants');
+  if (!page) return;
+  if (!tousEnseignantsPortail.length) {
+    page.innerHTML = '<div class="page-pad"><div class="section-title">👨‍🏫 Mes Enseignants</div><div class="empty"><div class="e-ico">👨‍🏫</div><p>Aucun enseignant enregistré.</p></div></div>';
+    return;
+  }
+  page.innerHTML = `<div class="page-pad">
+    <div class="section-title">👨‍🏫 Mes Enseignants</div>
+    ${tousEnseignantsPortail.map(p => {
+      const initiales = ((p.prenom?.[0]||'')+(p.nom?.[0]||'')).toUpperCase();
+      return `<div class="prof-contact-card">
+        <div class="pcc-avatar">${initiales||'👤'}</div>
+        <div class="pcc-info">
+          <div class="pi-nom">${p.nom} ${p.prenom}${p.grade?' · <span style="opacity:.7;font-size:11px">'+p.grade+'</span>':''}</div>
+          <div class="pi-spec">${p.specialite||''}</div>
+          <div class="pi-mat">${(p.matieres||[]).slice(0,4).join(' · ')}</div>
+        </div>
+        ${p.email ? `<a href="mailto:${p.email}" style="margin-left:auto;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.25);color:#fff;padding:6px 12px;border-radius:8px;font-size:11.5px;font-weight:600;text-decoration:none">✉️ Email</a>` : ''}
+      </div>`;
+    }).join('')}
+  </div>`;
+}
+
+
+// ══ ENSEIGNANTS PORTAIL ★ JOUR 13 ══════════════════════════════════
+
+async function chargerEnseignantsPortail() {
+  if (!currentEcoleId) { tousEnseignantsPortail = []; return; }
+  const { data } = await db.from('enseignants').select('*')
+    .eq('ecole_id', currentEcoleId).eq('statut','actif').order('nom');
+  tousEnseignantsPortail = data || [];
+}
+
+function afficherEnseignantsPortail() {
+  const page = document.getElementById('page-enseignants');
+  if (!tousEnseignantsPortail.length) {
+    page.innerHTML = '<div class="page-pad"><div class="section-title">👨‍🏫 Nos Enseignants</div><div class="empty"><div class="e-ico">👨‍🏫</div><p>Aucun enseignant disponible.</p></div></div>';
+    return;
+  }
+
+  // Filtrer par matières de l'étudiant (filière/niveau)
+  const gradeLabels = { vacataire:'Vacataire', contractuel:'Contractuel', permanent:'Permanent', charge_cours:'Chargé de cours', maitre_conf:'Maître de conf.', professeur:'Professeur' };
+
+  page.innerHTML = `<div class="page-pad">
+    <div class="section-title">👨‍🏫 Nos Enseignants</div>
+    <div style="font-size:12.5px;color:#6b7280;margin-bottom:1rem">
+      ${tousEnseignantsPortail.length} enseignant(s) actif(s)
+    </div>
+    <div class="card">
+      ${tousEnseignantsPortail.map(ens => {
+        const initiales = ((ens.prenom||'')[0]||'').toUpperCase() + ((ens.nom||'')[0]||'').toUpperCase();
+        const matieres = Array.isArray(ens.matieres) ? ens.matieres : (ens.matieres ? ens.matieres.split(',').map(m=>m.trim()) : []);
+        return `<div class="prof-card">
+          <div class="prof-avatar">${initiales}</div>
+          <div class="prof-body">
+            <div class="prof-nom">${ens.nom} ${ens.prenom}</div>
+            <div class="prof-spec">${ens.specialite||'—'} · <span style="color:#0f6e56;font-weight:600">${gradeLabels[ens.grade]||ens.grade||''}</span></div>
+            ${matieres.length ? `<div class="prof-mats">${matieres.slice(0,3).map(m=>`<span class="prof-mat-pill">${m}</span>`).join('')}${matieres.length>3?`<span class="prof-mat-pill">+${matieres.length-3}</span>`:''}</div>` : ''}
+          </div>
+          <div style="text-align:right;flex-shrink:0">
+            ${ens.email ? `<a href="mailto:${ens.email}" style="font-size:20px;text-decoration:none">✉️</a>` : ''}
+          </div>
+        </div>`;
+      }).join('')}
+    </div>
+  </div>`;
+}
 // ══ INIT ══
 (async function() {
   const { data: { session } } = await db.auth.getSession();
