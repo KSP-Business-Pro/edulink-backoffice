@@ -16,6 +16,8 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.6.0/jspdf.plugin.autotable.min.js"></script>
 <script data-cfasync="false" src="edulink-auth.js" defer></script>
 <script data-cfasync="false" src="edulink-notif.js" defer></script>
 <style>
@@ -826,6 +828,8 @@ button:hover { background:#a86615; transform:translateY(-1px); }
         <option value="T1">Trimestre 1</option><option value="T2">Trimestre 2</option><option value="T3">Trimestre 3</option>
       </select>
       <button class="btn-blue btn-sm" onclick="imprimerBulletin()">🖨️ Imprimer</button>
+      <button class="btn-sm btn-green" onclick="telechargerBulletinPDF()">⬇️ PDF</button>
+      <button class="btn-sm btn-purple" onclick="telechargerTousBulletins()">📦 Tous les bulletins PDF</button>
     </div>
     <div id="bulletin-container">
       <div class="empty-state"><div class="icon">📄</div><h3>Sélectionnez un étudiant</h3></div>
@@ -1213,6 +1217,7 @@ button:hover { background:#a86615; transform:translateY(-1px); }
     <h2>Rapports & Statistiques</h2>
     <div class="top-actions">
       <button class="btn-outline" onclick="exporterRapport('csv')">⬇️ Export CSV</button>
+      <button class="btn-green" onclick="exporterRapport('pdf')">📄 Export PDF</button>
       <button onclick="exporterRapport('print')">🖨️ Imprimer</button>
     </div>
   </div>
@@ -2849,6 +2854,7 @@ async function afficherRapport(type) {
   }
 }
 function exporterRapport(mode) {
+  if (mode === 'pdf') { exporterRapportPDF(); return; }
   if (mode === 'print') { window.print(); return; }
   // Détecter le rapport actif
   const actif = document.querySelector('.rapport-menu-item.active');
@@ -3877,6 +3883,557 @@ function exporterEnseignantsCSV() {
   const a = document.createElement('a'); a.href=URL.createObjectURL(blob);
   a.download='edulink_enseignants.csv'; a.click();
   showToast('Export CSV téléchargé !','success');
+}
+
+
+// ══ GÉNÉRATION PDF RÉELLE  ★ JOUR 14 ══════════════════════════════
+
+// ── Utilitaire jsPDF ──
+function getJsPDF() {
+  if (typeof window !== 'undefined' && window.jspdf) return window.jspdf.jsPDF;
+  if (typeof jspdf !== 'undefined') return jspdf.jsPDF;
+  return null;
+}
+
+// ── Couleurs EduLink ──
+const PDF_NAVY   = [30, 58, 95];
+const PDF_GOLD   = [201, 124, 26];
+const PDF_GREEN  = [5, 150, 105];
+const PDF_RED    = [220, 38, 38];
+const PDF_AMBER  = [217, 119, 6];
+const PDF_GRAY   = [107, 114, 128];
+const PDF_LIGHT  = [249, 250, 251];
+
+function pdfMentionColor(note) {
+  if (note >= 14) return PDF_GREEN;
+  if (note >= 10) return PDF_AMBER;
+  return PDF_RED;
+}
+function pdfMentionLabel(note) {
+  if (note >= 16) return 'Très bien';
+  if (note >= 14) return 'Bien';
+  if (note >= 12) return 'Assez bien';
+  if (note >= 10) return 'Passable';
+  return 'Insuffisant';
+}
+
+// ── Entête PDF (commun à tous les docs) ──
+function pdfDrawHeader(doc, ecoleNom, ecoleType, titre, sousTitre) {
+  const pw = doc.internal.pageSize.getWidth();
+  // Fond bleu marine
+  doc.setFillColor(...PDF_NAVY);
+  doc.rect(0, 0, pw, 38, 'F');
+  // Bande dorée
+  doc.setFillColor(...PDF_GOLD);
+  doc.rect(0, 38, pw, 3, 'F');
+  // Logo texte
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(18);
+  doc.setFont('helvetica', 'bold');
+  doc.text('EduLink', 14, 16);
+  // Nom école
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'normal');
+  doc.text(ecoleNom || 'Établissement', 14, 24);
+  doc.setTextColor(200, 200, 200);
+  doc.setFontSize(9);
+  doc.text(ecoleType || '', 14, 31);
+  // Titre document (droite)
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(13);
+  doc.setFont('helvetica', 'bold');
+  doc.text(titre, pw - 14, 16, { align: 'right' });
+  if (sousTitre) {
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.text(sousTitre, pw - 14, 24, { align: 'right' });
+  }
+  // Date édition
+  doc.setTextColor(180, 180, 180);
+  doc.setFontSize(8);
+  doc.text('Édité le ' + new Date().toLocaleDateString('fr-FR'), pw - 14, 31, { align: 'right' });
+  return 48; // y de départ après l'entête
+}
+
+// ── Pied de page ──
+function pdfDrawFooter(doc) {
+  const pw = doc.internal.pageSize.getWidth();
+  const ph = doc.internal.pageSize.getHeight();
+  doc.setFillColor(243, 244, 246);
+  doc.rect(0, ph - 14, pw, 14, 'F');
+  doc.setTextColor(...PDF_GRAY);
+  doc.setFontSize(7.5);
+  doc.setFont('helvetica', 'normal');
+  doc.text('Document généré par EduLink — Plateforme de gestion scolaire', 14, ph - 5);
+  doc.text(`Page ${doc.internal.getCurrentPageInfo().pageNumber}`, pw - 14, ph - 5, { align: 'right' });
+}
+
+// ══ BULLETIN PDF ══════════════════════════════════════════════════
+
+async function telechargerBulletinPDF() {
+  const JsPDF = getJsPDF();
+  if (!JsPDF) { showToast('jsPDF non chargé — réessayez dans quelques secondes', 'error'); return; }
+
+  const etudiantId = document.getElementById('select-bulletin-etudiant')?.value;
+  const periode    = document.getElementById('select-bulletin-periode')?.value;
+  if (!etudiantId) { showToast('Sélectionnez un étudiant', 'error'); return; }
+
+  showToast('Génération du PDF...', 'info');
+
+  // Données
+  const etudiant = tousLesEtudiants.find(e => e.id === etudiantId);
+  const { data: notes } = await db.from('notes').select('*').eq('etudiant_id', etudiantId).eq('periode', periode).order('matiere');
+  if (!notes?.length) { showToast('Aucune note pour cette période', 'error'); return; }
+
+  // Calculs
+  let totalPts = 0, totalCoeff = 0;
+  notes.forEach(n => { totalPts += n.note * (n.coefficient||1); totalCoeff += (n.coefficient||1); });
+  const moy = totalCoeff > 0 ? totalPts / totalCoeff : 0;
+
+  // Infos école
+  const ecole = tousLesEcoles?.find(e => e.id === currentEcoleId);
+  const ecoleNom  = ecole?.nom  || 'Établissement';
+  const ecoleType = ecole?.type || '';
+  const annee     = ecole?.annee_scolaire || new Date().getFullYear() + '-' + (new Date().getFullYear()+1);
+
+  const doc = new JsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  const pw  = doc.internal.pageSize.getWidth();
+  let y     = pdfDrawHeader(doc, ecoleNom, ecoleType, 'BULLETIN DE NOTES', `Année scolaire ${annee}`);
+
+  // Bloc infos étudiant
+  y += 5;
+  doc.setFillColor(239, 246, 255);
+  doc.roundedRect(14, y, pw - 28, 28, 3, 3, 'F');
+  doc.setDrawColor(...PDF_NAVY);
+  doc.setLineWidth(0.5);
+  doc.roundedRect(14, y, pw - 28, 28, 3, 3, 'S');
+
+  doc.setTextColor(...PDF_NAVY);
+  doc.setFontSize(13);
+  doc.setFont('helvetica', 'bold');
+  doc.text((etudiant?.nom || '') + ' ' + (etudiant?.prenom || ''), 22, y + 9);
+
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(...PDF_GRAY);
+  doc.text('Matricule : ' + (etudiant?.matricule || '—'), 22, y + 16);
+  doc.text('Filière : ' + (etudiant?.filiere || '—') + '  |  Niveau : ' + (etudiant?.niveau || '—'), 22, y + 22);
+
+  // Moyenne côté droit
+  doc.setFillColor(...(moy >= 10 ? PDF_GREEN : PDF_RED));
+  doc.roundedRect(pw - 55, y + 4, 41, 20, 3, 3, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(18);
+  doc.setFont('helvetica', 'bold');
+  doc.text(moy.toFixed(2) + '/20', pw - 34, y + 16, { align: 'center' });
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'normal');
+  doc.text(pdfMentionLabel(moy), pw - 34, y + 21, { align: 'center' });
+
+  y += 34;
+
+  // Titre période
+  doc.setTextColor(...PDF_NAVY);
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'bold');
+  doc.text('Relevé de notes — ' + periode, 14, y);
+  y += 6;
+
+  // Tableau notes
+  const rows = notes.map(n => [
+    n.matiere,
+    n.note + '/20',
+    n.coefficient || 1,
+    (n.note * (n.coefficient||1)).toFixed(2),
+    pdfMentionLabel(n.note)
+  ]);
+  rows.push([
+    'MOYENNE GÉNÉRALE',
+    { content: moy.toFixed(2) + '/20', styles: { fontStyle: 'bold', textColor: moy >= 10 ? PDF_GREEN : PDF_RED, fontSize: 11 } },
+    totalCoeff,
+    totalPts.toFixed(2),
+    { content: pdfMentionLabel(moy), styles: { fontStyle: 'bold', textColor: pdfMentionColor(moy) } }
+  ]);
+
+  doc.autoTable({
+    startY: y,
+    head: [['Matière', 'Note /20', 'Coeff.', 'Points', 'Mention']],
+    body: rows,
+    theme: 'grid',
+    headStyles: {
+      fillColor: PDF_NAVY, textColor: [255,255,255],
+      fontSize: 9, fontStyle: 'bold', halign: 'center'
+    },
+    columnStyles: {
+      0: { halign: 'left', cellWidth: 70 },
+      1: { halign: 'center', cellWidth: 25 },
+      2: { halign: 'center', cellWidth: 20 },
+      3: { halign: 'center', cellWidth: 25 },
+      4: { halign: 'center' }
+    },
+    bodyStyles: { fontSize: 9, textColor: [55, 65, 81] },
+    alternateRowStyles: { fillColor: [249, 250, 251] },
+    foot: [],
+    didParseCell: (data) => {
+      if (data.row.index === rows.length - 1) {
+        data.cell.styles.fillColor = [239, 246, 255];
+        data.cell.styles.fontStyle = 'bold';
+      }
+    },
+    margin: { left: 14, right: 14 }
+  });
+
+  y = doc.lastAutoTable.finalY + 12;
+
+  // Stats résumé
+  doc.setFillColor(249, 250, 251);
+  doc.roundedRect(14, y, pw - 28, 18, 3, 3, 'F');
+  const statW = (pw - 28) / 3;
+  const stats = [
+    { lbl: 'Matières évaluées', val: notes.length },
+    { lbl: 'Total coefficients', val: totalCoeff },
+    { lbl: 'Total points', val: totalPts.toFixed(2) }
+  ];
+  stats.forEach((s, i) => {
+    const x = 14 + statW * i + statW / 2;
+    doc.setTextColor(...PDF_NAVY);
+    doc.setFontSize(12);
+    doc.setFont('helvetica', 'bold');
+    doc.text(String(s.val), x, y + 8, { align: 'center' });
+    doc.setFontSize(7.5);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(...PDF_GRAY);
+    doc.text(s.lbl, x, y + 14, { align: 'center' });
+  });
+
+  y += 26;
+
+  // Signatures
+  if (y > 230) { doc.addPage(); y = 20; }
+  const sigW = 55;
+  const sigs = ['Directeur(trice)', 'Enseignant(e) référent(e)', 'Signature Parent'];
+  sigs.forEach((s, i) => {
+    const x = 14 + (pw - 28) / 3 * i;
+    doc.setDrawColor(200, 200, 200);
+    doc.setLineWidth(0.4);
+    doc.line(x, y + 18, x + sigW, y + 18);
+    doc.setFontSize(8);
+    doc.setTextColor(...PDF_GRAY);
+    doc.text(s, x + sigW / 2, y + 23, { align: 'center' });
+  });
+
+  // Mentions légales
+  y += 32;
+  doc.setFontSize(7.5);
+  doc.setTextColor(156, 163, 175);
+  doc.text('Ce bulletin est un document officiel de ' + ecoleNom + '. Toute modification est interdite.', pw / 2, y, { align: 'center' });
+
+  pdfDrawFooter(doc);
+
+  // Téléchargement
+  const filename = `Bulletin_${etudiant?.nom||'etudiant'}_${etudiant?.prenom||''}_${periode}.pdf`.replace(/\s+/g, '_');
+  doc.save(filename);
+  showToast('✅ Bulletin PDF téléchargé !', 'success');
+}
+
+// ══ RAPPORTS PDF ══════════════════════════════════════════════════
+
+async function exporterRapportPDF() {
+  const JsPDF = getJsPDF();
+  if (!JsPDF) { showToast('jsPDF non chargé', 'error'); return; }
+  // Récupérer le rapport actif
+  const activeMenu = document.querySelector('.rapport-menu-item.active');
+  const type = activeMenu?.id?.replace('rmenu-','') || 'effectifs';
+  showToast('Génération du rapport PDF...', 'info');
+
+  const ecole = tousLesEcoles?.find(e => e.id === currentEcoleId);
+  const ecoleNom = ecole?.nom || 'Établissement';
+  const ecoleType = ecole?.type || '';
+
+  const titres = { effectifs:'EFFECTIFS PAR FILIÈRE', absences:'TAUX D\'ABSENTÉISME', moyennes:'MOYENNES PAR MATIÈRE', paiements:'ÉTAT DES PAIEMENTS', discipline:'RAPPORT DISCIPLINAIRE' };
+  const titre = titres[type] || 'RAPPORT';
+
+  const doc = new JsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  const pw = doc.internal.pageSize.getWidth();
+  let y = pdfDrawHeader(doc, ecoleNom, ecoleType, titre, 'Rapport généré le ' + new Date().toLocaleDateString('fr-FR'));
+  y += 8;
+
+  if (type === 'effectifs') {
+    let q = db.from('etudiants').select('filiere, niveau, statut');
+    if (currentEcoleId) q = q.eq('ecole_id', currentEcoleId);
+    const { data } = await q;
+    const filieres = {};
+    (data||[]).forEach(e => { filieres[e.filiere] = (filieres[e.filiere]||0)+1; });
+    const niveaux = {};
+    (data||[]).forEach(e => { niveaux[e.niveau] = (niveaux[e.niveau]||0)+1; });
+
+    // KPI
+    doc.setFillColor(239, 246, 255);
+    doc.roundedRect(14, y, pw - 28, 20, 3, 3, 'F');
+    doc.setTextColor(...PDF_NAVY); doc.setFontSize(22); doc.setFont('helvetica','bold');
+    doc.text(String(data?.length||0), pw/2, y+13, { align:'center' });
+    doc.setFontSize(9); doc.setFont('helvetica','normal'); doc.setTextColor(...PDF_GRAY);
+    doc.text('étudiants inscrits au total', pw/2, y+19, { align:'center' });
+    y += 26;
+
+    // Table filières
+    doc.setTextColor(...PDF_NAVY); doc.setFontSize(10); doc.setFont('helvetica','bold');
+    doc.text('Répartition par filière', 14, y); y += 5;
+    doc.autoTable({
+      startY: y,
+      head: [['Filière', 'Effectif', '% du total']],
+      body: Object.entries(filieres).sort((a,b)=>b[1]-a[1]).map(([k,v]) => [k, v, ((v/(data?.length||1))*100).toFixed(1)+'%']),
+      theme: 'grid',
+      headStyles: { fillColor: PDF_NAVY, textColor:[255,255,255], fontSize:9, fontStyle:'bold' },
+      bodyStyles: { fontSize:9 }, alternateRowStyles: { fillColor: [249,250,251] },
+      margin: { left:14, right:14 }
+    });
+    y = doc.lastAutoTable.finalY + 10;
+    // Table niveaux
+    doc.setTextColor(...PDF_NAVY); doc.setFontSize(10); doc.setFont('helvetica','bold');
+    doc.text('Répartition par niveau', 14, y); y += 5;
+    doc.autoTable({
+      startY: y,
+      head: [['Niveau', 'Effectif']],
+      body: Object.entries(niveaux).sort((a,b)=>b[1]-a[1]).map(([k,v]) => [k, v]),
+      theme: 'grid',
+      headStyles: { fillColor: PDF_GOLD, textColor:[255,255,255], fontSize:9, fontStyle:'bold' },
+      bodyStyles: { fontSize:9 }, alternateRowStyles: { fillColor:[249,250,251] },
+      margin: { left:14, right:14 }
+    });
+
+  } else if (type === 'absences') {
+    const { data } = await db.from('absences').select('*, etudiants(nom, prenom)').order('date_absence', {ascending:false});
+    const stats = { absent:0, retard:0, excuse:0 };
+    (data||[]).forEach(a => { if(stats[a.statut]!==undefined) stats[a.statut]++; });
+
+    // KPIs
+    const kpis = [
+      { lbl:'Total absences', val:data?.length||0, color:PDF_NAVY },
+      { lbl:'Injustifiées', val:stats.absent, color:PDF_RED },
+      { lbl:'Retards', val:stats.retard, color:PDF_AMBER },
+      { lbl:'Excusées', val:stats.excuse, color:PDF_GREEN }
+    ];
+    const kW = (pw-28)/4;
+    kpis.forEach((k,i) => {
+      const x = 14 + kW*i;
+      doc.setFillColor(249,250,251);
+      doc.roundedRect(x, y, kW-3, 18, 2, 2, 'F');
+      doc.setTextColor(...k.color); doc.setFontSize(16); doc.setFont('helvetica','bold');
+      doc.text(String(k.val), x+kW/2-1.5, y+11, { align:'center' });
+      doc.setFontSize(7); doc.setFont('helvetica','normal'); doc.setTextColor(...PDF_GRAY);
+      doc.text(k.lbl, x+kW/2-1.5, y+16, { align:'center' });
+    });
+    y += 24;
+
+    doc.setTextColor(...PDF_NAVY); doc.setFontSize(10); doc.setFont('helvetica','bold');
+    doc.text('Détail des absences', 14, y); y += 5;
+    doc.autoTable({
+      startY: y,
+      head: [['Étudiant', 'Matière', 'Date', 'Statut', 'Justification']],
+      body: (data||[]).slice(0,50).map(a => [
+        a.etudiants ? a.etudiants.nom+' '+a.etudiants.prenom : '—',
+        a.matiere||'—',
+        new Date(a.date_absence).toLocaleDateString('fr-FR'),
+        a.statut||'—',
+        a.justification||'—'
+      ]),
+      theme: 'grid',
+      headStyles: { fillColor: PDF_NAVY, textColor:[255,255,255], fontSize:9, fontStyle:'bold' },
+      bodyStyles: { fontSize:8 }, alternateRowStyles: { fillColor:[249,250,251] },
+      columnStyles: { 0:{cellWidth:45}, 1:{cellWidth:35}, 2:{cellWidth:22}, 3:{cellWidth:20} },
+      margin: { left:14, right:14 }
+    });
+
+  } else if (type === 'moyennes') {
+    let q = db.from('notes').select('matiere, note, coefficient, etudiants(nom, prenom)');
+    if (currentEcoleId) q = q.eq('ecole_id', currentEcoleId);
+    const { data } = await q;
+    const matieres = {};
+    (data||[]).forEach(n => {
+      if (!matieres[n.matiere]) matieres[n.matiere] = { pts:0, coeff:0, nb:0 };
+      matieres[n.matiere].pts   += n.note*(n.coefficient||1);
+      matieres[n.matiere].coeff += (n.coefficient||1);
+      matieres[n.matiere].nb++;
+    });
+    const moyMat = Object.entries(matieres).map(([m,v]) => ({ matiere:m, moy:v.coeff>0?v.pts/v.coeff:0, nb:v.nb })).sort((a,b)=>b.moy-a.moy);
+
+    doc.setTextColor(...PDF_NAVY); doc.setFontSize(10); doc.setFont('helvetica','bold');
+    doc.text('Moyennes par matière', 14, y); y += 5;
+    doc.autoTable({
+      startY: y,
+      head: [['Matière', 'Moyenne /20', 'Nb notes', 'Mention']],
+      body: moyMat.map(m => [
+        m.matiere,
+        { content: m.moy.toFixed(2)+'/20', styles: { textColor: pdfMentionColor(m.moy), fontStyle:'bold' } },
+        m.nb,
+        pdfMentionLabel(m.moy)
+      ]),
+      theme: 'grid',
+      headStyles: { fillColor: PDF_NAVY, textColor:[255,255,255], fontSize:9, fontStyle:'bold' },
+      bodyStyles: { fontSize:9 }, alternateRowStyles: { fillColor:[249,250,251] },
+      margin: { left:14, right:14 }
+    });
+
+  } else if (type === 'paiements') {
+    let q = db.from('factures').select('*, etudiants(nom,prenom)');
+    if (currentEcoleId) q = q.eq('ecole_id', currentEcoleId);
+    const { data } = await q;
+    const all = data || [];
+    const totalDu = all.reduce((s,f)=>s+f.montant_total,0);
+    const totalPaye = all.reduce((s,f)=>s+(f.montant_paye||0),0);
+
+    // KPIs paiements
+    const kpis2 = [
+      { lbl:'Total facturé', val:new Intl.NumberFormat('fr-FR').format(totalDu)+' FCFA', color:PDF_NAVY },
+      { lbl:'Payé', val:new Intl.NumberFormat('fr-FR').format(totalPaye)+' FCFA', color:PDF_GREEN },
+      { lbl:'Restant', val:new Intl.NumberFormat('fr-FR').format(totalDu-totalPaye)+' FCFA', color:PDF_RED }
+    ];
+    const kW2 = (pw-28)/3;
+    kpis2.forEach((k,i) => {
+      const x = 14 + kW2*i;
+      doc.setFillColor(249,250,251);
+      doc.roundedRect(x, y, kW2-3, 18, 2, 2, 'F');
+      doc.setTextColor(...k.color); doc.setFontSize(9); doc.setFont('helvetica','bold');
+      doc.text(k.val, x+kW2/2-1.5, y+10, { align:'center' });
+      doc.setFontSize(7); doc.setFont('helvetica','normal'); doc.setTextColor(...PDF_GRAY);
+      doc.text(k.lbl, x+kW2/2-1.5, y+16, { align:'center' });
+    });
+    y += 24;
+
+    doc.setTextColor(...PDF_NAVY); doc.setFontSize(10); doc.setFont('helvetica','bold');
+    doc.text('Détail des factures', 14, y); y += 5;
+    doc.autoTable({
+      startY: y,
+      head: [['Étudiant', 'Référence', 'Total', 'Payé', 'Statut', 'Échéance']],
+      body: all.map(f => [
+        f.etudiants ? f.etudiants.nom+' '+f.etudiants.prenom : '—',
+        f.reference||'—',
+        new Intl.NumberFormat('fr-FR').format(f.montant_total),
+        new Intl.NumberFormat('fr-FR').format(f.montant_paye||0),
+        f.statut||'—',
+        f.date_echeance ? new Date(f.date_echeance).toLocaleDateString('fr-FR') : '—'
+      ]),
+      theme: 'grid',
+      headStyles: { fillColor: PDF_NAVY, textColor:[255,255,255], fontSize:9, fontStyle:'bold' },
+      bodyStyles: { fontSize:8 }, alternateRowStyles: { fillColor:[249,250,251] },
+      margin: { left:14, right:14 }
+    });
+
+  } else if (type === 'discipline') {
+    let q = db.from('incidents').select('*, etudiants(nom,prenom)').order('created_at',{ascending:false});
+    if (currentEcoleId) q = q.eq('ecole_id', currentEcoleId);
+    const { data } = await q;
+
+    doc.setTextColor(...PDF_NAVY); doc.setFontSize(10); doc.setFont('helvetica','bold');
+    doc.text('Rapport disciplinaire', 14, y); y += 5;
+    doc.autoTable({
+      startY: y,
+      head: [['Étudiant', 'Type', 'Sévérité', 'Sanction', 'Statut', 'Date']],
+      body: (data||[]).map(i => [
+        i.etudiants ? i.etudiants.nom+' '+i.etudiants.prenom : '—',
+        i.type_incident||'—',
+        i.severite||'—',
+        i.sanction||'Aucune',
+        i.statut||'—',
+        new Date(i.created_at).toLocaleDateString('fr-FR')
+      ]),
+      theme: 'grid',
+      headStyles: { fillColor: PDF_RED, textColor:[255,255,255], fontSize:9, fontStyle:'bold' },
+      bodyStyles: { fontSize:8 }, alternateRowStyles: { fillColor:[249,250,251] },
+      margin: { left:14, right:14 }
+    });
+  }
+
+  pdfDrawFooter(doc);
+  const filename = `EduLink_Rapport_${titre.replace(/\s+/g,'_')}_${new Date().toISOString().split('T')[0]}.pdf`;
+  doc.save(filename);
+  showToast('✅ Rapport PDF téléchargé !', 'success');
+}
+
+// ══ BULLETINS EN MASSE  ★ JOUR 14 ══════════════════════════════════
+
+async function telechargerTousBulletins() {
+  const JsPDF = getJsPDF();
+  if (!JsPDF) { showToast('jsPDF non chargé', 'error'); return; }
+  const periode = document.getElementById('select-bulletin-periode')?.value || 'S1';
+  if (!currentEcoleId) { showToast('Sélectionnez un établissement', 'error'); return; }
+
+  showToast('Génération des bulletins en cours...', 'info');
+
+  // Charger tous les étudiants + leurs notes
+  let qE = db.from('etudiants').select('*').order('nom');
+  if (currentEcoleId) qE = qE.eq('ecole_id', currentEcoleId);
+  const { data: etudiants } = await qE;
+  if (!etudiants?.length) { showToast('Aucun étudiant trouvé', 'error'); return; }
+
+  const { data: toutesNotes } = await db.from('notes').select('*').eq('ecole_id', currentEcoleId).eq('periode', periode);
+  const ecole = tousLesEcoles?.find(e => e.id === currentEcoleId);
+  const annee = ecole?.annee_scolaire || '';
+
+  const doc = new JsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+  const pw = doc.internal.pageSize.getWidth();
+  let first = true;
+
+  for (const etudiant of etudiants) {
+    const notes = (toutesNotes||[]).filter(n => n.etudiant_id === etudiant.id);
+    if (!notes.length) continue;
+
+    if (!first) doc.addPage();
+    first = false;
+
+    let totalPts = 0, totalCoeff = 0;
+    notes.forEach(n => { totalPts += n.note*(n.coefficient||1); totalCoeff += (n.coefficient||1); });
+    const moy = totalCoeff > 0 ? totalPts/totalCoeff : 0;
+
+    let y = pdfDrawHeader(doc, ecole?.nom||'', ecole?.type||'', 'BULLETIN DE NOTES', `Année ${annee}`);
+    y += 5;
+
+    // Infos étudiant
+    doc.setFillColor(239,246,255);
+    doc.roundedRect(14, y, pw-28, 28, 3, 3, 'F');
+    doc.setTextColor(...PDF_NAVY); doc.setFontSize(13); doc.setFont('helvetica','bold');
+    doc.text(etudiant.nom+' '+etudiant.prenom, 22, y+9);
+    doc.setFontSize(9); doc.setFont('helvetica','normal'); doc.setTextColor(...PDF_GRAY);
+    doc.text('Matricule : '+etudiant.matricule, 22, y+16);
+    doc.text('Filière : '+(etudiant.filiere||'—')+'  |  Niveau : '+(etudiant.niveau||'—'), 22, y+22);
+    doc.setFillColor(...(moy>=10?PDF_GREEN:PDF_RED));
+    doc.roundedRect(pw-55, y+4, 41, 20, 3, 3, 'F');
+    doc.setTextColor(255,255,255); doc.setFontSize(18); doc.setFont('helvetica','bold');
+    doc.text(moy.toFixed(2)+'/20', pw-34, y+15, { align:'center' });
+    doc.setFontSize(8); doc.setFont('helvetica','normal');
+    doc.text(pdfMentionLabel(moy), pw-34, y+21, { align:'center' });
+    y += 34;
+
+    doc.setTextColor(...PDF_NAVY); doc.setFontSize(10); doc.setFont('helvetica','bold');
+    doc.text('Relevé — '+periode, 14, y); y += 5;
+
+    const rows = notes.map(n => [n.matiere, n.note+'/20', n.coefficient||1, (n.note*(n.coefficient||1)).toFixed(2), pdfMentionLabel(n.note)]);
+    rows.push(['MOYENNE', { content:moy.toFixed(2)+'/20', styles:{fontStyle:'bold',textColor:pdfMentionColor(moy)} }, totalCoeff, totalPts.toFixed(2), { content:pdfMentionLabel(moy), styles:{fontStyle:'bold'} }]);
+    doc.autoTable({
+      startY: y, head:[['Matière','Note /20','Coeff.','Points','Mention']],
+      body: rows, theme:'grid',
+      headStyles:{ fillColor:PDF_NAVY, textColor:[255,255,255], fontSize:9, fontStyle:'bold' },
+      bodyStyles:{ fontSize:9 }, alternateRowStyles:{fillColor:[249,250,251]},
+      didParseCell:(d) => { if(d.row.index===rows.length-1){ d.cell.styles.fillColor=[239,246,255]; d.cell.styles.fontStyle='bold'; } },
+      margin:{left:14,right:14}
+    });
+
+    // Signatures
+    const sy = Math.min(doc.lastAutoTable.finalY+18, 255);
+    ['Directeur(trice)','Enseignant(e) référent(e)','Signature Parent'].forEach((s,i) => {
+      const sx = 14+(pw-28)/3*i;
+      doc.setDrawColor(200,200,200); doc.line(sx, sy, sx+55, sy);
+      doc.setFontSize(8); doc.setTextColor(...PDF_GRAY);
+      doc.text(s, sx+27.5, sy+5, { align:'center' });
+    });
+
+    pdfDrawFooter(doc);
+  }
+
+  if (first) { showToast('Aucun bulletin à générer pour cette période', 'error'); return; }
+  doc.save(`EduLink_Bulletins_${periode}_${new Date().toISOString().split('T')[0]}.pdf`);
+  showToast('✅ Tous les bulletins PDF téléchargés !', 'success');
 }
 
 // PWA Service Worker
