@@ -1475,6 +1475,35 @@ function getJsPDFPortail() {
   return null;
 }
 
+function pdfSafePortail(str) {
+  if (!str) return '';
+  return str
+    .replace(/é|è|ê|ë/g, 'e')
+    .replace(/à|â|ä/g, 'a')
+    .replace(/î|ï/g, 'i')
+    .replace(/ô|ö/g, 'o')
+    .replace(/ù|û|ü/g, 'u')
+    .replace(/ç/g, 'c')
+    .replace(/É|È|Ê|Ë/g, 'E')
+    .replace(/À|Â|Ä/g, 'A')
+    .replace(/Î|Ï/g, 'I')
+    .replace(/Ô|Ö/g, 'O')
+    .replace(/Ù|Û|Ü/g, 'U')
+    .replace(/Ç/g, 'C')
+    .replace(/[-￿]/g, '');
+}
+
+function labelPeriodePDF(p) {
+  if (!p) return 'Toutes periodes';
+  if (p === 'S1') return 'Semestre 1';
+  if (p === 'S2') return 'Semestre 2';
+  if (p === 'T1') return 'Trimestre 1';
+  if (p === 'T2') return 'Trimestre 2';
+  if (p === 'T3') return 'Trimestre 3';
+  if (p.startsWith('EXAM-')) return 'Examen';
+  return p;
+}
+
 async function telechargerBulletinPDFPortail(periode) {
   const JsPDF = getJsPDFPortail();
   if (!JsPDF) { showToast('jsPDF non chargé — réessayez', 'error'); return; }
@@ -1498,7 +1527,7 @@ async function telechargerBulletinPDFPortail(periode) {
 
   function mentionColor(note) { return note>=14?GREEN:note>=10?AMBER:RED; }
   function mentionLabel(note) {
-    if (note>=16) return 'Très bien';
+    if (note>=16) return 'Tres bien';
     if (note>=14) return 'Bien';
     if (note>=12) return 'Assez bien';
     if (note>=10) return 'Passable';
@@ -1518,15 +1547,15 @@ async function telechargerBulletinPDFPortail(periode) {
   doc.setFontSize(17); doc.setFont('helvetica','bold');
   doc.text('EduLink', 14, 15);
   doc.setFontSize(9); doc.setFont('helvetica','normal');
-  doc.text('Portail Famille — Bulletin de notes', 14, 23);
+  doc.text('Portail Famille - Bulletin de notes', 14, 23);
   doc.setTextColor(200,200,200); doc.setFontSize(8);
-  doc.text('Édité le '+new Date().toLocaleDateString('fr-FR'), 14, 30);
+  doc.text('Edite le '+new Date().toLocaleDateString('fr-FR'), 14, 30);
 
   doc.setTextColor(255,255,255);
   doc.setFontSize(12); doc.setFont('helvetica','bold');
   doc.text('BULLETIN DE NOTES', pw-14, 15, { align:'right' });
   doc.setFontSize(9); doc.setFont('helvetica','normal');
-  doc.text('Période : '+(periode||'Toutes'), pw-14, 23, { align:'right' });
+  doc.text('Periode : '+labelPeriodePDF(periode||''), pw-14, 23, { align:'right' });
 
   let y = 48;
 
@@ -1537,10 +1566,10 @@ async function telechargerBulletinPDFPortail(periode) {
   doc.roundedRect(14, y, pw-28, 28, 3, 3, 'S');
 
   doc.setTextColor(...NAVY2); doc.setFontSize(13); doc.setFont('helvetica','bold');
-  doc.text(currentEtudiant.nom+' '+currentEtudiant.prenom, 22, y+9);
+  doc.text(pdfSafePortail(currentEtudiant.nom+' '+currentEtudiant.prenom), 22, y+9);
   doc.setFontSize(9); doc.setFont('helvetica','normal'); doc.setTextColor(...GRAY);
-  doc.text('Matricule : '+(currentEtudiant.matricule||'—'), 22, y+16);
-  doc.text('Filière : '+(currentEtudiant.filiere||'—')+'  |  Niveau : '+(currentEtudiant.niveau||'—'), 22, y+22);
+  doc.text('Matricule : '+(currentEtudiant.matricule||'-'), 22, y+16);
+  doc.text('Filiere : '+(currentEtudiant.filiere||'-')+'  |  Niveau : '+(currentEtudiant.niveau||'-'), 22, y+22);
 
   // Moyenne
   doc.setFillColor(...(moy>=10?GREEN:RED));
@@ -1553,7 +1582,7 @@ async function telechargerBulletinPDFPortail(periode) {
   y += 34;
 
   doc.setTextColor(...NAVY); doc.setFontSize(10); doc.setFont('helvetica','bold');
-  doc.text('Relevé de notes — '+(periode||'Toutes périodes'), 14, y); y += 5;
+  doc.text('Releve de notes - '+labelPeriodePDF(periode||''), 14, y); y += 5;
 
   const rows = notes.map(n => [
     n.matiere,
@@ -1609,7 +1638,7 @@ async function telechargerBulletinPDFPortail(periode) {
   doc.setFillColor(243,244,246);
   doc.rect(0, ph-12, pw, 12, 'F');
   doc.setFontSize(7.5); doc.setTextColor(...GRAY);
-  doc.text('Bulletin généré via EduLink — Portail Famille', 14, ph-4);
+  doc.text('Bulletin genere via EduLink - Portail Famille', 14, ph-4);
   doc.text('Page 1', pw-14, ph-4, { align:'right' });
 
   const filename = `Bulletin_${currentEtudiant.nom}_${currentEtudiant.prenom}_${periode||'all'}.pdf`.replace(/\s+/g,'_');
