@@ -2336,7 +2336,7 @@ function pdfSafe(str) {
     .replace(/Ô|Ö/g, 'O')
     .replace(/Ù|Û|Ü/g, 'U')
     .replace(/Ç/g, 'C')
-    .replace(/[^ -]/g, ''); // Supprime tout autre char non-ASCII (emojis...)
+    .replace(/[-￿]/g, '');
 }
 
 async function remplirSelectBulletin() {
