@@ -816,7 +816,18 @@ button:hover { background:#a86615; transform:translateY(-1px); }
         <button class="btn-ghost btn-sm" onclick="naviguerSemaine(1)">Semaine suiv. →</button>
       </div>
       <div class="planning-grid-wrap">
-        <table class="planning-grid" id="planning-exam-table"></table>
+        <table class="planning-grid" id="planning-exam-table">
+          <thead><tr>
+            <th>Heure</th>
+            <th id="ph-lun">Lundi</th>
+            <th id="ph-mar">Mardi</th>
+            <th id="ph-mer">Mercredi</th>
+            <th id="ph-jeu">Jeudi</th>
+            <th id="ph-ven">Vendredi</th>
+            <th id="ph-sam">Samedi</th>
+          </tr></thead>
+          <tbody id="planning-exam-tbody"></tbody>
+        </table>
       </div>
     </div>
     <div id="exam-planning-vide" style="display:none" class="empty-state">
@@ -2941,23 +2952,28 @@ function afficherPlanningExamens() {
   // Créneaux horaires
   const creneaux = ['07:00','08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00'];
   const table = document.getElementById('planning-exam-table');
-  // Rebuild header
-  const theadRow = table.rows[0];
-  theadRow.cells[0].textContent = 'Heure';
-  jours.forEach((d, i) => {
-    if (theadRow.cells[i+1]) {
-      const iso = d.toISOString().split('T')[0];
-      theadRow.cells[i+1].textContent = joursFr[i] + ' ' + d.getDate();
-      theadRow.cells[i+1].className = iso === today ? 'today-col' : '';
-    }
-  });
+  // Update header columns
+  const theadRow = table.querySelector('thead tr');
+  if (theadRow) {
+    jours.forEach((d, i) => {
+      const th = theadRow.cells[i+1];
+      if (th) {
+        const iso = d.toISOString().split('T')[0];
+        th.textContent = joursFr[i] + ' ' + d.getDate();
+        th.className = iso === today ? 'today-col' : '';
+      }
+    });
+  }
 
-  // Remove old body rows
-  while (table.rows.length > 1) table.deleteRow(1);
+  // Clear and rebuild tbody
+  const tbody = document.getElementById('planning-exam-tbody') || table.querySelector('tbody');
+  if (tbody) tbody.innerHTML = '';
 
   let hasExam = false;
+  const tbodyRef = document.getElementById('planning-exam-tbody') || table.querySelector('tbody') || table;
   creneaux.forEach(h => {
-    const tr = table.insertRow();
+    const tr = tbodyRef.insertRow ? tbodyRef.insertRow() : document.createElement('tr');
+    if (!tbodyRef.insertRow) tbodyRef.appendChild(tr);
     const td0 = tr.insertCell(); td0.className = 'time-col'; td0.textContent = h;
     jours.forEach(d => {
       const iso = d.toISOString().split('T')[0];
