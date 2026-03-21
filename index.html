@@ -2309,7 +2309,13 @@ function labelPeriodeBulletin(p) {
 }
 
 async function remplirSelectBulletin() {
-  if (!tousLesEtudiants.length) await remplirSelect('input-absence-etudiant');
+  // Charger les étudiants depuis DB si cache vide
+  if (!tousLesEtudiants.length) {
+    let q = db.from('etudiants').select('*').order('nom');
+    if (currentEcoleId) q = q.eq('ecole_id', currentEcoleId);
+    const { data } = await q;
+    tousLesEtudiants = data || [];
+  }
   const sel = document.getElementById('select-bulletin-etudiant');
   sel.innerHTML = '<option value="">— Sélectionner un étudiant —</option>' + tousLesEtudiants.map(e=>`<option value="${e.id}">${e.nom} ${e.prenom}</option>`).join('');
 }
@@ -4016,8 +4022,12 @@ async function telechargerBulletinPDF() {
 
   showToast('Génération du PDF...', 'info');
 
-  // Données
-  const etudiant = tousLesEtudiants.find(e => e.id === etudiantId);
+  // Données — récupérer étudiant depuis cache OU DB
+  let etudiant = tousLesEtudiants.find(e => e.id === etudiantId);
+  if (!etudiant) {
+    const { data: etData } = await db.from('etudiants').select('*').eq('id', etudiantId).single();
+    etudiant = etData;
+  }
   const { data: notes } = await db.from('notes').select('*').eq('etudiant_id', etudiantId).eq('periode', periode).order('matiere');
   if (!notes?.length) { showToast('Aucune note pour cette période', 'error'); return; }
 
@@ -4072,7 +4082,7 @@ async function telechargerBulletinPDF() {
   doc.setTextColor(...PDF_NAVY);
   doc.setFontSize(10);
   doc.setFont('helvetica', 'bold');
-  doc.text('Relevé de notes — ' + periode, 14, y);
+  doc.text('Relevé de notes — ' + labelPeriodeBulletin(periode), 14, y);
   y += 6;
 
   // Tableau notes
@@ -4442,7 +4452,7 @@ async function telechargerTousBulletins() {
     y += 34;
 
     doc.setTextColor(...PDF_NAVY); doc.setFontSize(10); doc.setFont('helvetica','bold');
-    doc.text('Relevé — '+periode, 14, y); y += 5;
+    doc.text('Relevé — '+labelPeriodeBulletin(periode), 14, y); y += 5;
 
     const rows = notes.map(n => [n.matiere, n.note+'/20', n.coefficient||1, (n.note*(n.coefficient||1)).toFixed(2), pdfMentionLabel(n.note)]);
     rows.push(['MOYENNE', { content:moy.toFixed(2)+'/20', styles:{fontStyle:'bold',textColor:pdfMentionColor(moy)} }, totalCoeff, totalPts.toFixed(2), { content:pdfMentionLabel(moy), styles:{fontStyle:'bold'} }]);
