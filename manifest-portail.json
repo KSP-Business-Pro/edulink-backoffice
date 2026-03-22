@@ -13,14 +13,8 @@
   "dir": "ltr",
   "categories": ["education", "productivity"],
   "icons": [
-    { "src": "https://edulink-backoffice.vercel.app/icon-72.png",   "sizes": "72x72",   "type": "image/png" },
-    { "src": "https://edulink-backoffice.vercel.app/icon-96.png",   "sizes": "96x96",   "type": "image/png" },
-    { "src": "https://edulink-backoffice.vercel.app/icon-128.png",  "sizes": "128x128", "type": "image/png" },
-    { "src": "https://edulink-backoffice.vercel.app/icon-144.png",  "sizes": "144x144", "type": "image/png" },
-    { "src": "https://edulink-backoffice.vercel.app/icon-152.png",  "sizes": "152x152", "type": "image/png" },
-    { "src": "https://edulink-backoffice.vercel.app/icon-192.png",  "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "https://edulink-backoffice.vercel.app/icon-384.png",  "sizes": "384x384", "type": "image/png" },
-    { "src": "https://edulink-backoffice.vercel.app/icon-512.png",  "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    { "src": "https://edulink-backoffice.vercel.app/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "https://edulink-backoffice.vercel.app/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
   ],
   "shortcuts": [
     {
@@ -28,21 +22,21 @@
       "short_name": "Notes",
       "description": "Consulter mes notes et bulletins",
       "url": "/edulink-portail.html?page=notes",
-      "icons": [{ "src": "https://edulink-backoffice.vercel.app/icon-96.png", "sizes": "96x96" }]
+      "icons": [{ "src": "https://edulink-backoffice.vercel.app/icon-192.png", "sizes": "96x96" }]
     },
     {
       "name": "Mes absences",
       "short_name": "Absences",
       "description": "Consulter mes présences",
       "url": "/edulink-portail.html?page=absences",
-      "icons": [{ "src": "https://edulink-backoffice.vercel.app/icon-96.png", "sizes": "96x96" }]
+      "icons": [{ "src": "https://edulink-backoffice.vercel.app/icon-192.png", "sizes": "96x96" }]
     },
     {
       "name": "Examens à venir",
       "short_name": "Examens",
       "description": "Planning des examens",
       "url": "/edulink-portail.html?page=examens",
-      "icons": [{ "src": "https://edulink-backoffice.vercel.app/icon-96.png", "sizes": "96x96" }]
+      "icons": [{ "src": "https://edulink-backoffice.vercel.app/icon-192.png", "sizes": "96x96" }]
     }
   ],
   "screenshots": [
