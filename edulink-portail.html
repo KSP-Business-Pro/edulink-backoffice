@@ -538,6 +538,11 @@ body{font-family:'Poppins',sans-serif;background:var(--bg);min-height:100vh;colo
 <!-- ══ APPLICATION ══ -->
 <div id="app-portail">
 
+  <!-- Barre hors-ligne ★ JOUR 17 -->
+  <div id="offline-banner" style="display:none;background:#d97706;color:#fff;text-align:center;font-size:12px;font-weight:600;padding:7px;position:sticky;top:0;z-index:200">
+    📡 Mode hors-ligne — Dernières données affichées
+  </div>
+
   <!-- Header -->
   <div class="portail-header">
     <div class="header-top">
@@ -721,6 +726,10 @@ function lancerApp() {
   chargerTout();
   // Initialiser FCM après connexion
   setTimeout(initFCMPortail, 1500);
+  // Branding dynamique ★ JOUR 17
+  chargerBrandingPortail();
+  // Mode hors-ligne ★ JOUR 17
+  initOfflineModePortail();
 }
 
 async function chargerTout() {
@@ -2116,6 +2125,77 @@ async function desabonnerFCMPortail() {
   fcmPortailToken = null;
   localStorage.removeItem('edulink_fcm_token');
   showToast('Notifications désactivées', 'info');
+}
+
+// ══ BRANDING DYNAMIQUE  ★ JOUR 17 ═══════════════════════════════════
+
+async function chargerBrandingPortail() {
+  if (!currentEcoleId) return;
+  try {
+    const { data } = await db.from('ecoles')
+      .select('nom, couleur_primaire, couleur_secondaire, couleur_accent, couleur_bg, logo_url, slogan')
+      .eq('id', currentEcoleId).single();
+    if (!data) return;
+
+    const p  = data.couleur_primaire   || '#0f6e56';
+    const s  = data.couleur_secondaire || '#1e3a5f';
+    const a  = data.couleur_accent     || '#c97c1a';
+    const bg = data.couleur_bg         || '#f0f7f4';
+
+    // Injecter les CSS variables dans :root
+    const root = document.documentElement;
+    root.style.setProperty('--teal',       p);
+    root.style.setProperty('--navy',       s);
+    root.style.setProperty('--gold',       a);
+    root.style.setProperty('--bg',         bg);
+    root.style.setProperty('--teal-light', p + '22');
+
+    // Mettre à jour le thème PWA
+    document.querySelector('meta[name="theme-color"]')?.setAttribute('content', p);
+
+    // Mettre à jour le titre si slogan
+    if (data.slogan) {
+      document.title = (data.nom || 'EduLink') + ' — Portail Famille';
+    }
+
+    // Mettre à jour le logo dans le header si défini
+    if (data.logo_url) {
+      const logoEl = document.querySelector('.header-logo');
+      if (logoEl) {
+        logoEl.innerHTML = `<img src="${data.logo_url}" style="height:28px;width:auto;object-fit:contain;border-radius:6px" onerror="this.parentNode.innerHTML='🎓 EduLink'"> ${data.nom || 'EduLink'}`;
+      }
+    }
+
+    console.log('[Branding] Thème appliqué :', p, s, a);
+  } catch(e) {
+    console.warn('[Branding Portail]', e.message);
+  }
+}
+
+// ══ MODE HORS-LIGNE PORTAIL  ★ JOUR 17 ══════════════════════════════
+
+function initOfflineModePortail() {
+  const banner = document.getElementById('offline-banner');
+  function updateStatus() {
+    if (banner) banner.style.display = navigator.onLine ? 'none' : 'block';
+  }
+  window.addEventListener('online',  () => { updateStatus(); showToast('🌐 Connexion rétablie', 'success'); });
+  window.addEventListener('offline', () => { updateStatus(); showToast('📡 Mode hors-ligne activé', 'info'); });
+  updateStatus();
+
+  // Enregistrer SW et écouter les messages
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/service-worker.js')
+      .then(reg => console.log('[SW Portail] Enregistré'))
+      .catch(e  => console.warn('[SW Portail]', e.message));
+
+    navigator.serviceWorker.addEventListener('message', (event) => {
+      if (event.data?.type === 'EDULINK_SYNC_DONE') {
+        showToast('🔄 Données synchronisées', 'success');
+        chargerTout(); // Recharger les données
+      }
+    });
+  }
 }
 
 // ══ INIT ══

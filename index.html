@@ -624,7 +624,16 @@ button:hover { background:#a86615; transform:translateY(-1px); }
 .parent-badge { display:flex; align-items:center; gap:6px; background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px; padding:7px 10px; font-size:12px; }
 .parent-badge .pb-email { font-weight:600; color:#059669; }
 
-@media (max-width: 768px) {
+/* ══════════════════════════════════════════════
+   BRANDING  ★ JOUR 17
+══════════════════════════════════════════════ */
+.theme-pill{border-radius:10px;padding:6px 8px;cursor:pointer;border:2px solid transparent;transition:all .15s;text-align:center}
+.theme-pill:hover{transform:translateY(-1px);box-shadow:0 4px 12px rgba(0,0,0,.1)}
+.theme-pill.sel{border-color:#1e3a5f;box-shadow:0 0 0 3px rgba(30,58,95,.2)}
+.theme-pill .tp-bar{height:8px;border-radius:4px;margin-bottom:4px}
+.theme-pill .tp-nom{font-size:10px;font-weight:600;color:#374151}
+.offline-bar{display:none;background:#d97706;color:#fff;text-align:center;font-size:12px;font-weight:600;padding:6px;position:sticky;top:0;z-index:200}
+.offline-bar.show{display:block}
   body { flex-direction:column; }
   #hamburger { display:block; }
   nav {
@@ -667,6 +676,7 @@ button:hover { background:#a86615; transform:translateY(-1px); }
 
 <!-- ═══════════════════════ ÉCRAN DE CONNEXION ═══════════════════════ -->
 <button id="hamburger" onclick="toggleMobileNav()">☰</button>
+<div id="offline-bar" class="offline-bar"></div>
 <div id="nav-overlay" onclick="fermerMobileNav()"></div>
 <div id="login-screen">
   <div class="login-card">
@@ -1447,7 +1457,97 @@ button:hover { background:#a86615; transform:translateY(-1px); }
       <div style="text-align:center;background:#f9fafb;border-radius:10px;padding:.9rem;border:1px solid #f3f4f6"><div style="font-size:22px;font-weight:700;color:#1e3a5f" id="sys-ecoles">—</div><div style="font-size:11px;color:#6b7280">Établissements</div></div>
       <div style="text-align:center;background:#f9fafb;border-radius:10px;padding:.9rem;border:1px solid #f3f4f6"><div style="font-size:22px;font-weight:700;color:#059669" id="sys-etudiants">—</div><div style="font-size:11px;color:#6b7280">Étudiants</div></div>
       <div style="text-align:center;background:#f9fafb;border-radius:10px;padding:.9rem;border:1px solid #f3f4f6"><div style="font-size:22px;font-weight:700;color:#c97c1a" id="sys-users">—</div><div style="font-size:11px;color:#6b7280">Utilisateurs</div></div>
-      <div style="text-align:center;background:#f9fafb;border-radius:10px;padding:.9rem;border:1px solid #f3f4f6"><div style="font-size:13px;font-weight:700;color:#1e3a5f">Jour 16</div><div style="font-size:11px;color:#6b7280">Version EduLink</div></div>
+      <div style="text-align:center;background:#f9fafb;border-radius:10px;padding:.9rem;border:1px solid #f3f4f6"><div style="font-size:13px;font-weight:700;color:#1e3a5f">Jour 17</div><div style="font-size:11px;color:#6b7280">Version EduLink</div></div>
+    </div>
+  </div>
+
+  <!-- ★ JOUR 17 — Branding Établissement -->
+  <div style="background:#fff;border-radius:14px;border:1px solid #e5e7eb;padding:1.2rem;margin-top:1.2rem">
+    <div style="font-size:13px;font-weight:700;color:#374151;margin-bottom:1rem;padding-bottom:.6rem;border-bottom:1px solid #f3f4f6">🎨 Branding & Identité visuelle ★ Jour 17</div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.2rem">
+
+      <!-- Couleurs -->
+      <div>
+        <div style="font-size:11.5px;font-weight:600;color:#6b7280;margin-bottom:.75rem;text-transform:uppercase;letter-spacing:.04em">Couleurs de l'établissement</div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem;margin-bottom:1rem">
+          <div>
+            <label style="font-size:11px;font-weight:600;color:#374151;display:block;margin-bottom:4px">Couleur principale</label>
+            <div style="display:flex;align-items:center;gap:6px">
+              <input type="color" id="brand-couleur-primaire" value="#0f6e56" oninput="previewBranding()" style="width:36px;height:36px;border-radius:8px;border:1px solid #e5e7eb;cursor:pointer;padding:2px">
+              <input type="text" id="brand-couleur-primaire-hex" value="#0f6e56" oninput="syncColorInput(this,'brand-couleur-primaire')" style="flex:1;padding:6px 8px;border:1px solid #e5e7eb;border-radius:6px;font-size:11px;font-family:monospace;outline:none">
+            </div>
+          </div>
+          <div>
+            <label style="font-size:11px;font-weight:600;color:#374151;display:block;margin-bottom:4px">Couleur secondaire</label>
+            <div style="display:flex;align-items:center;gap:6px">
+              <input type="color" id="brand-couleur-secondaire" value="#1e3a5f" oninput="previewBranding()" style="width:36px;height:36px;border-radius:8px;border:1px solid #e5e7eb;cursor:pointer;padding:2px">
+              <input type="text" id="brand-couleur-secondaire-hex" value="#1e3a5f" oninput="syncColorInput(this,'brand-couleur-secondaire')" style="flex:1;padding:6px 8px;border:1px solid #e5e7eb;border-radius:6px;font-size:11px;font-family:monospace;outline:none">
+            </div>
+          </div>
+          <div>
+            <label style="font-size:11px;font-weight:600;color:#374151;display:block;margin-bottom:4px">Couleur accent</label>
+            <div style="display:flex;align-items:center;gap:6px">
+              <input type="color" id="brand-couleur-accent" value="#c97c1a" oninput="previewBranding()" style="width:36px;height:36px;border-radius:8px;border:1px solid #e5e7eb;cursor:pointer;padding:2px">
+              <input type="text" id="brand-couleur-accent-hex" value="#c97c1a" oninput="syncColorInput(this,'brand-couleur-accent')" style="flex:1;padding:6px 8px;border:1px solid #e5e7eb;border-radius:6px;font-size:11px;font-family:monospace;outline:none">
+            </div>
+          </div>
+        </div>
+
+        <!-- Thèmes prédéfinis -->
+        <div style="font-size:11.5px;font-weight:600;color:#6b7280;margin-bottom:.5rem">Thèmes prédéfinis</div>
+        <div id="brand-themes-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:1rem">
+          <div class="loading" style="grid-column:1/-1">Chargement...</div>
+        </div>
+
+        <!-- Logo -->
+        <div style="font-size:11.5px;font-weight:600;color:#6b7280;margin-bottom:.5rem">Logo URL</div>
+        <input type="url" id="brand-logo-url" placeholder="https://votre-ecole.bj/logo.png" style="width:100%;padding:7px 10px;border:1px solid #e5e7eb;border-radius:8px;font-size:12.5px;font-family:'Poppins',sans-serif;outline:none;margin-bottom:.75rem" oninput="previewBranding()">
+
+        <!-- Slogan -->
+        <div style="font-size:11.5px;font-weight:600;color:#6b7280;margin-bottom:.5rem">Slogan / Devise</div>
+        <input type="text" id="brand-slogan" placeholder="Ex: L'excellence au service de l'avenir" style="width:100%;padding:7px 10px;border:1px solid #e5e7eb;border-radius:8px;font-size:12.5px;font-family:'Poppins',sans-serif;outline:none" maxlength="80">
+      </div>
+
+      <!-- Aperçu -->
+      <div>
+        <div style="font-size:11.5px;font-weight:600;color:#6b7280;margin-bottom:.75rem;text-transform:uppercase;letter-spacing:.04em">Aperçu portail</div>
+        <div id="brand-preview" style="border-radius:16px;overflow:hidden;border:1px solid #e5e7eb;font-family:'Poppins',sans-serif">
+          <!-- Header -->
+          <div id="prev-header" style="background:linear-gradient(135deg,#0f6e56,#1e3a5f);padding:1rem;color:#fff">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:.5rem">
+              <div id="prev-logo" style="width:36px;height:36px;border-radius:10px;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff;flex-shrink:0">🎓</div>
+              <div>
+                <div style="font-size:14px;font-weight:700" id="prev-nom">EduLink</div>
+                <div id="prev-slogan" style="font-size:10px;opacity:.75">Portail Famille</div>
+              </div>
+            </div>
+            <div style="font-size:11px;opacity:.7">Espace étudiant · BALOGOUN Isaac</div>
+          </div>
+          <!-- Stats -->
+          <div style="background:#f0f7f4;padding:.75rem;display:grid;grid-template-columns:1fr 1fr;gap:.5rem">
+            <div style="background:#fff;border-radius:10px;padding:.6rem;text-align:center;border:1px solid #e5e7eb">
+              <div id="prev-accent" style="font-size:18px;font-weight:700;color:#0f6e56">11.3/20</div>
+              <div style="font-size:10px;color:#6b7280">Moyenne</div>
+            </div>
+            <div style="background:#fff;border-radius:10px;padding:.6rem;text-align:center;border:1px solid #e5e7eb">
+              <div style="font-size:18px;font-weight:700;color:#dc2626">2</div>
+              <div style="font-size:10px;color:#6b7280">Absences</div>
+            </div>
+          </div>
+          <!-- Nav -->
+          <div id="prev-nav" style="background:#fff;display:flex;border-top:1px solid #e5e7eb">
+            <div style="flex:1;text-align:center;padding:.5rem;font-size:9px;color:#0f6e56;font-weight:600">🏠<br>Accueil</div>
+            <div style="flex:1;text-align:center;padding:.5rem;font-size:9px;color:#9ca3af">📊<br>Notes</div>
+            <div style="flex:1;text-align:center;padding:.5rem;font-size:9px;color:#9ca3af">✅<br>Présences</div>
+            <div style="flex:1;text-align:center;padding:.5rem;font-size:9px;color:#9ca3af">📝<br>Examens</div>
+          </div>
+        </div>
+
+        <button onclick="sauvegarderBranding()" style="width:100%;margin-top:.75rem;background:#0f6e56;color:#fff;border:none;padding:10px;border-radius:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Poppins',sans-serif">🎨 Enregistrer le branding</button>
+        <button onclick="reinitialiserBranding()" style="width:100%;margin-top:.5rem;background:#f3f4f6;color:#374151;border:1px solid #e5e7eb;padding:9px;border-radius:8px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Poppins',sans-serif">↺ Réinitialiser (thème EduLink)</button>
+      </div>
     </div>
   </div>
 </div>
@@ -2315,6 +2415,7 @@ function showPage(p) {
     enseignants:     chargerEnseignants,
     notifications:   chargerNotifications,
   };
+  if (p === 'parametres') { chargerBranding(); }
   if (loaders[p]) loaders[p]();
 }
 
@@ -5463,6 +5564,154 @@ document.addEventListener('DOMContentLoaded', function() {
 // ══════════════════════════════════════════════════════════════════════
 //  FIN CENTRE DE NOTIFICATIONS  ★ JOUR 16
 // ══════════════════════════════════════════════════════════════════════
+
+// ══════════════════════════════════════════════════════════════════════
+//  BRANDING ★ JOUR 17
+// ══════════════════════════════════════════════════════════════════════
+
+let tousThemes = [];
+
+async function chargerBranding() {
+  if (!currentEcoleId) return;
+  try {
+    // Charger branding de l'école
+    const { data: ecole } = await db.from('ecoles')
+      .select('nom, couleur_primaire, couleur_secondaire, couleur_accent, logo_url, slogan, couleur_bg')
+      .eq('id', currentEcoleId).single();
+
+    if (ecole) {
+      const p = ecole.couleur_primaire   || '#0f6e56';
+      const s = ecole.couleur_secondaire || '#1e3a5f';
+      const a = ecole.couleur_accent     || '#c97c1a';
+      setColorInputs(p, s, a);
+      document.getElementById('brand-logo-url').value  = ecole.logo_url || '';
+      document.getElementById('brand-slogan').value    = ecole.slogan   || '';
+      previewBranding();
+    }
+
+    // Charger thèmes prédéfinis
+    const { data: themes } = await db.from('branding_themes').select('*').order('nom');
+    tousThemes = themes || [];
+    afficherThemes();
+  } catch(e) { console.warn('[Branding]', e.message); }
+}
+
+function afficherThemes() {
+  const grid = document.getElementById('brand-themes-grid');
+  if (!grid || !tousThemes.length) return;
+  grid.innerHTML = tousThemes.map(t => `
+    <div class="theme-pill" onclick="appliquerTheme(${JSON.stringify(t).replace(/"/g,'&quot;')})"
+         title="${t.description || t.nom}">
+      <div class="tp-bar" style="background:linear-gradient(90deg,${t.couleur_primaire},${t.couleur_secondaire})"></div>
+      <div style="width:12px;height:12px;border-radius:50%;background:${t.couleur_accent};margin:0 auto 3px"></div>
+      <div class="tp-nom">${t.nom.replace(' ','<br>')}</div>
+    </div>`).join('');
+}
+
+function appliquerTheme(theme) {
+  setColorInputs(theme.couleur_primaire, theme.couleur_secondaire, theme.couleur_accent);
+  document.querySelectorAll('.theme-pill').forEach(p => p.classList.remove('sel'));
+  event.currentTarget.classList.add('sel');
+  previewBranding();
+  showToast('Thème "' + theme.nom + '" appliqué — cliquez Enregistrer', 'info');
+}
+
+function setColorInputs(p, s, a) {
+  document.getElementById('brand-couleur-primaire').value   = p;
+  document.getElementById('brand-couleur-primaire-hex').value = p;
+  document.getElementById('brand-couleur-secondaire').value = s;
+  document.getElementById('brand-couleur-secondaire-hex').value = s;
+  document.getElementById('brand-couleur-accent').value     = a;
+  document.getElementById('brand-couleur-accent-hex').value = a;
+}
+
+function syncColorInput(hexInput, colorId) {
+  const val = hexInput.value;
+  if (/^#[0-9a-fA-F]{6}$/.test(val)) {
+    document.getElementById(colorId).value = val;
+    previewBranding();
+  }
+}
+
+function previewBranding() {
+  const p    = document.getElementById('brand-couleur-primaire').value;
+  const s    = document.getElementById('brand-couleur-secondaire').value;
+  const a    = document.getElementById('brand-couleur-accent').value;
+  const logo = document.getElementById('brand-logo-url').value.trim();
+  const slogan = document.getElementById('brand-slogan').value.trim();
+
+  // Mise à jour aperçu
+  const header = document.getElementById('prev-header');
+  if (header) header.style.background = `linear-gradient(135deg,${p},${s})`;
+  const accent = document.getElementById('prev-accent');
+  if (accent) accent.style.color = p;
+  const nav = document.getElementById('prev-nav');
+  if (nav) nav.querySelectorAll('div')[0].style.color = p;
+  const prevSlogan = document.getElementById('prev-slogan');
+  if (prevSlogan) prevSlogan.textContent = slogan || 'Portail Famille';
+  const prevLogo = document.getElementById('prev-logo');
+  if (prevLogo && logo) {
+    prevLogo.innerHTML = `<img src="${logo}" style="width:100%;height:100%;object-fit:contain;border-radius:8px" onerror="this.parentNode.textContent='🎓'">`;
+  }
+  const bg = document.querySelector('#brand-preview div[style*="f0f7f4"]');
+  if (bg) bg.style.backgroundColor = document.getElementById('brand-couleur-primaire').value + '15';
+
+  // Mettre à jour les hex inputs
+  document.getElementById('brand-couleur-primaire-hex').value = p;
+  document.getElementById('brand-couleur-secondaire-hex').value = s;
+  document.getElementById('brand-couleur-accent-hex').value = a;
+}
+
+async function sauvegarderBranding() {
+  if (!currentEcoleId) { showToast('Aucun établissement sélectionné', 'error'); return; }
+  const payload = {
+    couleur_primaire:   document.getElementById('brand-couleur-primaire').value,
+    couleur_secondaire: document.getElementById('brand-couleur-secondaire').value,
+    couleur_accent:     document.getElementById('brand-couleur-accent').value,
+    logo_url:           document.getElementById('brand-logo-url').value.trim() || null,
+    slogan:             document.getElementById('brand-slogan').value.trim() || null,
+  };
+  try {
+    const { error } = await db.from('ecoles').update(payload).eq('id', currentEcoleId);
+    if (error) throw error;
+    showToast('🎨 Branding enregistré ! Le portail sera mis à jour.', 'success');
+  } catch(e) {
+    showToast('Erreur : ' + e.message, 'error');
+  }
+}
+
+function reinitialiserBranding() {
+  setColorInputs('#0f6e56', '#1e3a5f', '#c97c1a');
+  document.getElementById('brand-logo-url').value = '';
+  document.getElementById('brand-slogan').value   = '';
+  previewBranding();
+  showToast('Thème EduLink par défaut appliqué', 'info');
+}
+
+// ══ MODE HORS-LIGNE ★ JOUR 17 ═════════════════════════════════════════
+
+function initOfflineMode() {
+  const bar = document.getElementById('offline-bar');
+  function updateStatus() {
+    if (!navigator.onLine) {
+      if (bar) { bar.textContent = '📡 Mode hors-ligne — Données en cache'; bar.classList.add('show'); }
+    } else {
+      if (bar) bar.classList.remove('show');
+    }
+  }
+  window.addEventListener('online',  updateStatus);
+  window.addEventListener('offline', updateStatus);
+  updateStatus();
+
+  // Écouter les messages du SW (sync done)
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.addEventListener('message', (event) => {
+      if (event.data?.type === 'EDULINK_SYNC_DONE') {
+        showToast('🔄 Données synchronisées', 'success');
+      }
+    });
+  }
+}
 
 // PWA Service Worker
 if ('serviceWorker' in navigator) {

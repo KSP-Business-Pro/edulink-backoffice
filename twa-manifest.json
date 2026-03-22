@@ -1,0 +1,49 @@
+{
+  "packageId": "bj.edulink.portail",
+  "host": "edulink-backoffice.vercel.app",
+  "name": "EduLink — Portail Famille",
+  "launcherName": "EduLink",
+  "display": "standalone",
+  "orientation": "portrait",
+  "themeColor": "#0f6e56",
+  "navigationColor": "#0f6e56",
+  "navigationColorDark": "#085041",
+  "navigationDividerColor": "#0f6e56",
+  "backgroundColor": "#f0f7f4",
+  "startUrl": "/edulink-portail.html",
+  "iconUrl": "https://edulink-backoffice.vercel.app/icon-512.png",
+  "maskableIconUrl": "https://edulink-backoffice.vercel.app/icon-maskable.png",
+  "splashScreenFadeOutDuration": 300,
+  "enableNotifications": true,
+  "shortcuts": [
+    {
+      "name": "Mes notes",
+      "short_name": "Notes",
+      "url": "/edulink-portail.html#notes",
+      "icons": [{ "src": "/icon-96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Mes absences",
+      "short_name": "Absences",
+      "url": "/edulink-portail.html#absences",
+      "icons": [{ "src": "/icon-96.png", "sizes": "96x96" }]
+    }
+  ],
+  "generatorApp": "bubblewrap",
+  "webManifestUrl": "https://edulink-backoffice.vercel.app/manifest-portail.json",
+  "fallbackType": "customtabs",
+  "features": {
+    "locationDelegation": { "enabled": false },
+    "playBilling": { "enabled": false }
+  },
+  "alphaDependencies": { "enabled": false },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "isMetaQuest": false,
+  "fullScopeUrl": "https://edulink-backoffice.vercel.app/",
+  "minSdkVersion": 19,
+  "signingKey": {
+    "path": "./android.keystore",
+    "alias": "edulink"
+  }
+}
