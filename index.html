@@ -135,6 +135,82 @@ button:hover { background:#a86615; transform:translateY(-1px); }
 /* ── States ── */
 .loading    { text-align:center; padding:2rem; color:#6b7280; font-size:13px; }
 .empty-state { text-align:center; padding:3rem; color:#9ca3af; }
+
+/* ══════════════════════════════════════════════
+   CENTRE DE NOTIFICATIONS  ★ JOUR 16
+══════════════════════════════════════════════ */
+.notif-center-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:1.5rem; }
+.nc-stat { background:#fff; border-radius:14px; padding:1.1rem 1.2rem; border:1px solid #e5e7eb; display:flex; align-items:center; gap:.85rem; }
+.nc-stat-ico { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
+.nc-stat-ico.blue   { background:#dbeafe; }
+.nc-stat-ico.green  { background:#dcfce7; }
+.nc-stat-ico.amber  { background:#fef9c3; }
+.nc-stat-ico.purple { background:#ede9fe; }
+.nc-stat-val { font-size:24px; font-weight:700; line-height:1; }
+.nc-stat-lbl { font-size:11px; color:#6b7280; font-weight:500; margin-top:2px; }
+
+/* Layout 2 colonnes */
+.nc-layout { display:grid; grid-template-columns:1fr 360px; gap:1rem; }
+.nc-main   { display:flex; flex-direction:column; gap:1rem; }
+.nc-side   { display:flex; flex-direction:column; gap:1rem; }
+
+/* Bloc envoi rapide */
+.nc-compose { background:#fff; border-radius:14px; border:1px solid #e5e7eb; overflow:hidden; }
+.nc-compose-header { background:linear-gradient(135deg,#1e3a5f,#2d5a8e); padding:.9rem 1.2rem; color:#fff; font-size:13px; font-weight:700; display:flex; align-items:center; gap:8px; }
+.nc-compose-body { padding:1rem 1.2rem; }
+.nc-type-grid { display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-bottom:.85rem; }
+.nc-type-btn { padding:7px 10px; border-radius:8px; border:1.5px solid #e5e7eb; background:#fff; cursor:pointer; font-size:11.5px; font-weight:600; font-family:'Poppins',sans-serif; color:#374151; transition:all .15s; text-align:center; }
+.nc-type-btn.sel { border-color:#1e3a5f; background:#eff6ff; color:#1e3a5f; }
+.nc-type-btn:hover { border-color:#1e3a5f; }
+
+/* Config auto-notifs */
+.nc-config-block { background:#fff; border-radius:14px; border:1px solid #e5e7eb; overflow:hidden; }
+.nc-config-header { padding:.85rem 1.2rem; border-bottom:1px solid #f3f4f6; font-size:13px; font-weight:700; color:#374151; display:flex; align-items:center; gap:6px; }
+.nc-toggle-row { display:flex; align-items:center; justify-content:space-between; padding:.75rem 1.2rem; border-bottom:1px solid #f3f4f6; }
+.nc-toggle-row:last-child { border-bottom:none; }
+.nc-toggle-info .nti-label { font-size:12.5px; font-weight:600; color:#111827; }
+.nc-toggle-info .nti-sub   { font-size:11px; color:#9ca3af; margin-top:1px; }
+.nc-switch { position:relative; display:inline-block; width:38px; height:22px; flex-shrink:0; }
+.nc-switch input { opacity:0; width:0; height:0; }
+.nc-slider { position:absolute; inset:0; background:#d1d5db; border-radius:11px; cursor:pointer; transition:background .2s; }
+.nc-slider::before { content:''; position:absolute; width:16px; height:16px; left:3px; bottom:3px; background:#fff; border-radius:50%; transition:transform .2s; }
+.nc-switch input:checked + .nc-slider { background:#059669; }
+.nc-switch input:checked + .nc-slider::before { transform:translateX(16px); }
+
+/* Historique envois */
+.nc-hist-item { padding:.9rem 1.2rem; border-bottom:1px solid #f3f4f6; display:flex; gap:.85rem; align-items:flex-start; transition:background .1s; cursor:default; }
+.nc-hist-item:hover { background:#fafafa; }
+.nc-hist-item:last-child { border-bottom:none; }
+.nc-hist-ico { width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
+.nc-hist-body { flex:1; min-width:0; }
+.nc-hist-titre { font-size:12.5px; font-weight:600; color:#111827; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.nc-hist-sub { font-size:11px; color:#6b7280; margin-bottom:4px; }
+.nc-hist-pills { display:flex; gap:4px; flex-wrap:wrap; }
+.nc-hist-right { text-align:right; flex-shrink:0; }
+.nc-hist-date { font-size:10.5px; color:#9ca3af; }
+.nc-hist-rate { font-size:13px; font-weight:700; color:#1e3a5f; margin-top:4px; }
+
+/* Filtres barre */
+.nc-filter-bar { display:flex; gap:6px; margin-bottom:1rem; flex-wrap:wrap; align-items:center; }
+.nc-filter-btn { padding:5px 14px; border-radius:20px; font-size:11.5px; font-weight:600; border:1.5px solid #e5e7eb; background:#fff; color:#6b7280; cursor:pointer; font-family:'Poppins',sans-serif; transition:all .15s; }
+.nc-filter-btn.active { background:#1e3a5f; border-color:#1e3a5f; color:#fff; }
+
+/* Taux d'ouverture bar */
+.nc-rate-bar { height:5px; background:#e5e7eb; border-radius:3px; margin-top:5px; overflow:hidden; }
+.nc-rate-fill { height:100%; border-radius:3px; background:linear-gradient(90deg,#059669,#1d9e75); }
+
+/* Appareils abonnés */
+.nc-device-row { display:flex; align-items:center; gap:.75rem; padding:.7rem 1.2rem; border-bottom:1px solid #f3f4f6; }
+.nc-device-row:last-child { border-bottom:none; }
+.nc-device-ico { font-size:18px; flex-shrink:0; }
+.nc-device-info { flex:1; min-width:0; }
+.nc-device-role { font-size:12px; font-weight:600; color:#374151; }
+.nc-device-ua { font-size:10.5px; color:#9ca3af; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.nc-device-date { font-size:10px; color:#9ca3af; }
+@media (max-width:900px) {
+  .notif-center-grid { grid-template-columns:1fr 1fr; }
+  .nc-layout { grid-template-columns:1fr; }
+}
 .empty-state .icon { font-size:44px; margin-bottom:.75rem; }
 .empty-state h3 { font-size:15px; font-weight:600; margin-bottom:.4rem; color:#374151; }
 .empty-state p { font-size:13px; }
@@ -683,7 +759,7 @@ button:hover { background:#a86615; transform:translateY(-1px); }
   <a onclick="showPage('documents')" id="nav-documents"><span class="ico">📄</span> Documents</a>
   <a onclick="showPage('rapports')"  id="nav-rapports"><span class="ico">📈</span> Rapports</a>
   <a onclick="showPage('utilisateurs')" id="nav-utilisateurs" style="display:none"><span class="ico">👥</span> Utilisateurs</a>
-  <a onclick="ouvrirConfigNotif()" id="nav-notifs" style="display:none"><span class="ico">📧</span> Notifications</a>
+  <a onclick="showPage('notifications')" id="nav-notifications"><span class="ico">🔔</span> Notifications <span id="badge-notifs" style="margin-left:auto;background:#dc2626;color:#fff;border-radius:10px;padding:1px 6px;font-size:10px;display:none"></span></a>
   <a onclick="showPage('parametres')" id="nav-parametres"><span class="ico">⚙️</span> Paramètres</a>
 
   <div class="nav-bottom">
@@ -1371,17 +1447,156 @@ button:hover { background:#a86615; transform:translateY(-1px); }
       <div style="text-align:center;background:#f9fafb;border-radius:10px;padding:.9rem;border:1px solid #f3f4f6"><div style="font-size:22px;font-weight:700;color:#1e3a5f" id="sys-ecoles">—</div><div style="font-size:11px;color:#6b7280">Établissements</div></div>
       <div style="text-align:center;background:#f9fafb;border-radius:10px;padding:.9rem;border:1px solid #f3f4f6"><div style="font-size:22px;font-weight:700;color:#059669" id="sys-etudiants">—</div><div style="font-size:11px;color:#6b7280">Étudiants</div></div>
       <div style="text-align:center;background:#f9fafb;border-radius:10px;padding:.9rem;border:1px solid #f3f4f6"><div style="font-size:22px;font-weight:700;color:#c97c1a" id="sys-users">—</div><div style="font-size:11px;color:#6b7280">Utilisateurs</div></div>
-      <div style="text-align:center;background:#f9fafb;border-radius:10px;padding:.9rem;border:1px solid #f3f4f6"><div style="font-size:13px;font-weight:700;color:#1e3a5f">Jour 13</div><div style="font-size:11px;color:#6b7280">Version EduLink</div></div>
+      <div style="text-align:center;background:#f9fafb;border-radius:10px;padding:.9rem;border:1px solid #f3f4f6"><div style="font-size:13px;font-weight:700;color:#1e3a5f">Jour 16</div><div style="font-size:11px;color:#6b7280">Version EduLink</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     CENTRE DE NOTIFICATIONS  ★ JOUR 16
+═══════════════════════════════════════ -->
+<div class="page" id="page-notifications">
+  <div class="top">
+    <div><h2>🔔 Centre de Notifications</h2><p class="page-subtitle">Envoi, historique et configuration des alertes push</p></div>
+    <div class="top-actions">
+      <button class="btn-outline" onclick="actualiserNotifications()">↻ Actualiser</button>
+      <button onclick="ouvrirModal('modal-push-notif')">+ Nouvelle notification</button>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="notif-center-grid">
+    <div class="nc-stat"><div class="nc-stat-ico blue">📤</div><div><div class="nc-stat-val" style="color:#1e3a5f" id="nc-stat-envoyes">—</div><div class="nc-stat-lbl">Notifications envoyées</div></div></div>
+    <div class="nc-stat"><div class="nc-stat-ico green">👁️</div><div><div class="nc-stat-val" style="color:#059669" id="nc-stat-taux">—%</div><div class="nc-stat-lbl">Taux d'ouverture moyen</div></div></div>
+    <div class="nc-stat"><div class="nc-stat-ico amber">📱</div><div><div class="nc-stat-val" style="color:#d97706" id="nc-stat-appareils">—</div><div class="nc-stat-lbl">Appareils abonnés</div></div></div>
+    <div class="nc-stat"><div class="nc-stat-ico purple">⏳</div><div><div class="nc-stat-val" style="color:#7c3aed" id="nc-stat-24h">—</div><div class="nc-stat-lbl">Dernières 24h</div></div></div>
+  </div>
+
+  <!-- Layout 2 colonnes -->
+  <div class="nc-layout">
+
+    <!-- Colonne principale -->
+    <div class="nc-main">
+
+      <!-- Historique envois -->
+      <div style="background:#fff;border-radius:14px;border:1px solid #e5e7eb;overflow:hidden">
+        <div style="padding:.9rem 1.2rem;border-bottom:1px solid #f3f4f6;display:flex;align-items:center;justify-content:space-between">
+          <div style="font-size:13px;font-weight:700;color:#374151">📋 Historique des envois</div>
+          <button class="btn-sm btn-outline" onclick="exporterHistoriqueNotifCSV()">⬇ Export CSV</button>
+        </div>
+        <div style="padding:.65rem 1.2rem;border-bottom:1px solid #f3f4f6">
+          <div class="nc-filter-bar">
+            <button class="nc-filter-btn active" onclick="filtrerHistorique('tous',this)">Tous</button>
+            <button class="nc-filter-btn" onclick="filtrerHistorique('annonce',this)">📢 Annonces</button>
+            <button class="nc-filter-btn" onclick="filtrerHistorique('absence',this)">🚫 Absences</button>
+            <button class="nc-filter-btn" onclick="filtrerHistorique('note',this)">📊 Notes</button>
+            <button class="nc-filter-btn" onclick="filtrerHistorique('examen',this)">📝 Examens</button>
+            <button class="nc-filter-btn" onclick="filtrerHistorique('paiement',this)">💳 Paiements</button>
+          </div>
+        </div>
+        <div id="nc-hist-list"><div class="loading">Chargement de l'historique...</div></div>
+      </div>
+
+      <!-- Appareils abonnés -->
+      <div style="background:#fff;border-radius:14px;border:1px solid #e5e7eb;overflow:hidden">
+        <div style="padding:.9rem 1.2rem;border-bottom:1px solid #f3f4f6;display:flex;align-items:center;justify-content:space-between">
+          <div style="font-size:13px;font-weight:700;color:#374151">📱 Appareils abonnés aux Push</div>
+          <span style="font-size:11px;color:#6b7280" id="nc-devices-count"></span>
+        </div>
+        <div id="nc-devices-list"><div class="loading">Chargement...</div></div>
+      </div>
+    </div>
+
+    <!-- Colonne latérale -->
+    <div class="nc-side">
+
+      <!-- Composer rapide -->
+      <div class="nc-compose">
+        <div class="nc-compose-header">✏️ Composer une notification</div>
+        <div class="nc-compose-body">
+          <div style="margin-bottom:.75rem">
+            <div style="font-size:11px;font-weight:600;color:#6b7280;margin-bottom:6px;text-transform:uppercase;letter-spacing:.04em">Type</div>
+            <div class="nc-type-grid">
+              <button class="nc-type-btn sel" onclick="selTypeNotif(this,'annonce')">📢 Annonce</button>
+              <button class="nc-type-btn" onclick="selTypeNotif(this,'absence')">🚫 Absence</button>
+              <button class="nc-type-btn" onclick="selTypeNotif(this,'note')">📊 Note</button>
+              <button class="nc-type-btn" onclick="selTypeNotif(this,'examen')">📝 Examen</button>
+              <button class="nc-type-btn" onclick="selTypeNotif(this,'paiement')">💳 Paiement</button>
+              <button class="nc-type-btn" onclick="selTypeNotif(this,'message')">✉️ Message</button>
+            </div>
+          </div>
+          <div class="form-group" style="margin-bottom:.75rem">
+            <label>Titre *</label>
+            <input type="text" id="nc-compose-titre" placeholder="Ex: Absence signalée aujourd'hui" maxlength="60">
+          </div>
+          <div class="form-group" style="margin-bottom:.75rem">
+            <label>Message *</label>
+            <textarea rows="3" id="nc-compose-body" style="width:100%;padding:8px 10px;border:1px solid #e5e7eb;border-radius:8px;font-size:12.5px;font-family:'Poppins',sans-serif;outline:none;resize:none" placeholder="Détails de la notification..."></textarea>
+          </div>
+          <div class="form-group" style="margin-bottom:.75rem">
+            <label>Destinataires</label>
+            <select id="nc-compose-dest" style="width:100%;padding:7px 10px;border:1px solid #e5e7eb;border-radius:8px;font-size:12.5px;font-family:'Poppins',sans-serif;outline:none">
+              <option value="tous">Tous les abonnés</option>
+              <option value="parents">Parents uniquement</option>
+              <option value="etudiants">Étudiants uniquement</option>
+            </select>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:#374151;cursor:pointer;flex-shrink:0">
+              <input type="checkbox" id="nc-compose-urgent" style="width:14px;height:14px"> Urgent
+            </label>
+            <button onclick="envoyerDepuisCompose()" style="flex:1;background:#1e3a5f;color:#fff;border:none;padding:9px;border-radius:8px;font-size:12.5px;font-weight:700;cursor:pointer;font-family:'Poppins',sans-serif">🔔 Envoyer</button>
+          </div>
+          <div id="nc-compose-result" style="margin-top:.6rem;font-size:11.5px;text-align:center;display:none"></div>
+        </div>
+      </div>
+
+      <!-- Config déclencheurs automatiques -->
+      <div class="nc-config-block">
+        <div class="nc-config-header">⚙️ Déclencheurs automatiques</div>
+        <div class="nc-toggle-row">
+          <div class="nc-toggle-info"><div class="nti-label">🚫 Absence enregistrée</div><div class="nti-sub">Notifie le parent immédiatement</div></div>
+          <label class="nc-switch"><input type="checkbox" id="cfg-absence" checked onchange="sauvegarderConfigNotif()"><span class="nc-slider"></span></label>
+        </div>
+        <div class="nc-toggle-row">
+          <div class="nc-toggle-info"><div class="nti-label">📊 Nouvelle note saisie</div><div class="nti-sub">Alerte la famille sur la note</div></div>
+          <label class="nc-switch"><input type="checkbox" id="cfg-note" checked onchange="sauvegarderConfigNotif()"><span class="nc-slider"></span></label>
+        </div>
+        <div class="nc-toggle-row">
+          <div class="nc-toggle-info"><div class="nti-label">📝 Examen planifié</div><div class="nti-sub">Rappel J-7 avant l'épreuve</div></div>
+          <label class="nc-switch"><input type="checkbox" id="cfg-examen" checked onchange="sauvegarderConfigNotif()"><span class="nc-slider"></span></label>
+        </div>
+        <div class="nc-toggle-row">
+          <div class="nc-toggle-info"><div class="nti-label">💳 Facture en retard</div><div class="nti-sub">Rappel de paiement auto</div></div>
+          <label class="nc-switch"><input type="checkbox" id="cfg-paiement" onchange="sauvegarderConfigNotif()"><span class="nc-slider"></span></label>
+        </div>
+        <div class="nc-toggle-row">
+          <div class="nc-toggle-info"><div class="nti-label">✉️ Nouveau message reçu</div><div class="nti-sub">Copie push des messages</div></div>
+          <label class="nc-switch"><input type="checkbox" id="cfg-message" checked onchange="sauvegarderConfigNotif()"><span class="nc-slider"></span></label>
+        </div>
+        <div style="padding:.75rem 1.2rem;background:#f9fafb;border-top:1px solid #f3f4f6">
+          <div style="font-size:11px;font-weight:600;color:#6b7280;margin-bottom:.4rem">Plage horaire d'envoi</div>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input type="time" id="cfg-heure-debut" value="07:00" onchange="sauvegarderConfigNotif()" style="padding:5px 8px;border:1px solid #e5e7eb;border-radius:6px;font-size:12px;font-family:'Poppins',sans-serif;outline:none;flex:1">
+            <span style="font-size:11px;color:#9ca3af">→</span>
+            <input type="time" id="cfg-heure-fin" value="21:00" onchange="sauvegarderConfigNotif()" style="padding:5px 8px;border:1px solid #e5e7eb;border-radius:6px;font-size:12px;font-family:'Poppins',sans-serif;outline:none;flex:1">
+          </div>
+        </div>
+      </div>
+
+      <!-- Conseil -->
+      <div style="background:#eff6ff;border-radius:12px;padding:1rem;font-size:12px;color:#1d4ed8;line-height:1.6">
+        <div style="font-weight:700;margin-bottom:.4rem">💡 Conseils</div>
+        <div>— Envoyez entre 9h et 18h pour un meilleur taux d'ouverture.</div>
+        <div>— Réservez la priorité <strong>Haute</strong> aux alertes critiques.</div>
+        <div>— Le taux d'ouverture se met à jour quand le parent ouvre le portail.</div>
+      </div>
     </div>
   </div>
 </div>
 
 </main>
 </div><!-- /#app-main -->
-
-<!-- ═══════════════════════════════════════════
-     MODALS
-═══════════════════════════════════════════ -->
 
 <!-- ★ JOUR 7 — Modal Import CSV ★ -->
 <div class="modal-overlay" id="modal-import-csv">
@@ -2097,7 +2312,8 @@ function showPage(p) {
     utilisateurs: () => { if (typeof chargerUtilisateurs === 'function') chargerUtilisateurs(); },
     parametres:   () => { chargerParametres(); chargerConfigFCM(); },
     examens:      chargerExamens,
-    enseignants:  chargerEnseignants,
+    enseignants:     chargerEnseignants,
+    notifications:   chargerNotifications,
   };
   if (loaders[p]) loaders[p]();
 }
@@ -4901,6 +5117,352 @@ function ajouterNotifLocale(titre, message, icone = '🔔') {
     badge.style.display = 'flex';
   }
 }
+
+
+// ══════════════════════════════════════════════════════════════════════
+//  CENTRE DE NOTIFICATIONS  ★ JOUR 16
+// ══════════════════════════════════════════════════════════════════════
+
+let ncHistoriqueData = [];    // cache local historique
+let ncFiltreActif    = 'tous'; // filtre actif
+let ncTypeCompose    = 'annonce'; // type sélectionné dans le compose
+let ncConfigCache    = null;  // config chargée depuis Supabase
+
+// ── Chargement principal ───────────────────────────────────────────────
+async function chargerNotifications() {
+  await Promise.all([
+    chargerKPIsNotifications(),
+    chargerHistoriqueNotifications(),
+    chargerAppareilsAbonnes(),
+    chargerConfigNotif()
+  ]);
+}
+
+async function actualiserNotifications() {
+  showToast('Actualisation...', 'info');
+  await chargerNotifications();
+  showToast('✅ Actualisé', 'success');
+}
+
+// ── KPIs ──────────────────────────────────────────────────────────────
+async function chargerKPIsNotifications() {
+  if (!currentEcoleId) return;
+  try {
+    // Historique envois
+    const { data: hist } = await db.from('notifications_historique')
+      .select('nb_envoyes, nb_echecs, taux_ouverture')
+      .eq('ecole_id', currentEcoleId);
+
+    const totalEnvoyes = (hist||[]).reduce((s,h) => s + (h.nb_envoyes||0), 0);
+    const tauxMoy = hist?.length
+      ? Math.round((hist||[]).reduce((s,h) => s + (h.taux_ouverture||0), 0) / hist.length)
+      : 0;
+
+    // Appareils
+    const { count: nbApp } = await db.from('push_tokens')
+      .select('*', {count:'exact', head:true}).eq('ecole_id', currentEcoleId);
+
+    // Dernières 24h
+    const hier = new Date(Date.now() - 86400000).toISOString();
+    const { count: nb24h } = await db.from('notifications_historique')
+      .select('*', {count:'exact', head:true})
+      .eq('ecole_id', currentEcoleId).gte('created_at', hier);
+
+    const el = id => document.getElementById(id);
+    if (el('nc-stat-envoyes'))  el('nc-stat-envoyes').textContent  = totalEnvoyes.toLocaleString('fr-FR');
+    if (el('nc-stat-taux'))     el('nc-stat-taux').textContent      = tauxMoy + '%';
+    if (el('nc-stat-appareils'))el('nc-stat-appareils').textContent = nbApp || 0;
+    if (el('nc-stat-24h'))      el('nc-stat-24h').textContent       = nb24h || 0;
+  } catch(e) { console.warn('[Notif] KPIs:', e.message); }
+}
+
+// ── Historique envois ──────────────────────────────────────────────────
+async function chargerHistoriqueNotifications() {
+  const el = document.getElementById('nc-hist-list');
+  if (!el) return;
+  el.innerHTML = '<div class="loading">Chargement...</div>';
+  try {
+    const { data } = await db.from('notifications_historique')
+      .select('*').eq('ecole_id', currentEcoleId)
+      .order('created_at', {ascending: false}).limit(50);
+    ncHistoriqueData = data || [];
+    afficherHistorique();
+  } catch(e) {
+    el.innerHTML = '<div class="loading">Erreur de chargement</div>';
+  }
+}
+
+function afficherHistorique() {
+  const el = document.getElementById('nc-hist-list');
+  if (!el) return;
+  const liste = ncFiltreActif === 'tous'
+    ? ncHistoriqueData
+    : ncHistoriqueData.filter(h => (h.type || 'annonce') === ncFiltreActif);
+
+  if (!liste.length) {
+    el.innerHTML = `<div class="empty-state"><div class="icon">🔔</div><h3>Aucun envoi</h3><p>Les notifications apparaîtront ici après le premier envoi.</p></div>`;
+    return;
+  }
+
+  const ICONES = { annonce:'📢', absence:'🚫', note:'📊', examen:'📝', paiement:'💳', message:'✉️', systeme:'🔔' };
+  const COULEURS = { annonce:'blue', absence:'red', note:'teal', examen:'purple', paiement:'amber', message:'green' };
+
+  el.innerHTML = liste.map(h => {
+    const type    = h.type || 'annonce';
+    const ico     = ICONES[type] || '🔔';
+    const couleur = COULEURS[type] || 'blue';
+    const total   = (h.nb_envoyes||0) + (h.nb_echecs||0);
+    const taux    = h.taux_ouverture || 0;
+    const tauxBar = Math.min(100, taux);
+    const dest    = {tous:'Tous',parents:'Parents',etudiants:'Étudiants'}[h.destinataires] || h.destinataires || 'Tous';
+    const prio    = h.priorite === 'high' ? '<span class="badge red" style="font-size:9.5px">URGENT</span>' : '';
+    return `
+    <div class="nc-hist-item">
+      <div class="nc-hist-ico" style="background:var(--ico-bg-${couleur},#dbeafe)">${ico}</div>
+      <div class="nc-hist-body">
+        <div class="nc-hist-titre">${h.titre||'—'} ${prio}</div>
+        <div class="nc-hist-sub">${h.body||''}</div>
+        <div class="nc-hist-pills">
+          <span class="badge ${couleur}">${type}</span>
+          <span class="badge gray">${dest}</span>
+          <span class="badge green" style="font-size:9.5px">✅ ${h.nb_envoyes||0}</span>
+          ${(h.nb_echecs||0) > 0 ? `<span class="badge red" style="font-size:9.5px">❌ ${h.nb_echecs}</span>` : ''}
+        </div>
+        <div class="nc-rate-bar" style="width:140px;margin-top:6px"><div class="nc-rate-fill" style="width:${tauxBar}%"></div></div>
+        <div style="font-size:10px;color:#9ca3af;margin-top:2px">Taux d'ouverture : ${taux}%</div>
+      </div>
+      <div class="nc-hist-right">
+        <div class="nc-hist-date">${fmtDateHeure(h.created_at)}</div>
+        <div class="nc-hist-rate">${h.nb_envoyes||0}<span style="font-size:10px;color:#9ca3af">/${total} envoyés</span></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filtrerHistorique(type, btn) {
+  ncFiltreActif = type;
+  document.querySelectorAll('.nc-filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  afficherHistorique();
+}
+
+function fmtDateHeure(d) {
+  if (!d) return '—';
+  const date = new Date(d);
+  return date.toLocaleDateString('fr-FR', {day:'2-digit', month:'short'}) + ' ' +
+         date.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
+}
+
+// ── Appareils abonnés ──────────────────────────────────────────────────
+async function chargerAppareilsAbonnes() {
+  const el = document.getElementById('nc-devices-list');
+  const cnt = document.getElementById('nc-devices-count');
+  if (!el) return;
+  try {
+    const { data } = await db.from('push_tokens')
+      .select('role, user_agent, updated_at, plateforme')
+      .eq('ecole_id', currentEcoleId)
+      .order('updated_at', {ascending: false}).limit(20);
+    const tokens = data || [];
+    if (cnt) cnt.textContent = tokens.length + ' appareil(s)';
+    if (!tokens.length) {
+      el.innerHTML = '<div class="empty-state" style="padding:1.5rem"><div class="icon" style="font-size:28px">📱</div><h3>Aucun appareil abonné</h3><p>Les appareils s\'afficheront ici après activation des push sur le portail.</p></div>';
+      return;
+    }
+    const ROLE_ICO = { parent:'👨‍👩‍👧', etudiant:'🎓', admin:'👨‍💼' };
+    el.innerHTML = tokens.map(t => {
+      const ico = ROLE_ICO[t.role] || '📱';
+      const ua  = t.user_agent || '—';
+      const plateforme = ua.includes('Android') ? '🤖 Android' : ua.includes('iPhone')||ua.includes('iPad') ? '🍎 iOS' : '💻 Desktop';
+      return `
+      <div class="nc-device-row">
+        <div class="nc-device-ico">${ico}</div>
+        <div class="nc-device-info">
+          <div class="nc-device-role">${t.role||'Inconnu'} · ${plateforme}</div>
+          <div class="nc-device-ua">${ua.slice(0,70)}...</div>
+        </div>
+        <div class="nc-device-date">${fmtDateHeure(t.updated_at)}</div>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    el.innerHTML = '<div class="loading">Erreur</div>';
+  }
+}
+
+// ── Config déclencheurs automatiques ──────────────────────────────────
+async function chargerConfigNotif() {
+  if (!currentEcoleId) return;
+  try {
+    const { data } = await db.from('notifications_config')
+      .select('*').eq('ecole_id', currentEcoleId).maybeSingle();
+    if (!data) return;
+    ncConfigCache = data;
+    const ids = {
+      'cfg-absence':  data.notif_absence,
+      'cfg-note':     data.notif_note,
+      'cfg-examen':   data.notif_examen,
+      'cfg-paiement': data.notif_paiement,
+      'cfg-message':  data.notif_message,
+    };
+    Object.entries(ids).forEach(([id, val]) => {
+      const el = document.getElementById(id);
+      if (el) el.checked = val ?? true;
+    });
+    const hd = document.getElementById('cfg-heure-debut');
+    const hf = document.getElementById('cfg-heure-fin');
+    if (hd && data.heure_debut) hd.value = data.heure_debut.slice(0,5);
+    if (hf && data.heure_fin)   hf.value = data.heure_fin.slice(0,5);
+  } catch(e) { console.warn('[Notif] Config:', e.message); }
+}
+
+async function sauvegarderConfigNotif() {
+  if (!currentEcoleId) return;
+  const payload = {
+    ecole_id:      currentEcoleId,
+    notif_absence: document.getElementById('cfg-absence')?.checked ?? true,
+    notif_note:    document.getElementById('cfg-note')?.checked ?? true,
+    notif_examen:  document.getElementById('cfg-examen')?.checked ?? true,
+    notif_paiement:document.getElementById('cfg-paiement')?.checked ?? false,
+    notif_message: document.getElementById('cfg-message')?.checked ?? true,
+    heure_debut:   document.getElementById('cfg-heure-debut')?.value || '07:00',
+    heure_fin:     document.getElementById('cfg-heure-fin')?.value   || '21:00',
+    updated_at:    new Date().toISOString()
+  };
+  try {
+    await db.from('notifications_config').upsert(payload, {onConflict:'ecole_id'});
+    ncConfigCache = payload;
+    showToast('✅ Configuration sauvegardée', 'success');
+  } catch(e) { showToast('Erreur sauvegarde config', 'error'); }
+}
+
+// ── Composer rapide ────────────────────────────────────────────────────
+function selTypeNotif(btn, type) {
+  document.querySelectorAll('.nc-type-btn').forEach(b => b.classList.remove('sel'));
+  btn.classList.add('sel');
+  ncTypeCompose = type;
+  // Pré-remplir le titre selon le type
+  const TITRES = {
+    annonce: 'Annonce importante',
+    absence: 'Absence signalée',
+    note:    'Nouvelle note disponible',
+    examen:  'Rappel d\'examen',
+    paiement:'Rappel de paiement',
+    message: 'Nouveau message reçu'
+  };
+  const inp = document.getElementById('nc-compose-titre');
+  if (inp && !inp.value) inp.value = TITRES[type] || '';
+}
+
+async function envoyerDepuisCompose() {
+  const titre  = document.getElementById('nc-compose-titre')?.value.trim();
+  const body   = document.getElementById('nc-compose-body')?.value.trim();
+  const dest   = document.getElementById('nc-compose-dest')?.value || 'tous';
+  const urgent = document.getElementById('nc-compose-urgent')?.checked;
+  const result = document.getElementById('nc-compose-result');
+
+  if (!titre || !body) { showToast('Titre et message obligatoires', 'error'); return; }
+
+  const serverKey = localStorage.getItem('edulink_fcm_server_key');
+  if (!serverKey) { showToast('Clé Server FCM manquante — Voir Paramètres', 'error'); return; }
+
+  if (result) { result.style.display = 'block'; result.textContent = '⏳ Envoi en cours...'; result.style.color = '#6b7280'; }
+
+  // Récupérer tokens filtrés
+  let q = db.from('push_tokens').select('token, role').eq('ecole_id', currentEcoleId);
+  if (dest === 'parents')   q = q.eq('role', 'parent');
+  if (dest === 'etudiants') q = q.eq('role', 'etudiant');
+  const { data: tokens } = await q;
+
+  if (!tokens?.length) {
+    if (result) { result.textContent = '⚠️ Aucun appareil abonné'; result.style.color = '#d97706'; }
+    return;
+  }
+
+  let succes = 0, echecs = 0;
+  const ICONES_TYPE = { annonce:'📢', absence:'🚫', note:'📊', examen:'📝', paiement:'💳', message:'✉️' };
+  const icone = ICONES_TYPE[ncTypeCompose] || '🔔';
+
+  try {
+    const resp = await fetch('https://fcm.googleapis.com/fcm/send', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'key=' + serverKey },
+      body: JSON.stringify({
+        registration_ids: tokens.slice(0, 500).map(t => t.token),
+        notification: { title: icone + ' ' + titre, body, icon:'/icon-192.png', badge:'/icon-72.png' },
+        data: { title: titre, body, url:'/edulink-portail.html', tag:'edulink-'+ncTypeCompose+'-'+Date.now(), ecole_id: currentEcoleId },
+        priority: urgent ? 'high' : 'normal'
+      })
+    });
+    const res = await resp.json();
+    succes = res.success || 0;
+    echecs = res.failure  || 0;
+  } catch(e) { echecs = tokens.length; }
+
+  // Persister dans l'historique
+  await db.from('notifications_historique').insert([{
+    ecole_id: currentEcoleId, titre, body,
+    type: ncTypeCompose, destinataires: dest,
+    nb_envoyes: succes, nb_echecs: echecs,
+    priorite: urgent ? 'high' : 'normal',
+    envoyee_par: 'admin'
+  }]).catch(() => {});
+
+  // Persister dans la table notifications (portail)
+  await db.from('notifications').insert([{
+    ecole_id: currentEcoleId,
+    etudiant_id: null,
+    type: ncTypeCompose,
+    titre: icone + ' ' + titre,
+    corps: body,
+    icone, couleur: 'blue',
+    priorite: urgent ? 'high' : 'normal'
+  }]).catch(() => {});
+
+  if (result) {
+    result.textContent = succes > 0 ? `✅ ${succes} envoyé(s) — ❌ ${echecs} échec(s)` : `❌ ${echecs} échec(s)`;
+    result.style.color = succes > 0 ? '#059669' : '#dc2626';
+  }
+  showToast(`🔔 ${succes} notification(s) envoyée(s)`, succes > 0 ? 'success' : 'error');
+
+  // Reset form & refresh
+  setTimeout(() => {
+    if (result) result.style.display = 'none';
+    ['nc-compose-titre','nc-compose-body'].forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
+    chargerHistoriqueNotifications();
+    chargerKPIsNotifications();
+  }, 2500);
+}
+
+// ── Export CSV historique ──────────────────────────────────────────────
+function exporterHistoriqueNotifCSV() {
+  if (!ncHistoriqueData.length) { showToast('Aucune donnée à exporter', 'error'); return; }
+  const header = 'Titre,Type,Message,Destinataires,Envoyés,Echecs,Taux ouverture,Date';
+  const rows = ncHistoriqueData.map(h =>
+    [h.titre,h.type||'annonce',h.body,h.destinataires,h.nb_envoyes,h.nb_echecs,(h.taux_ouverture||0)+'%',fmtDateHeure(h.created_at)]
+    .map(v => '"'+(v||'').toString().replace(/"/g,'""')+'"').join(',')
+  ).join('\n');
+  const blob = new Blob(['\ufeff'+header+'\n'+rows], {type:'text/csv;charset=utf-8;'});
+  const url  = URL.createObjectURL(blob);
+  const a    = Object.assign(document.createElement('a'), {href:url, download:'edulink_notifications_'+new Date().toISOString().split('T')[0]+'.csv'});
+  a.click(); URL.revokeObjectURL(url);
+  showToast('✅ Export CSV généré', 'success');
+}
+
+// ── Hook showPage — ajouter notifications dans les loaders ────────────
+// Intégration propre : on ajoute notifications au map de loaders existant
+document.addEventListener('DOMContentLoaded', function() {
+  // Patch sûr : on écoute les clics nav-notifications
+  const navBtn = document.getElementById('nav-notifications');
+  if (navBtn) {
+    navBtn.addEventListener('click', function() {
+      chargerNotifications();
+    });
+  }
+});
+
+// ══════════════════════════════════════════════════════════════════════
+//  FIN CENTRE DE NOTIFICATIONS  ★ JOUR 16
+// ══════════════════════════════════════════════════════════════════════
 
 // PWA Service Worker
 if ('serviceWorker' in navigator) {

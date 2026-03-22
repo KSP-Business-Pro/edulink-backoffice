@@ -341,6 +341,77 @@ body{font-family:'Poppins',sans-serif;background:var(--bg);min-height:100vh;colo
 .exam-filter-btn.active{background:#0f6e56;border-color:#0f6e56;color:#fff;}
 
 
+/* ══ CENTRE NOTIFICATIONS PORTAIL ★ JOUR 16 ══ */
+.pn-empty{text-align:center;padding:3rem 1rem;color:#9ca3af}
+.pn-empty .pn-ico{font-size:44px;margin-bottom:.75rem}
+.pn-empty p{font-size:13px}
+
+.pn-item{
+  display:flex;align-items:flex-start;gap:.75rem;
+  padding:.9rem 1rem;border-bottom:1px solid #f3f4f6;
+  cursor:pointer;transition:background .1s;
+  position:relative;
+}
+.pn-item:last-child{border-bottom:none}
+.pn-item:hover{background:#fafafa}
+.pn-item.unread{background:#eff6ff;border-left:3px solid #1e3a5f}
+.pn-item.high{border-left:3px solid #dc2626!important}
+
+.pn-dot{
+  width:8px;height:8px;border-radius:50%;
+  background:#1e3a5f;position:absolute;top:1rem;right:1rem;
+  flex-shrink:0;
+}
+.pn-item.unread .pn-dot{display:block}
+.pn-item:not(.unread) .pn-dot{display:none}
+
+.pn-ico-wrap{
+  width:38px;height:38px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:16px;flex-shrink:0;
+}
+.pn-ico-wrap.blue  {background:#dbeafe}
+.pn-ico-wrap.green {background:#dcfce7}
+.pn-ico-wrap.red   {background:#fee2e2}
+.pn-ico-wrap.amber {background:#fef9c3}
+.pn-ico-wrap.purple{background:#ede9fe}
+.pn-ico-wrap.teal  {background:#e1f5ee}
+
+.pn-body{flex:1;min-width:0}
+.pn-titre{font-size:13px;font-weight:600;color:#111827;margin-bottom:2px}
+.pn-item.unread .pn-titre{color:#1e3a5f}
+.pn-corps{font-size:12px;color:#6b7280;line-height:1.5;margin-bottom:3px}
+.pn-meta{font-size:10.5px;color:#9ca3af;display:flex;gap:8px;align-items:center}
+.pn-type-pill{
+  font-size:9.5px;font-weight:700;padding:1px 7px;border-radius:10px;
+}
+
+.pn-filter-bar{
+  display:flex;gap:6px;padding:.65rem 1rem;
+  border-bottom:1px solid #f3f4f6;overflow-x:auto;
+  scrollbar-width:none;
+}
+.pn-filter-bar::-webkit-scrollbar{display:none}
+.pn-filter-btn{
+  padding:4px 12px;border-radius:20px;font-size:11px;font-weight:600;
+  border:1.5px solid #e5e7eb;background:#fff;color:#6b7280;
+  cursor:pointer;font-family:'Poppins',sans-serif;transition:all .15s;
+  white-space:nowrap;
+}
+.pn-filter-btn.active{background:#1e3a5f;border-color:#1e3a5f;color:#fff}
+
+.pn-header-bar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:.75rem 1rem;border-bottom:1px solid #f3f4f6;
+}
+.pn-header-bar .ph-title{font-size:13px;font-weight:700;color:#374151}
+.pn-tout-lire{
+  font-size:11.5px;color:#0f6e56;font-weight:600;
+  border:none;background:none;cursor:pointer;font-family:'Poppins',sans-serif;
+  padding:4px 8px;border-radius:6px;transition:background .1s;
+}
+.pn-tout-lire:hover{background:#e1f5ee}
+
 /* ══ NOTIF PUSH PORTAIL ★ JOUR 15 ══ */
 .push-banner{
   background:linear-gradient(135deg,#1e3a5f,#2d5a8e);
@@ -492,6 +563,7 @@ body{font-family:'Poppins',sans-serif;background:var(--bg);min-height:100vh;colo
   <div class="page" id="page-absences"></div>
   <div class="page" id="page-paiements"></div>
   <div class="page" id="page-messages"></div>
+  <div class="page" id="page-notifs"></div>
 
   <div class="page" id="page-enseignants"></div>
   <div class="page" id="page-examens"></div>
@@ -528,6 +600,11 @@ body{font-family:'Poppins',sans-serif;background:var(--bg);min-height:100vh;colo
       <span class="nav-ico">✉️</span>
       <span class="nav-lbl">Messages</span>
       <span class="nav-badge" id="nav-msg-badge"></span>
+    </button>
+    <button class="nav-item" id="nav-notifs" onclick="showPage('notifs')">
+      <span class="nav-ico">🔔</span>
+      <span class="nav-lbl">Alertes</span>
+      <span class="nav-badge" id="nav-notifs-badge"></span>
     </button>
   </nav>
 
@@ -647,7 +724,7 @@ function lancerApp() {
 }
 
 async function chargerTout() {
-  await Promise.all([chargerNotes(), chargerAbsences(), chargerFactures(), chargerMessages(), chargerExamensPortail(), chargerEnseignantsPortail()]);
+  await Promise.all([chargerNotes(), chargerAbsences(), chargerFactures(), chargerMessages(), chargerExamensPortail(), chargerEnseignantsPortail(), chargerNotifsPortail()]);
   afficherAccueil();
 }
 
@@ -700,6 +777,7 @@ function showPage(p) {
     messages: afficherMessages,
     examens: afficherExamensPortail,
     enseignants: afficherEnseignantsPortail,
+    notifs: afficherNotifsPortail,
   };
   if (renderers[p]) renderers[p]();
 }
@@ -1673,6 +1751,193 @@ async function telechargerBulletinPDFPortail(periode) {
   showToast('✅ Bulletin PDF téléchargé !', 'success');
 }
 
+// ══ CENTRE DE NOTIFICATIONS PORTAIL ★ JOUR 16 ════════════════════════
+
+let toutesNotifsPortail   = [];
+let notifsFiltreActif     = 'tous';
+
+// ── Charger depuis Supabase ───────────────────────────────────────────
+async function chargerNotifsPortail() {
+  if (!currentEcoleId) return;
+  try {
+    let q = db.from('notifications')
+      .select('*')
+      .eq('ecole_id', currentEcoleId)
+      .order('created_at', {ascending: false})
+      .limit(60);
+    // Filtrer par étudiant si connu
+    if (currentEtudiant?.id) {
+      q = db.from('notifications')
+        .select('*')
+        .eq('ecole_id', currentEcoleId)
+        .or(`etudiant_id.eq.${currentEtudiant.id},etudiant_id.is.null`)
+        .order('created_at', {ascending: false})
+        .limit(60);
+    }
+    const { data } = await q;
+    toutesNotifsPortail = data || [];
+    // Mettre à jour le badge nav
+    const nonLues = toutesNotifsPortail.filter(n => !n.lu).length;
+    const badge = document.getElementById('nav-notifs-badge');
+    if (badge) {
+      if (nonLues > 0) { badge.style.display = 'flex'; badge.textContent = nonLues; }
+      else badge.style.display = 'none';
+    }
+  } catch(e) {
+    console.warn('[Portail Notifs]', e.message);
+  }
+}
+
+// ── Afficher la page Alertes ──────────────────────────────────────────
+function afficherNotifsPortail() {
+  const page = document.getElementById('page-notifs');
+  if (!page) return;
+
+  const nonLues = toutesNotifsPortail.filter(n => !n.lu).length;
+
+  page.innerHTML = `
+    <div class="card" style="margin:1rem 1rem 0">
+      <div class="pn-header-bar">
+        <div class="ph-title">🔔 Mes alertes <span style="font-size:11px;color:#9ca3af;font-weight:400">(${toutesNotifsPortail.length})</span></div>
+        ${nonLues > 0 ? `<button class="pn-tout-lire" onclick="marquerToutesLues()">Tout marquer lu</button>` : ''}
+      </div>
+      <div class="pn-filter-bar" id="pn-filter-bar">
+        <button class="pn-filter-btn active" onclick="filtrerNotifsPortail('tous',this)">Toutes</button>
+        <button class="pn-filter-btn" onclick="filtrerNotifsPortail('absence',this)">🚫 Absences</button>
+        <button class="pn-filter-btn" onclick="filtrerNotifsPortail('note',this)">📊 Notes</button>
+        <button class="pn-filter-btn" onclick="filtrerNotifsPortail('examen',this)">📝 Examens</button>
+        <button class="pn-filter-btn" onclick="filtrerNotifsPortail('paiement',this)">💳 Paiements</button>
+        <button class="pn-filter-btn" onclick="filtrerNotifsPortail('annonce',this)">📢 Annonces</button>
+        <button class="pn-filter-btn" onclick="filtrerNotifsPortail('message',this)">✉️ Messages</button>
+      </div>
+      <div id="pn-liste"></div>
+    </div>`;
+
+  renderNotifsListe();
+}
+
+function renderNotifsListe() {
+  const el = document.getElementById('pn-liste');
+  if (!el) return;
+
+  const liste = notifsFiltreActif === 'tous'
+    ? toutesNotifsPortail
+    : toutesNotifsPortail.filter(n => n.type === notifsFiltreActif);
+
+  if (!liste.length) {
+    el.innerHTML = `<div class="pn-empty"><div class="pn-ico">🔔</div><p>Aucune alerte${notifsFiltreActif !== 'tous' ? ' dans cette catégorie' : ''}.</p></div>`;
+    return;
+  }
+
+  const ICONES   = { annonce:'📢', absence:'🚫', note:'📊', examen:'📝', paiement:'💳', message:'✉️', systeme:'🔔' };
+  const COULEURS = { annonce:'blue', absence:'red', note:'teal', examen:'purple', paiement:'amber', message:'green', systeme:'blue' };
+  const TYPE_LBL = { annonce:'Annonce', absence:'Absence', note:'Note', examen:'Examen', paiement:'Paiement', message:'Message', systeme:'Système' };
+
+  el.innerHTML = liste.map(n => {
+    const ico     = ICONES[n.type]   || '🔔';
+    const couleur = COULEURS[n.type] || 'blue';
+    const lbl     = TYPE_LBL[n.type] || n.type;
+    const urgent  = n.priorite === 'high';
+    return `
+    <div class="pn-item ${!n.lu ? 'unread' : ''} ${urgent ? 'high' : ''}"
+         onclick="marquerLuePortail('${n.id}',this)">
+      <div class="pn-ico-wrap ${couleur}">${ico}</div>
+      <div class="pn-body">
+        <div class="pn-titre">${n.titre || '—'}</div>
+        <div class="pn-corps">${n.corps || ''}</div>
+        <div class="pn-meta">
+          <span class="pn-type-pill badge ${couleur}">${lbl}</span>
+          ${urgent ? '<span class="pn-type-pill badge red">URGENT</span>' : ''}
+          <span>${fmtDateRelative(n.created_at)}</span>
+        </div>
+      </div>
+      ${!n.lu ? '<div class="pn-dot"></div>' : ''}
+    </div>`;
+  }).join('');
+}
+
+function filtrerNotifsPortail(type, btn) {
+  notifsFiltreActif = type;
+  document.querySelectorAll('.pn-filter-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  renderNotifsListe();
+}
+
+// ── Marquer une notification comme lue ───────────────────────────────
+async function marquerLuePortail(id, el) {
+  if (!id) return;
+  const notif = toutesNotifsPortail.find(n => n.id === id);
+  if (!notif || notif.lu) return;
+  notif.lu = true;
+  notif.lu_at = new Date().toISOString();
+  // Mettre à jour visuellement
+  el.classList.remove('unread');
+  el.classList.remove('high');
+  const dot = el.querySelector('.pn-dot');
+  if (dot) dot.remove();
+  // Mettre à jour badge nav
+  const nonLues = toutesNotifsPortail.filter(n => !n.lu).length;
+  const badge = document.getElementById('nav-notifs-badge');
+  if (badge) { badge.style.display = nonLues > 0 ? 'flex' : 'none'; badge.textContent = nonLues; }
+  // Persister en base
+  await db.from('notifications').update({ lu: true, lu_at: new Date().toISOString() }).eq('id', id).catch(() => {});
+  // Naviguer si lien
+  if (notif.lien) showPage(notif.lien.replace('/','').replace('.html',''));
+}
+
+// ── Tout marquer comme lu ─────────────────────────────────────────────
+async function marquerToutesLues() {
+  if (!currentEcoleId) return;
+  toutesNotifsPortail.forEach(n => { n.lu = true; });
+  const badge = document.getElementById('nav-notifs-badge');
+  if (badge) badge.style.display = 'none';
+  afficherNotifsPortail();
+  await db.from('notifications')
+    .update({ lu: true, lu_at: new Date().toISOString() })
+    .eq('ecole_id', currentEcoleId).eq('lu', false).catch(() => {});
+  showToast('✅ Toutes les alertes marquées comme lues', 'success');
+}
+
+// ── Date relative lisible ─────────────────────────────────────────────
+function fmtDateRelative(d) {
+  if (!d) return '—';
+  const now  = Date.now();
+  const diff = now - new Date(d).getTime();
+  const mn   = Math.floor(diff / 60000);
+  const h    = Math.floor(diff / 3600000);
+  const j    = Math.floor(diff / 86400000);
+  if (mn < 2)  return 'À l\'instant';
+  if (mn < 60) return `Il y a ${mn} min`;
+  if (h < 24)  return `Il y a ${h}h`;
+  if (j === 1) return 'Hier';
+  if (j < 7)   return `Il y a ${j} jours`;
+  return new Date(d).toLocaleDateString('fr-FR', {day:'2-digit',month:'short'});
+}
+
+// ── Créer une notification locale (appelée par les triggers auto) ────
+async function creerNotifLocale(type, titre, corps, couleur='blue', icone='🔔', lien=null) {
+  if (!currentEcoleId) return;
+  try {
+    const { data } = await db.from('notifications').insert([{
+      ecole_id:    currentEcoleId,
+      etudiant_id: currentEtudiant?.id || null,
+      type, titre, corps, icone, couleur,
+      lien,
+      priorite:   'normal',
+      lu:          false
+    }]).select().single();
+    if (data) {
+      toutesNotifsPortail.unshift(data);
+      // Mettre à jour badge
+      const badge = document.getElementById('nav-notifs-badge');
+      const cnt = toutesNotifsPortail.filter(n => !n.lu).length;
+      if (badge && cnt > 0) { badge.style.display = 'flex'; badge.textContent = cnt; }
+    }
+  } catch(e) {
+    console.warn('[Portail Notifs] creerNotifLocale:', e.message);
+  }
+}
+
 // ══ FCM PORTAIL FAMILLE  ★ JOUR 15 — CORRIGÉ ════════════════════════
 //  Fix 1 : enregistrement explicite du SW firebase-messaging-sw.js
 //  Fix 2 : passage de swReg à getToken() (requis par FCM web)
@@ -1729,7 +1994,12 @@ async function initFCMPortail() {
     // 4. Écouter les messages reçus en premier plan (app ouverte)
     fcmPortailMessaging.onMessage(function(payload) {
       const notif = payload.notification || {};
-      afficherBanniereNotif(notif.title || 'EduLink', notif.body || '');
+      const data  = payload.data         || {};
+      const titre = notif.title || data.title || 'EduLink';
+      const corps = notif.body  || data.body  || '';
+      afficherBanniereNotif(titre, corps);
+      // Persister dans la table notifications pour l'historique portail
+      creerNotifLocale('annonce', titre, corps, 'blue', '🔔', data.url || null);
     });
 
     // 5. Flux de permission
@@ -1833,6 +2103,7 @@ function masquerBannierePermission() {
 // ── Bannière notification reçue (foreground) ─────────────────────────
 function afficherBanniereNotif(titre, message) {
   showToast('🔔 ' + titre + (message ? ' — ' + message : ''), 'info');
+  injecterNotifPortail(titre, message, 'annonce');
 }
 
 // ── Désinscription ────────────────────────────────────────────────────
@@ -1845,6 +2116,192 @@ async function desabonnerFCMPortail() {
   fcmPortailToken = null;
   localStorage.removeItem('edulink_fcm_token');
   showToast('Notifications désactivées', 'info');
+}
+
+// ══ CENTRE DE NOTIFICATIONS PORTAIL  ★ JOUR 16 ══════════════════════
+
+let toutesNotifsPortail   = [];
+let notifsFiltreActif     = 'toutes';
+
+async function chargerNotifsPortail() {
+  if (!currentEcoleId) return;
+  try {
+    let q = db.from('notifications')
+      .select('*')
+      .eq('ecole_id', currentEcoleId)
+      .order('created_at', {ascending: false})
+      .limit(60);
+    // Filtrer par étudiant si lié
+    if (currentEtudiant?.id) {
+      q = db.from('notifications').select('*')
+        .eq('ecole_id', currentEcoleId)
+        .or(`etudiant_id.eq.${currentEtudiant.id},etudiant_id.is.null`)
+        .order('created_at', {ascending: false}).limit(60);
+    }
+    const { data } = await q;
+    toutesNotifsPortail = data || [];
+
+    // Mettre à jour le badge de la nav
+    const nonLues = toutesNotifsPortail.filter(n => !n.lu).length;
+    const badge   = document.getElementById('nav-notifs-badge');
+    if (badge) {
+      badge.style.display = nonLues > 0 ? 'flex' : 'none';
+      badge.textContent   = nonLues > 0 ? nonLues : '';
+    }
+  } catch(e) {
+    console.warn('[Notifs Portail]', e.message);
+    toutesNotifsPortail = [];
+  }
+}
+
+function afficherNotifsPortail() {
+  const page = document.getElementById('page-notifs');
+  if (!page) return;
+
+  const nonLues = toutesNotifsPortail.filter(n => !n.lu).length;
+  const total   = toutesNotifsPortail.length;
+
+  const ICONES  = { absence:'🚫', note:'📊', examen:'📝', message:'✉️', paiement:'💳', annonce:'📢', systeme:'🔔' };
+  const COULEURS = { absence:'red', note:'teal', examen:'purple', message:'blue', paiement:'amber', annonce:'teal', systeme:'blue' };
+
+  page.innerHTML = `
+  <div style="padding:1rem 1rem 0">
+    <!-- Stats -->
+    <div class="pn-stat-row">
+      <div class="pn-stat">
+        <div class="pn-stat-val" style="color:#0f6e56">${total}</div>
+        <div class="pn-stat-lbl">Notifications reçues</div>
+      </div>
+      <div class="pn-stat">
+        <div class="pn-stat-val" style="color:${nonLues>0?'#dc2626':'#059669'}">${nonLues}</div>
+        <div class="pn-stat-lbl">Non lues</div>
+      </div>
+    </div>
+
+    <!-- Filtres -->
+    <div class="pn-filter-bar">
+      <button class="pn-filter-btn ${notifsFiltreActif==='toutes'?'active':''}" onclick="filtrerNotifsPortail('toutes',this)">Toutes</button>
+      <button class="pn-filter-btn ${notifsFiltreActif==='absence'?'active':''}" onclick="filtrerNotifsPortail('absence',this)">🚫 Absences</button>
+      <button class="pn-filter-btn ${notifsFiltreActif==='note'?'active':''}" onclick="filtrerNotifsPortail('note',this)">📊 Notes</button>
+      <button class="pn-filter-btn ${notifsFiltreActif==='examen'?'active':''}" onclick="filtrerNotifsPortail('examen',this)">📝 Examens</button>
+      <button class="pn-filter-btn ${notifsFiltreActif==='annonce'?'active':''}" onclick="filtrerNotifsPortail('annonce',this)">📢 Annonces</button>
+    </div>
+
+    <!-- Action tout lire -->
+    ${nonLues > 0 ? `
+    <div style="display:flex;justify-content:flex-end;margin-bottom:.75rem">
+      <button onclick="toutMarquerLuPortail()" style="background:transparent;border:1.5px solid #0f6e56;color:#0f6e56;font-size:12px;padding:5px 14px;border-radius:20px;cursor:pointer;font-family:'Poppins',sans-serif;font-weight:600">✅ Tout marquer lu</button>
+    </div>` : ''}
+
+    <!-- Liste -->
+    <div class="card" id="pn-list-container">
+      ${renderListeNotifsPortail()}
+    </div>
+  </div>`;
+}
+
+function renderListeNotifsPortail() {
+  const ICONES  = { absence:'🚫', note:'📊', examen:'📝', message:'✉️', paiement:'💳', annonce:'📢', systeme:'🔔' };
+  const COULEURS = { absence:'red', note:'teal', examen:'purple', message:'blue', paiement:'amber', annonce:'teal', systeme:'blue' };
+
+  const liste = notifsFiltreActif === 'toutes'
+    ? toutesNotifsPortail
+    : toutesNotifsPortail.filter(n => n.type === notifsFiltreActif);
+
+  if (!liste.length) {
+    return `<div class="empty"><div class="e-ico">🔔</div><p>Aucune notification${notifsFiltreActif!=='toutes'?' dans cette catégorie':''}</p></div>`;
+  }
+
+  const fmtD = d => {
+    if (!d) return '—';
+    const dt = new Date(d);
+    const diff = Date.now() - dt.getTime();
+    if (diff < 60000)    return 'À l\'instant';
+    if (diff < 3600000)  return Math.floor(diff/60000) + ' min';
+    if (diff < 86400000) return Math.floor(diff/3600000) + 'h';
+    return dt.toLocaleDateString('fr-FR', {day:'2-digit', month:'short'});
+  };
+
+  return liste.map(n => {
+    const ico = ICONES[n.type]   || '🔔';
+    const cls = COULEURS[n.type] || 'blue';
+    const lue = n.lu;
+    return `
+    <div class="pn-item${!lue?' non-lue':''}" onclick="marquerLuPortail('${n.id}', this)">
+      <div class="pn-ico ${cls}">${ico}</div>
+      <div class="pn-body">
+        <div class="pn-titre">${n.titre||'Notification'}</div>
+        <div class="pn-corps">${n.corps||''}</div>
+        <div class="pn-date">${fmtD(n.created_at)}${n.priorite==='high'?' · <span style="color:#dc2626;font-weight:700">URGENT</span>':''}</div>
+      </div>
+      <div class="pn-dot${lue?' lue':''}"></div>
+    </div>`;
+  }).join('');
+}
+
+function filtrerNotifsPortail(type, btn) {
+  notifsFiltreActif = type;
+  document.querySelectorAll('.pn-filter-btn').forEach(b => b.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  const container = document.getElementById('pn-list-container');
+  if (container) container.innerHTML = renderListeNotifsPortail();
+}
+
+async function marquerLuPortail(id, el) {
+  // Marquer dans le cache local
+  const notif = toutesNotifsPortail.find(n => n.id === id);
+  if (!notif || notif.lu) return;
+  notif.lu    = true;
+  notif.lu_at = new Date().toISOString();
+  // Maj UI locale immédiate
+  if (el) {
+    el.classList.remove('non-lue');
+    const dot = el.querySelector('.pn-dot');
+    if (dot) dot.classList.add('lue');
+    const titre = el.querySelector('.pn-titre');
+    if (titre) titre.style.color = '#111827';
+  }
+  // Mettre à jour badge
+  const nonLues = toutesNotifsPortail.filter(n => !n.lu).length;
+  const badge   = document.getElementById('nav-notifs-badge');
+  if (badge) { badge.style.display = nonLues > 0 ? 'flex' : 'none'; badge.textContent = nonLues || ''; }
+  // Persister en base
+  await db.from('notifications').update({ lu: true, lu_at: new Date().toISOString() }).eq('id', id).catch(() => {});
+  // Si lien → naviguer
+  if (notif.lien) window.location.href = notif.lien;
+}
+
+async function toutMarquerLuPortail() {
+  const ids = toutesNotifsPortail.filter(n => !n.lu).map(n => n.id);
+  if (!ids.length) return;
+  toutesNotifsPortail.forEach(n => { n.lu = true; n.lu_at = new Date().toISOString(); });
+  const badge = document.getElementById('nav-notifs-badge');
+  if (badge) badge.style.display = 'none';
+  afficherNotifsPortail();
+  await db.from('notifications').update({ lu: true, lu_at: new Date().toISOString() })
+    .in('id', ids).catch(() => {});
+  showToast('✅ Toutes les notifications marquées comme lues', 'success');
+}
+
+// ── Injection de notification depuis FCM (foreground) ─────────────────
+// Appelée par initFCMPortail quand un message arrive en premier plan
+function injecterNotifPortail(titre, corps, type = 'annonce') {
+  const fakeNotif = {
+    id:         'local-' + Date.now(),
+    type,
+    titre,
+    corps,
+    lu:         false,
+    icone:      '🔔',
+    couleur:    'blue',
+    created_at: new Date().toISOString(),
+    priorite:   'normal'
+  };
+  toutesNotifsPortail.unshift(fakeNotif);
+  // Mettre à jour badge
+  const nonLues = toutesNotifsPortail.filter(n => !n.lu).length;
+  const badge   = document.getElementById('nav-notifs-badge');
+  if (badge) { badge.style.display = 'flex'; badge.textContent = nonLues; }
 }
 
 // ══ INIT ══
