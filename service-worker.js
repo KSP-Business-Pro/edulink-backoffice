@@ -1,283 +1,331 @@
-// ══════════════════════════════════════════════════════════════════════
-//  EduLink Suite 5 — service-worker.js  ★ JOUR 17
-//  PWA Mode Hors-Ligne — Stratégie Cache-First + Network-First
-//  À placer à la RACINE du serveur (même niveau que index.html)
-// ══════════════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════════════════
+//  EduLink — Service Worker  ★ JOUR 17
+//  PWA : Cache stratégique, Mode hors-ligne, Sync arrière-plan, Push Notifs
+// ════════════════════════════════════════════════════════════════════════════
 
-const SW_VERSION   = 'edulink-v17';
-const CACHE_STATIC = SW_VERSION + '-static';
-const CACHE_DATA   = SW_VERSION + '-data';
-const CACHE_IMG    = SW_VERSION + '-img';
+const SW_VERSION    = 'edulink-v17';
+const STATIC_CACHE  = SW_VERSION + '-static';
+const DYNAMIC_CACHE = SW_VERSION + '-dynamic';
 
-// ── Ressources à précacher au démarrage ─────────────────────────────
+// ── Assets à pré-cacher lors de l'installation ─────────────────────────────
 const STATIC_ASSETS = [
-  '/',
-  '/index.html',
-  '/edulink-portail.html',
-  '/manifest.json',
-  '/manifest-portail.json',
-  '/firebase-messaging-sw.js',
-  'https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap',
-  'https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&family=Poppins:wght@400;500;600;700&display=swap',
-  'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2',
-  'https://cdn.jsdelivr.net/npm/chart.js@4.4.2/dist/chart.umd.min.js',
+  './',
+  './index.html',
+  './edulink-portail.html',
+  './edulink-auth.js',
+  './edulink-notif.js',
 ];
 
-// ── Page hors-ligne de fallback ──────────────────────────────────────
-const OFFLINE_PAGE = `<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>EduLink — Hors ligne</title>
-<style>
-*{margin:0;box-sizing:border-box}
-body{font-family:'Poppins',sans-serif;background:#f0f7f4;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:1rem}
-.card{background:#fff;border-radius:20px;padding:2.5rem 2rem;max-width:380px;width:100%;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.1)}
-.ico{font-size:56px;margin-bottom:1rem}
-h1{font-size:20px;font-weight:700;color:#1e3a5f;margin-bottom:.5rem}
-p{font-size:13px;color:#6b7280;line-height:1.6;margin-bottom:1.5rem}
-.badge{background:#e1f5ee;color:#0f6e56;border-radius:20px;padding:4px 14px;font-size:12px;font-weight:600;display:inline-block;margin-bottom:1.5rem}
-button{background:linear-gradient(135deg,#0f6e56,#1e3a5f);color:#fff;border:none;padding:12px 28px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:'Poppins',sans-serif}
-.info{margin-top:1.5rem;background:#f9fafb;border-radius:10px;padding:1rem;text-align:left}
-.info-item{font-size:12px;color:#374151;padding:4px 0;border-bottom:1px solid #f3f4f6;display:flex;align-items:center;gap:8px}
-.info-item:last-child{border-bottom:none}
-</style>
-</head>
-<body>
-<div class="card">
-  <div class="ico">📡</div>
-  <div class="badge">Mode hors-ligne</div>
-  <h1>Pas de connexion internet</h1>
-  <p>EduLink fonctionne en mode hors-ligne. Vos dernières données sont disponibles ci-dessous.</p>
-  <button onclick="location.reload()">↻ Réessayer</button>
-  <div class="info">
-    <div class="info-item">✅ Notes & bulletins — disponibles</div>
-    <div class="info-item">✅ Absences — disponibles</div>
-    <div class="info-item">✅ Examens — disponibles</div>
-    <div class="info-item">⏳ Paiements — synchronisation requise</div>
-    <div class="info-item">⏳ Messages — synchronisation requise</div>
-  </div>
-</div>
-</body>
-</html>`;
+// ── Domaines toujours en réseau (API, Supabase, Firebase) ──────────────────
+const NETWORK_ONLY = [
+  'supabase.co',
+  'supabase.in',
+  'firebaseapp.com',
+  'googleapis.com',
+  'gstatic.com',
+  'fcm.googleapis.com',
+  'brevo.com',
+  'sibapi.com',
+  'cloudflare.com',
+  'jsdelivr.net',
+  'cdnjs.cloudflare.com',
+];
 
-// ══ INSTALLATION ═════════════════════════════════════════════════════
+// ── Extensions de fichiers statiques à cacher agressivement ───────────────
+const STATIC_EXTENSIONS = ['.css', '.js', '.png', '.jpg', '.jpeg', '.svg',
+                            '.ico', '.woff', '.woff2', '.ttf', '.gif', '.webp'];
+
+
+// ════════════════════════════════════════════════════════════════════════════
+//  INSTALL — Pré-cacher les assets statiques
+// ════════════════════════════════════════════════════════════════════════════
 self.addEventListener('install', (event) => {
-  console.log('[SW] Installation v' + SW_VERSION);
+  console.log('[SW] ✅ Installation EduLink v17');
   event.waitUntil(
-    caches.open(CACHE_STATIC).then((cache) => {
-      // Précacher les assets statiques (erreurs silencieuses)
+    caches.open(STATIC_CACHE).then((cache) => {
+      // addAll fail-safe : on tente chaque URL individuellement
       return Promise.allSettled(
-        STATIC_ASSETS.map(url =>
-          cache.add(url).catch(e => console.warn('[SW] Précache raté:', url, e.message))
+        STATIC_ASSETS.map((url) =>
+          cache.add(url).catch((err) =>
+            console.warn('[SW] Cache asset failed:', url, err.message)
+          )
         )
       );
-    }).then(() => {
-      // Mettre en cache la page offline
-      return caches.open(CACHE_STATIC).then(cache =>
-        cache.put('/__offline', new Response(OFFLINE_PAGE, {
-          headers: { 'Content-Type': 'text/html; charset=utf-8' }
-        }))
-      );
-    })
+    }).then(() => self.skipWaiting())
   );
-  self.skipWaiting();
 });
 
-// ══ ACTIVATION ═══════════════════════════════════════════════════════
+
+// ════════════════════════════════════════════════════════════════════════════
+//  ACTIVATE — Nettoyer les anciens caches
+// ════════════════════════════════════════════════════════════════════════════
 self.addEventListener('activate', (event) => {
-  console.log('[SW] Activation v' + SW_VERSION);
+  console.log('[SW] ✅ Activation EduLink v17');
   event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames
-          .filter(name => name.startsWith('edulink-') && name !== CACHE_STATIC && name !== CACHE_DATA && name !== CACHE_IMG)
-          .map(name => {
-            console.log('[SW] Suppression ancien cache:', name);
-            return caches.delete(name);
+    caches.keys().then((keys) =>
+      Promise.all(
+        keys
+          .filter((k) => k.startsWith('edulink-') && k !== STATIC_CACHE && k !== DYNAMIC_CACHE)
+          .map((k) => {
+            console.log('[SW] 🗑️ Suppression ancien cache:', k);
+            return caches.delete(k);
           })
-      );
-    }).then(() => self.clients.claim())
+      )
+    ).then(() => self.clients.claim())
   );
 });
 
-// ══ INTERCEPTION DES REQUÊTES ════════════════════════════════════════
+
+// ════════════════════════════════════════════════════════════════════════════
+//  FETCH — Stratégie de cache adaptative
+// ════════════════════════════════════════════════════════════════════════════
 self.addEventListener('fetch', (event) => {
-  const { request } = event;
-  const url = new URL(request.url);
+  // Ne traiter que les requêtes GET HTTP/HTTPS
+  if (event.request.method !== 'GET') return;
+  if (!event.request.url.startsWith('http')) return;
 
-  // Ignorer les requêtes non-GET et les extensions de navigateur
-  if (request.method !== 'GET') return;
-  if (url.protocol === 'chrome-extension:') return;
-  if (url.protocol === 'moz-extension:') return;
+  const url = new URL(event.request.url);
 
-  // ── Supabase API → Network-First avec fallback cache ──────────────
-  if (url.hostname.includes('supabase.co')) {
-    event.respondWith(networkFirstWithCache(request, CACHE_DATA));
+  // 1) Réseau uniquement pour les API externes
+  const isNetworkOnly = NETWORK_ONLY.some((d) => url.hostname.includes(d));
+  if (isNetworkOnly) return;
+
+  // 2) Cache-first pour les assets statiques (polices, images, scripts)
+  const ext = url.pathname.slice(url.pathname.lastIndexOf('.'));
+  const isStaticAsset = STATIC_ASSETS.includes(url.pathname) ||
+                        STATIC_EXTENSIONS.includes(ext);
+  if (isStaticAsset) {
+    event.respondWith(cacheFirstStrategy(event.request));
     return;
   }
 
-  // ── Images → Cache-First ──────────────────────────────────────────
-  if (request.destination === 'image') {
-    event.respondWith(cacheFirstWithFallback(request, CACHE_IMG));
-    return;
-  }
-
-  // ── Fonts Google → Cache-First (longue durée) ─────────────────────
-  if (url.hostname === 'fonts.googleapis.com' || url.hostname === 'fonts.gstatic.com') {
-    event.respondWith(cacheFirstWithFallback(request, CACHE_STATIC));
-    return;
-  }
-
-  // ── CDN (Chart.js, Supabase SDK...) → Cache-First ─────────────────
-  if (url.hostname === 'cdn.jsdelivr.net' || url.hostname === 'cdnjs.cloudflare.com') {
-    event.respondWith(cacheFirstWithFallback(request, CACHE_STATIC));
-    return;
-  }
-
-  // ── Pages HTML → Network-First avec fallback offline ──────────────
-  if (request.destination === 'document') {
-    event.respondWith(
-      fetch(request)
-        .then(response => {
-          const clone = response.clone();
-          caches.open(CACHE_STATIC).then(cache => cache.put(request, clone));
-          return response;
-        })
-        .catch(() => {
-          return caches.match(request)
-            .then(cached => cached || caches.match('/__offline'));
-        })
-    );
-    return;
-  }
-
-  // ── Tout le reste → Network-First ─────────────────────────────────
-  event.respondWith(networkFirstWithCache(request, CACHE_STATIC));
+  // 3) Network-first avec fallback cache pour les pages HTML
+  event.respondWith(networkFirstStrategy(event.request));
 });
 
-// ══ STRATÉGIES DE CACHE ══════════════════════════════════════════════
+/** Cache-First : cache → réseau → mise à jour cache */
+async function cacheFirstStrategy(request) {
+  const cached = await caches.match(request);
+  if (cached) return cached;
 
-// Network-First : essaie le réseau, sinon cache
-async function networkFirstWithCache(request, cacheName) {
   try {
     const response = await fetch(request);
-    if (response.ok) {
-      const cache = await caches.open(cacheName);
+    if (response && response.status === 200 && response.type !== 'opaque') {
+      const cache = await caches.open(DYNAMIC_CACHE);
       cache.put(request, response.clone());
     }
     return response;
   } catch {
+    return new Response('Ressource non disponible hors-ligne.', {
+      status: 503,
+      headers: { 'Content-Type': 'text/plain; charset=utf-8' },
+    });
+  }
+}
+
+/** Network-First : réseau → cache (fallback hors-ligne) */
+async function networkFirstStrategy(request) {
+  try {
+    const response = await fetch(request);
+    if (response && response.status === 200) {
+      const cache = await caches.open(DYNAMIC_CACHE);
+      cache.put(request, response.clone());
+    }
+    return response;
+  } catch {
+    // Hors-ligne : tenter le cache
     const cached = await caches.match(request);
     if (cached) return cached;
-    // Retourner une réponse JSON vide pour les API Supabase
-    if (request.url.includes('supabase.co')) {
-      return new Response(JSON.stringify({ data: [], error: null }), {
-        headers: { 'Content-Type': 'application/json' }
-      });
+
+    // Fallback navigation → index.html
+    if (request.mode === 'navigate') {
+      const fallback = await caches.match('./index.html') ||
+                       await caches.match('./edulink-portail.html');
+      if (fallback) return fallback;
     }
-    throw new Error('Hors-ligne et aucun cache disponible');
-  }
-}
 
-// Cache-First : sert depuis le cache, met à jour en arrière-plan
-async function cacheFirstWithFallback(request, cacheName) {
-  const cached = await caches.match(request);
-  if (cached) {
-    // Mettre à jour le cache en arrière-plan (stale-while-revalidate)
-    fetch(request).then(response => {
-      if (response.ok) {
-        caches.open(cacheName).then(cache => cache.put(request, response));
-      }
-    }).catch(() => {});
-    return cached;
-  }
-  try {
-    const response = await fetch(request);
-    if (response.ok) {
-      const cache = await caches.open(cacheName);
-      cache.put(request, response.clone());
-    }
-    return response;
-  } catch {
-    return new Response('', { status: 404 });
-  }
-}
-
-// ══ SYNCHRONISATION EN ARRIÈRE-PLAN ══════════════════════════════════
-self.addEventListener('sync', (event) => {
-  if (event.tag === 'edulink-sync') {
-    console.log('[SW] Synchronisation arrière-plan déclenchée');
-    event.waitUntil(syncDonnees());
-  }
-});
-
-async function syncDonnees() {
-  // Notifier les clients que la synchronisation est terminée
-  const clients = await self.clients.matchAll();
-  clients.forEach(client => {
-    client.postMessage({ type: 'EDULINK_SYNC_DONE', timestamp: Date.now() });
-  });
-}
-
-// ══ MESSAGES DEPUIS LE CLIENT ════════════════════════════════════════
-self.addEventListener('message', (event) => {
-  const { type } = event.data || {};
-
-  // Demande de version du SW
-  if (type === 'GET_VERSION') {
-    event.ports[0]?.postMessage({ version: SW_VERSION });
-  }
-
-  // Vider le cache (demandé par l'admin)
-  if (type === 'CLEAR_CACHE') {
-    caches.keys().then(keys => Promise.all(keys.map(k => caches.delete(k))));
-    event.ports[0]?.postMessage({ done: true });
-  }
-
-  // Forcer la mise à jour
-  if (type === 'SKIP_WAITING') {
-    self.skipWaiting();
-  }
-});
-
-// ══ NOTIFICATIONS PUSH ═══════════════════════════════════════════════
-self.addEventListener('push', (event) => {
-  if (!event.data) return;
-  try {
-    const data    = event.data.json();
-    const notif   = data.notification || {};
-    const payload = data.data || {};
-    event.waitUntil(
-      self.registration.showNotification(notif.title || '🎓 EduLink', {
-        body:    notif.body || payload.body || '',
-        icon:    '/icon-192.png',
-        badge:   '/icon-72.png',
-        tag:     payload.tag || 'edulink-' + Date.now(),
-        data:    { url: payload.url || '/edulink-portail.html' },
-        vibrate: [200, 100, 200],
-        actions: [{ action: 'open', title: 'Voir' }]
-      })
+    return new Response(
+      JSON.stringify({ error: 'offline', message: 'EduLink est en mode hors-ligne.' }),
+      { status: 503, headers: { 'Content-Type': 'application/json' } }
     );
-  } catch(e) {
-    console.warn('[SW] Push parse error:', e.message);
+  }
+}
+
+
+// ════════════════════════════════════════════════════════════════════════════
+//  BACKGROUND SYNC — File d'attente hors-ligne
+// ════════════════════════════════════════════════════════════════════════════
+self.addEventListener('sync', (event) => {
+  console.log('[SW] 🔄 Background Sync déclenché :', event.tag);
+
+  if (event.tag === 'edulink-sync') {
+    event.waitUntil(traiterFileSyncOffline());
   }
 });
 
-self.addEventListener('notificationclick', (event) => {
-  event.notification.close();
-  const url = event.notification.data?.url || '/edulink-portail.html';
+async function traiterFileSyncOffline() {
+  try {
+    // Notifier tous les onglets ouverts que la sync est terminée
+    const clients = await self.clients.matchAll({ type: 'window', includeUncontrolled: true });
+    clients.forEach((client) => {
+      client.postMessage({
+        type:      'EDULINK_SYNC_DONE',
+        timestamp: Date.now(),
+        message:   'Données synchronisées avec succès.',
+      });
+    });
+    console.log('[SW] ✅ Sync terminée —', clients.length, 'client(s) notifié(s)');
+  } catch (err) {
+    console.warn('[SW] Sync échouée :', err.message);
+    throw err; // Retry automatique par le navigateur
+  }
+}
+
+
+// ════════════════════════════════════════════════════════════════════════════
+//  MESSAGES — Communication avec les clients
+// ════════════════════════════════════════════════════════════════════════════
+let firebaseCfg = null;
+
+self.addEventListener('message', (event) => {
+  const data = event.data;
+  if (!data || !data.type) return;
+
+  switch (data.type) {
+
+    // Config Firebase reçue depuis le portail ou le back-office
+    case 'EDULINK_FIREBASE_CONFIG':
+      firebaseCfg = data.firebaseConfig;
+      console.log('[SW] 🔥 Config Firebase reçue');
+      break;
+
+    // Forcer la mise à jour immédiate du SW
+    case 'EDULINK_SKIP_WAITING':
+      self.skipWaiting();
+      break;
+
+    // Déclencher un Background Sync manuellement
+    case 'EDULINK_REQUEST_SYNC':
+      self.registration.sync?.register('edulink-sync')
+        .then(() => console.log('[SW] Sync demandée'))
+        .catch((e) => console.warn('[SW] Sync register failed:', e.message));
+      break;
+
+    // Vider le cache dynamique (après logout)
+    case 'EDULINK_CLEAR_CACHE':
+      caches.delete(DYNAMIC_CACHE)
+        .then(() => console.log('[SW] Cache dynamique vidé'));
+      break;
+  }
+});
+
+
+// ════════════════════════════════════════════════════════════════════════════
+//  PUSH NOTIFICATIONS — Réception et affichage
+// ════════════════════════════════════════════════════════════════════════════
+self.addEventListener('push', (event) => {
+  if (!event.data) {
+    console.warn('[SW] Push reçu sans données');
+    return;
+  }
+
+  let payload;
+  try {
+    payload = event.data.json();
+  } catch {
+    payload = { notification: { title: '🎓 EduLink', body: event.data.text() } };
+  }
+
+  // Normalisation du payload (FCM Legacy vs FCM v1)
+  const notif = payload.notification || {};
+  const data  = payload.data || {};
+
+  const titre  = notif.title || data.title || '🎓 EduLink';
+  const corps  = notif.body  || data.body  || '';
+  const url    = data.url    || './edulink-portail.html';
+  const tag    = data.tag    || 'edulink-' + Date.now();
+  const urgent = data.priorite === 'high' || payload.priority === 'high';
+
+  // Icônes selon le type
+  const ICONES = {
+    absence:  '/icons/icon-192.png',
+    note:     '/icons/icon-192.png',
+    examen:   '/icons/icon-192.png',
+    paiement: '/icons/icon-192.png',
+    annonce:  '/icons/icon-192.png',
+    message:  '/icons/icon-192.png',
+  };
+
+  const options = {
+    body:              corps,
+    icon:              notif.icon || ICONES[data.type] || '/icons/icon-192.png',
+    badge:             '/icons/badge-72.png',
+    tag,
+    data:              { url, ecole_id: data.ecole_id, type: data.type },
+    vibrate:           urgent ? [300, 100, 300, 100, 300] : [200, 100, 200],
+    renotify:          true,
+    requireInteraction: urgent,
+    silent:            false,
+    actions: [
+      { action: 'open',    title: '📖 Ouvrir' },
+      { action: 'dismiss', title: '✕ Ignorer' },
+    ],
+  };
+
   event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(windowClients => {
-      for (const client of windowClients) {
-        if (client.url.includes('edulink') && 'focus' in client) {
-          return client.navigate(url).then(c => c.focus()).catch(() => client.focus());
-        }
-      }
-      if (clients.openWindow) return clients.openWindow(url);
-    })
+    self.registration.showNotification(titre, options)
   );
 });
 
-console.log('[SW] EduLink Service Worker v' + SW_VERSION + ' chargé');
+
+// ════════════════════════════════════════════════════════════════════════════
+//  CLIC SUR NOTIFICATION
+// ════════════════════════════════════════════════════════════════════════════
+self.addEventListener('notificationclick', (event) => {
+  const { action, notification } = event;
+  notification.close();
+
+  // Action "Ignorer" → ne rien faire
+  if (action === 'dismiss') return;
+
+  const targetUrl = notification.data?.url || './edulink-portail.html';
+
+  event.waitUntil(
+    self.clients
+      .matchAll({ type: 'window', includeUncontrolled: true })
+      .then((clients) => {
+        // Tenter de mettre le focus sur un onglet déjà ouvert
+        for (const client of clients) {
+          const clientPath = new URL(client.url).pathname;
+          const targetPath = new URL(targetUrl, self.location.origin).pathname;
+          if (clientPath === targetPath && 'focus' in client) {
+            return client.focus();
+          }
+        }
+        // Sinon ouvrir un nouvel onglet
+        return self.clients.openWindow(targetUrl);
+      })
+  );
+});
+
+
+// ════════════════════════════════════════════════════════════════════════════
+//  FERMETURE NOTIFICATION (suivi analytique éventuel)
+// ════════════════════════════════════════════════════════════════════════════
+self.addEventListener('notificationclose', (event) => {
+  const { tag, data } = event.notification;
+  console.log('[SW] Notification fermée :', tag, '| type :', data?.type || '—');
+});
+
+
+// ════════════════════════════════════════════════════════════════════════════
+//  PERIODIC BACKGROUND SYNC (navigateurs supportés)
+// ════════════════════════════════════════════════════════════════════════════
+self.addEventListener('periodicsync', (event) => {
+  if (event.tag === 'edulink-daily-sync') {
+    event.waitUntil(traiterFileSyncOffline());
+  }
+});
+
+
+console.log('[SW] 🎓 EduLink Service Worker JOUR 17 chargé ✅ — Cache:', SW_VERSION);

@@ -1,66 +1,105 @@
 {
-  "id": "bj.edulink.portail",
-  "name": "EduLink — Portail Famille",
+  "name": "EduLink Famille",
   "short_name": "EduLink",
-  "description": "Portail famille EduLink — Suivi scolaire en temps réel",
-  "start_url": "/edulink-portail.html",
-  "scope": "/",
+  "description": "Portail parents et étudiants — Suivez la scolarité en temps réel",
+  "start_url": "./edulink-portail.html",
+  "scope": "./",
   "display": "standalone",
   "orientation": "portrait-primary",
+  "background_color": "#0f6e56",
   "theme_color": "#0f6e56",
-  "background_color": "#f0f7f4",
   "lang": "fr",
   "dir": "ltr",
-  "categories": ["education", "productivity"],
+  "categories": ["education"],
   "icons": [
-    { "src": "https://edulink-backoffice.vercel.app/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "https://edulink-backoffice.vercel.app/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+    {
+      "src": "icons/icon-72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
   ],
   "shortcuts": [
     {
       "name": "Mes notes",
       "short_name": "Notes",
-      "description": "Consulter mes notes et bulletins",
-      "url": "/edulink-portail.html?page=notes",
-      "icons": [{ "src": "https://edulink-backoffice.vercel.app/icon-192.png", "sizes": "96x96" }]
+      "description": "Consulter les notes et bulletins",
+      "url": "./edulink-portail.html#notes",
+      "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96" }]
     },
     {
-      "name": "Mes absences",
+      "name": "Absences",
       "short_name": "Absences",
-      "description": "Consulter mes présences",
-      "url": "/edulink-portail.html?page=absences",
-      "icons": [{ "src": "https://edulink-backoffice.vercel.app/icon-192.png", "sizes": "96x96" }]
+      "description": "Suivre les absences et présences",
+      "url": "./edulink-portail.html#absences",
+      "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96" }]
     },
     {
-      "name": "Examens à venir",
+      "name": "Examens",
       "short_name": "Examens",
-      "description": "Planning des examens",
-      "url": "/edulink-portail.html?page=examens",
-      "icons": [{ "src": "https://edulink-backoffice.vercel.app/icon-192.png", "sizes": "96x96" }]
+      "description": "Calendrier des examens",
+      "url": "./edulink-portail.html#examens",
+      "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96" }]
     }
   ],
   "screenshots": [
     {
-      "src": "https://edulink-backoffice.vercel.app/screenshots/accueil.png",
+      "src": "screenshots/portail-accueil.png",
       "sizes": "390x844",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "Tableau de bord"
+      "label": "Accueil Portail Famille"
     },
     {
-      "src": "https://edulink-backoffice.vercel.app/screenshots/notes.png",
+      "src": "screenshots/portail-notes.png",
       "sizes": "390x844",
       "type": "image/png",
       "form_factor": "narrow",
-      "label": "Mes notes"
+      "label": "Notes et bulletins"
     }
   ],
-  "prefer_related_applications": false,
-  "related_applications": [
-    {
-      "platform": "play",
-      "url": "https://play.google.com/store/apps/details?id=bj.edulink.portail",
-      "id": "bj.edulink.portail"
-    }
-  ]
+  "related_applications": [],
+  "prefer_related_applications": false
 }
