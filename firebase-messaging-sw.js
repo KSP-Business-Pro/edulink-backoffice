@@ -2,9 +2,8 @@
 importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js');
 importScripts('https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js');
 
-// ── Configuration Firebase RÉELLE EduLink-Benin ──
 firebase.initializeApp({
-  apiKey:            "AIzaSyCHdpDzx8KtCKZ-UAftTBIE1OQhWn-tSDfU",
+  apiKey:            "AIzaSyCHdpDzx8KtCKZ-UAftTBIE10QhWn-tSDfU",
   authDomain:        "edulink-benin.firebaseapp.com",
   projectId:         "edulink-benin",
   storageBucket:     "edulink-benin.firebasestorage.app",
@@ -14,7 +13,6 @@ firebase.initializeApp({
 
 const messaging = firebase.messaging();
 
-// ── Réception message en arrière-plan ──
 messaging.onBackgroundMessage(function(payload) {
   const notif = payload.notification || {};
   const data  = payload.data || {};
@@ -24,10 +22,10 @@ messaging.onBackgroundMessage(function(payload) {
 
   return self.registration.showNotification(title, {
     body,
-    icon:  '/icon-192.png',
-    badge: '/icon-72.png',
-    tag:   data.tag || 'edulink-notif',
-    data:  { url },
+    icon:    '/icon-192.png',
+    badge:   '/icon-72.png',
+    tag:     data.tag || 'edulink-notif',
+    data:    { url },
     vibrate: [200, 100, 200],
     actions: [
       { action: 'open',    title: 'Ouvrir' },
@@ -36,18 +34,14 @@ messaging.onBackgroundMessage(function(payload) {
   });
 });
 
-// ── Clic sur notification ──
 self.addEventListener('notificationclick', function(event) {
   event.notification.close();
   if (event.action === 'dismiss') return;
   const url = event.notification.data?.url || '/edulink-portail.html';
   event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function(windowClients) {
-      for (let i = 0; i < windowClients.length; i++) {
-        const client = windowClients[i];
-        if (client.url.includes('edulink') && 'focus' in client) {
-          return client.focus();
-        }
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then(function(wcs) {
+      for (let i = 0; i < wcs.length; i++) {
+        if (wcs[i].url.includes('edulink') && 'focus' in wcs[i]) return wcs[i].focus();
       }
       if (clients.openWindow) return clients.openWindow(url);
     })
