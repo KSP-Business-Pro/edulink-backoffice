@@ -1673,47 +1673,92 @@ async function telechargerBulletinPDFPortail(periode) {
   showToast('✅ Bulletin PDF téléchargé !', 'success');
 }
 
-// ══ FCM PORTAIL FAMILLE  ★ JOUR 15 ══════════════════════════════════
+// ══ FCM PORTAIL FAMILLE  ★ JOUR 15 — CORRIGÉ ════════════════════════
+//  Fix 1 : enregistrement explicite du SW firebase-messaging-sw.js
+//  Fix 2 : passage de swReg à getToken() (requis par FCM web)
+//  Fix 3 : config Firebase envoyée au SW via postMessage (dynamic config)
 
-let fcmPortailMessaging = null;
-let fcmPortailToken     = null;
+let fcmPortailMessaging  = null;
+let fcmPortailToken      = null;
+let fcmPortailSwReg      = null;
+let fcmPortailFirebaseCfg = null;
 
-// Initialisation FCM côté portail famille
+// ── Init principale ──────────────────────────────────────────────────
 async function initFCMPortail() {
-  if (typeof firebase === 'undefined') return;
+  if (typeof firebase === 'undefined')     return;
+  if (!('serviceWorker' in navigator))     return;
+  if (!('Notification' in window))         return;
+
   try {
-    // Récupérer config Firebase depuis Supabase
+    // 1. Charger config Firebase depuis Supabase
     const { data } = await db.from('parametres')
       .select('firebase_config')
       .eq('ecole_id', currentEcoleId)
       .maybeSingle();
-    if (!data?.firebase_config) return;
+    if (!data?.firebase_config) {
+      console.warn('[FCM Portail] firebase_config absent dans parametres');
+      return;
+    }
+    fcmPortailFirebaseCfg = data.firebase_config;
 
-    if (!firebase.apps.length) firebase.initializeApp(data.firebase_config);
-
+    // 2. Initialiser Firebase dans le thread principal
+    if (!firebase.apps.length) {
+      firebase.initializeApp(fcmPortailFirebaseCfg);
+    }
     fcmPortailMessaging = firebase.messaging();
 
-    // Écoute messages en premier plan
+    // 3. Enregistrer le Service Worker FCM
+    try {
+      fcmPortailSwReg = await navigator.serviceWorker.register('/firebase-messaging-sw.js', { scope: '/' });
+      await navigator.serviceWorker.ready;
+
+      // Envoyer la config au SW dès qu'il est actif
+      envoyerConfigAuSW(fcmPortailSwReg);
+
+      // Aussi envoyer quand le SW passe à l'état "active" (première installation)
+      if (fcmPortailSwReg.installing) {
+        fcmPortailSwReg.installing.addEventListener('statechange', function() {
+          if (this.state === 'activated') envoyerConfigAuSW(fcmPortailSwReg);
+        });
+      }
+    } catch(swErr) {
+      console.warn('[FCM Portail] Échec enregistrement SW :', swErr.message);
+      // On continue sans SW (foreground seulement)
+    }
+
+    // 4. Écouter les messages reçus en premier plan (app ouverte)
     fcmPortailMessaging.onMessage(function(payload) {
       const notif = payload.notification || {};
-      afficherBanniereNotif(
-        notif.title || 'EduLink',
-        notif.body  || ''
-      );
+      afficherBanniereNotif(notif.title || 'EduLink', notif.body || '');
     });
 
-    // Afficher la bannière de permission si pas encore accordée
+    // 5. Flux de permission
     if (Notification.permission === 'default') {
       afficherBannierePermission();
     } else if (Notification.permission === 'granted') {
       await abonnerFCMPortail();
     }
+    // Si 'denied' → on ne fait rien (l'utilisateur a refusé)
+
   } catch(err) {
-    console.warn('[FCM Portail] Erreur init:', err.message);
+    console.warn('[FCM Portail] Erreur init :', err.message);
   }
 }
 
-// Demander permission et s'abonner
+// ── Envoyer config Firebase au SW via postMessage ────────────────────
+function envoyerConfigAuSW(swReg) {
+  if (!fcmPortailFirebaseCfg) return;
+  const target = swReg.active || swReg.waiting || swReg.installing;
+  if (target) {
+    target.postMessage({
+      type:          'EDULINK_FIREBASE_CONFIG',
+      firebaseConfig: fcmPortailFirebaseCfg
+    });
+    console.log('[FCM Portail] Config envoyée au SW');
+  }
+}
+
+// ── Demander permission et s'abonner ─────────────────────────────────
 async function demanderPermissionPush() {
   try {
     const permission = await Notification.requestPermission();
@@ -1721,30 +1766,36 @@ async function demanderPermissionPush() {
     if (permission === 'granted') {
       await abonnerFCMPortail();
       afficherBanniereNotif('🔔 Notifications activées !', 'Vous recevrez les alertes en temps réel.');
+    } else {
+      showToast('Notifications refusées par le navigateur', 'error');
     }
   } catch(err) {
-    console.warn('[FCM Portail] Permission error:', err);
+    console.warn('[FCM Portail] Permission error :', err);
   }
 }
 
+// ── S'abonner et sauvegarder le token ────────────────────────────────
 async function abonnerFCMPortail() {
   try {
     // Récupérer VAPID key depuis Supabase
     const { data } = await db.from('parametres')
       .select('vapid_key').eq('ecole_id', currentEcoleId).maybeSingle();
     const vapidKey = data?.vapid_key || localStorage.getItem('edulink_vapid_key');
-    if (!vapidKey || !fcmPortailMessaging) return;
+    if (!vapidKey) { console.warn('[FCM Portail] VAPID key manquante'); return; }
+    if (!fcmPortailMessaging) return;
 
-    const token = await fcmPortailMessaging.getToken({ vapidKey });
-    if (!token) return;
+    // FIX CRITIQUE : passer serviceWorkerRegistration à getToken()
+    const tokenOptions = { vapidKey };
+    if (fcmPortailSwReg) tokenOptions.serviceWorkerRegistration = fcmPortailSwReg;
+
+    const token = await fcmPortailMessaging.getToken(tokenOptions);
+    if (!token) { console.warn('[FCM Portail] Token vide'); return; }
     fcmPortailToken = token;
+    localStorage.setItem('edulink_fcm_token', token); // Cache local
 
-    // Déterminer le rôle
     const role = currentProfile?.role || 'parent';
-
-    // Sauvegarder en base
     await db.from('push_tokens').upsert({
-      ecole_id:   currentEcoleId,
+      ecole_id:    currentEcoleId,
       token,
       role,
       etudiant_id: currentEtudiant?.id || null,
@@ -1752,13 +1803,13 @@ async function abonnerFCMPortail() {
       updated_at:  new Date().toISOString()
     }, { onConflict: 'token' });
 
-    console.log('[FCM Portail] Abonné avec token:', token.slice(0,20)+'...');
+    console.log('[FCM Portail] ✅ Abonné avec token :', token.slice(0, 20) + '...');
   } catch(err) {
-    console.warn('[FCM Portail] Erreur abonnement:', err.message);
+    console.warn('[FCM Portail] Erreur abonnement :', err.message);
   }
 }
 
-// ── Bannière permission ──
+// ── Bannière permission ───────────────────────────────────────────────
 function afficherBannierePermission() {
   const el = document.getElementById('push-permission-banner');
   if (!el) return;
@@ -1779,24 +1830,20 @@ function masquerBannierePermission() {
   if (el) el.innerHTML = '';
 }
 
-// ── Bannière notification reçue ──
+// ── Bannière notification reçue (foreground) ─────────────────────────
 function afficherBanniereNotif(titre, message) {
   showToast('🔔 ' + titre + (message ? ' — ' + message : ''), 'info');
-  // Also show as system notification if in background
-  if (document.hidden && Notification.permission === 'granted') {
-    new Notification(titre, {
-      body: message,
-      icon: '/icon-192.png',
-      badge: '/icon-72.png'
-    });
-  }
 }
 
-// ── Désinscription ──
+// ── Désinscription ────────────────────────────────────────────────────
 async function desabonnerFCMPortail() {
-  if (!fcmPortailToken) return;
+  if (!fcmPortailToken || !fcmPortailMessaging) return;
+  try {
+    await fcmPortailMessaging.deleteToken();
+  } catch(_) {}
   await db.from('push_tokens').delete().eq('token', fcmPortailToken);
   fcmPortailToken = null;
+  localStorage.removeItem('edulink_fcm_token');
   showToast('Notifications désactivées', 'info');
 }
 
