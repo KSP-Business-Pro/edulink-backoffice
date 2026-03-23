@@ -91,22 +91,6 @@
       "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96" }]
     }
   ],
-  "screenshots": [
-    {
-      "src": "screenshots/dashboard-wide.png",
-      "sizes": "1280x720",
-      "type": "image/png",
-      "form_factor": "wide",
-      "label": "Tableau de bord EduLink"
-    },
-    {
-      "src": "screenshots/etudiants.png",
-      "sizes": "1280x720",
-      "type": "image/png",
-      "form_factor": "wide",
-      "label": "Gestion des étudiants"
-    }
-  ],
   "related_applications": [],
   "prefer_related_applications": false
 }
