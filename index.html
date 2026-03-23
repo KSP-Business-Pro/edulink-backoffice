@@ -1605,6 +1605,109 @@ button:hover { background:#a86615; transform:translateY(-1px); }
 <!-- ═══════════════════════════════════════
      CENTRE DE NOTIFICATIONS  ★ JOUR 16
 ═══════════════════════════════════════ -->
+Copier dans <main>, après la dernière <div class="page">
+-->
+<div class="page" id="page-certificats">
+  <div class="top">
+    <div>
+      <h2>📜 Certificats & Attestations</h2>
+      <p class="page-subtitle">Émission de documents officiels pour les étudiants</p>
+    </div>
+    <div class="top-actions">
+      <button class="btn-secondary" onclick="exporterCertificatsCSV()">📥 Export CSV</button>
+      <button onclick="ouvrirModalCertificat()">+ Émettre un document</button>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div class="cert-stat-bar">
+    <div class="cert-stat">
+      <div class="cert-stat-ico navy">📜</div>
+      <div><div class="cs-val" style="color:#1e3a5f" id="cs-total">—</div><div class="cs-lbl">Total émis</div></div>
+    </div>
+    <div class="cert-stat">
+      <div class="cert-stat-ico green">📋</div>
+      <div><div class="cs-val" style="color:#059669" id="cs-attestations">—</div><div class="cs-lbl">Attestations</div></div>
+    </div>
+    <div class="cert-stat">
+      <div class="cert-stat-ico gold">📊</div>
+      <div><div class="cs-val" style="color:#d97706" id="cs-releves">—</div><div class="cs-lbl">Relevés de notes</div></div>
+    </div>
+    <div class="cert-stat">
+      <div class="cert-stat-ico purple">🏆</div>
+      <div><div class="cs-val" style="color:#7c3aed" id="cs-diplomes">—</div><div class="cs-lbl">Diplômes prov.</div></div>
+    </div>
+  </div>
+
+  <!-- Types rapides -->
+  <div class="cert-type-grid">
+    <div class="cert-type-card">
+      <div class="ctc-ico">📋</div>
+      <div class="ctc-count" id="ct-att-ins">—</div>
+      <div class="ctc-nom">Attestation d'inscription</div>
+      <div class="ctc-sub">Prouve l'inscription en cours</div>
+      <button class="ctc-btn" onclick="ouvrirModalCertificat('attestation_inscription')">+ Générer</button>
+    </div>
+    <div class="cert-type-card">
+      <div class="ctc-ico">📊</div>
+      <div class="ctc-count" id="ct-releve">—</div>
+      <div class="ctc-nom">Relevé de notes officiel</div>
+      <div class="ctc-sub">Notes par période / semestre</div>
+      <button class="ctc-btn" onclick="ouvrirModalCertificat('releve_notes')">+ Générer</button>
+    </div>
+    <div class="cert-type-card">
+      <div class="ctc-ico">🎓</div>
+      <div class="ctc-count" id="ct-scol">—</div>
+      <div class="ctc-nom">Certificat de scolarité</div>
+      <div class="ctc-sub">Justificatif officiel de scolarité</div>
+      <button class="ctc-btn" onclick="ouvrirModalCertificat('certificat_scolarite')">+ Générer</button>
+    </div>
+    <div class="cert-type-card">
+      <div class="ctc-ico">🏆</div>
+      <div class="ctc-count" id="ct-diplo">—</div>
+      <div class="ctc-nom">Diplôme provisoire</div>
+      <div class="ctc-sub">En attente du diplôme définitif</div>
+      <button class="ctc-btn" onclick="ouvrirModalCertificat('diplome_provisoire')">+ Générer</button>
+    </div>
+  </div>
+
+  <!-- Filtres & recherche -->
+  <div class="search-bar">
+    <input type="text" id="search-certificats" placeholder="Rechercher par étudiant, référence CERT-..." oninput="filtrerCertificats()">
+  </div>
+  <div class="filters">
+    <span class="filter-label">Type :</span>
+    <select id="filter-cert-type" onchange="filtrerCertificats()">
+      <option value="">Tous les types</option>
+      <option value="attestation_inscription">📋 Attestation d'inscription</option>
+      <option value="releve_notes">📊 Relevé de notes</option>
+      <option value="certificat_scolarite">🎓 Certificat de scolarité</option>
+      <option value="diplome_provisoire">🏆 Diplôme provisoire</option>
+    </select>
+    <select id="filter-cert-statut" onchange="filtrerCertificats()">
+      <option value="">Tous statuts</option>
+      <option value="emis">Émis</option>
+      <option value="signe">Signé</option>
+      <option value="annule">Annulé</option>
+    </select>
+  </div>
+
+  <!-- Tableau -->
+  <table>
+    <tr>
+      <th>Référence</th>
+      <th>Étudiant</th>
+      <th>Type de document</th>
+      <th>Signataire</th>
+      <th>Date d'émission</th>
+      <th>Statut</th>
+      <th>Actions</th>
+    </tr>
+    <tbody id="tbody-certificats">
+      <tr><td colspan="7" class="loading">Chargement...</td></tr>
+    </tbody>
+  </table>
+</div><!-- /#page-certificats -->
 <div class="page" id="page-notifications">
   <div class="top">
     <div><h2>🔔 Centre de Notifications</h2><p class="page-subtitle">Envoi, historique et configuration des alertes push</p></div>
