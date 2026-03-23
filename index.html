@@ -31,7 +31,7 @@
 body { background:#f3f4f6; display:flex; }
 
 /* ── Navigation ── */
-nav { width:230px; background:#1e3a5f; min-height:100vh; padding:1rem; flex-shrink:0; display:flex; flex-direction:column; }
+nav { width:230px; background:#1e3a5f; min-height:100vh; padding:1rem; flex-shrink:0; display:flex; flex-direction:column; overflow-y:auto; }
 nav .logo { color:#fff; font-size:15px; font-weight:700; margin-bottom:.5rem; }
 nav .ecole-selector-wrap { margin-bottom:1.2rem; }
 nav .ecole-selector-wrap select { width:100%; padding:6px 10px; border-radius:8px; border:1px solid rgba(255,255,255,.25); background:rgba(255,255,255,.1); color:#fff; font-size:12px; font-family:'Poppins',sans-serif; cursor:pointer; outline:none; }
@@ -5912,7 +5912,14 @@ function filtrerCertificats() {
 }
 
 // ── Modal : émission ───────────────────────────────────────────────────────
-function ouvrirModalCertificat(type = 'attestation_inscription') {
+async function ouvrirModalCertificat(type = 'attestation_inscription') {
+  // Charger les étudiants si pas encore fait
+  if (!tousLesEtudiants.length) {
+    let q = db.from('etudiants').select('*').order('nom');
+    if (currentEcoleId) q = q.eq('ecole_id', currentEcoleId);
+    const { data } = await q;
+    tousLesEtudiants = data || [];
+  }
   // Remplir étudiant
   const sel = document.getElementById('input-cert-etudiant');
   if (sel) {
