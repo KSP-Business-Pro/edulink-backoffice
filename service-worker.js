@@ -3,7 +3,7 @@
 //  PWA : Cache stratégique, Mode hors-ligne, Sync arrière-plan, Push Notifs
 // ════════════════════════════════════════════════════════════════════════════
 
-const SW_VERSION    = 'edulink-v17';
+const SW_VERSION    = 'edulink-v18';
 const STATIC_CACHE  = SW_VERSION + '-static';
 const DYNAMIC_CACHE = SW_VERSION + '-dynamic';
 
