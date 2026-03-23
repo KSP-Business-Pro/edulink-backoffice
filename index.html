@@ -1713,6 +1713,60 @@ Copier dans <main>, après la dernière <div class="page">
     <div><h2>🔔 Centre de Notifications</h2><p class="page-subtitle">Envoi, historique et configuration des alertes push</p></div>
     <div class="top-actions">
       <button class="btn-outline" onclick="actualiserNotifications()">↻ Actualiser</button>
+      Copier avant </body>
+-->
+<div class="modal-overlay" id="modal-certificat">
+  <div class="modal">
+    <h3>📜 Émettre un document officiel</h3>
+
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Type de document *</label>
+        <select id="input-cert-type" onchange="onChangeCertType()">
+          <option value="attestation_inscription">📋 Attestation d'inscription</option>
+          <option value="releve_notes">📊 Relevé de notes officiel</option>
+          <option value="certificat_scolarite">🎓 Certificat de scolarité</option>
+          <option value="diplome_provisoire">🏆 Diplôme provisoire</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Étudiant *</label>
+        <select id="input-cert-etudiant"></select>
+      </div>
+    </div>
+
+    <div class="form-group" id="cert-periode-group" style="display:none">
+      <label>Période du relevé *</label>
+      <select id="input-cert-periode">
+        <option value="S1">Semestre 1</option>
+        <option value="S2">Semestre 2</option>
+        <option value="T1">Trimestre 1</option>
+        <option value="T2">Trimestre 2</option>
+        <option value="T3">Trimestre 3</option>
+        <option value="annuel">Année complète</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label>Délivré par / Signataire *</label>
+      <input type="text" id="input-cert-signe" placeholder="Ex : Prof. ADOHA Kémi — Directeur Général">
+    </div>
+
+    <div class="form-group">
+      <label>Mention / Observations (optionnel)</label>
+      <textarea rows="2" id="input-cert-obs" placeholder="Informations complémentaires, mention honorifique..."></textarea>
+    </div>
+
+    <div style="background:#f0fdf4;border-radius:8px;padding:.75rem 1rem;font-size:12.5px;color:#059669;margin-bottom:1rem">
+      ✅ Un PDF officiel sera généré avec numéro de référence unique et QR code de vérification.
+    </div>
+
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="fermerModal('modal-certificat')">Annuler</button>
+      <button class="btn-green" id="btn-emettre-cert" onclick="emettreNouvCertificat()">📜 Générer & Télécharger le PDF</button>
+    </div>
+  </div>
+</div>
       <button onclick="ouvrirModal('modal-push-notif')">+ Nouvelle notification</button>
     </div>
   </div>
