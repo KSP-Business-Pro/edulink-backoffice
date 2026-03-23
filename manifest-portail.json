@@ -84,22 +84,6 @@
       "icons": [{ "src": "icons/icon-96.png", "sizes": "96x96" }]
     }
   ],
-  "screenshots": [
-    {
-      "src": "screenshots/portail-accueil.png",
-      "sizes": "390x844",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Accueil Portail Famille"
-    },
-    {
-      "src": "screenshots/portail-notes.png",
-      "sizes": "390x844",
-      "type": "image/png",
-      "form_factor": "narrow",
-      "label": "Notes et bulletins"
-    }
-  ],
   "related_applications": [],
   "prefer_related_applications": false
 }
