@@ -830,6 +830,11 @@ function showToast(msg, type='') {
   setTimeout(() => t.className = 'toast', 3500);
 }
 function fmtDate(d) { return d ? new Date(d).toLocaleDateString('fr-FR') : '—'; }
+function fmtDateTime(d) {
+  if (!d) return '—';
+  const dt = new Date(d);
+  return dt.toLocaleDateString('fr-FR') + ' ' + dt.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+}
 function fmtMontant(n) { return new Intl.NumberFormat('fr-FR').format(n||0) + ' FCFA'; }
 function getApp(note) {
   if (note >= 16) return { label:'Très bien', cls:'green' };
@@ -2138,7 +2143,9 @@ async function marquerLuePortail(id, el) {
   const badge = document.getElementById('nav-notifs-badge');
   if (badge) { badge.style.display = nonLues > 0 ? 'flex' : 'none'; badge.textContent = nonLues; }
   // Persister en base
-  await db.from('notifications').update({ lu: true, lu_at: new Date().toISOString() }).eq('id', id).catch(() => {});
+  try {
+    await db.from('notifications').update({ lu: true, lu_at: new Date().toISOString() }).eq('id', id);
+  } catch(_) {}
   // Naviguer si lien
   if (notif.lien) showPage(notif.lien.replace('/','').replace('.html',''));
 }
