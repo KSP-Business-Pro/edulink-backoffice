@@ -1386,16 +1386,20 @@ function afficherMessages() {
 
   var unreadBadge = nonLus > 0 ? '<span class="msg-unread-badge">' + nonLus + ' non lu' + (nonLus>1?'s':'') + '</span>' : '';
 
+  // Build HTML safely without apostrophe issues
+  var composeHTML = '<div class="msg-compose-v2">' +
+    '<input type="text" id="msg-objet" placeholder="Objet (optionnel)">' +
+    '<textarea id="msg-contenu" rows="3" placeholder="Votre message..."></textarea>' +
+    '<button class="msg-send-v2" onclick="envoyerMessageV2()">&#128228; Envoyer</button>' +
+    '</div>';
+
   page.innerHTML = '<div style="padding:.75rem 1rem 0">' +
-    '<div class="section-title">✉️ Messagerie ' + unreadBadge + '</div>' +
+    '<div class="section-title">&#9993;&#65039; Messagerie ' + unreadBadge + '</div>' +
     '</div>' +
     '<div class="card" style="margin:0 1rem 1rem;overflow:hidden">' +
     '<div class="msg-thread" id="msg-thread">' + threadHTML + '</div>' +
-    '<div class="msg-compose-v2">' +
-    '<input type="text" id="msg-objet" placeholder="Objet (optionnel)">' +
-    '<textarea id="msg-contenu" rows="3" placeholder="Votre message à l'administration..."></textarea>' +
-    '<button class="msg-send-v2" onclick="envoyerMessageV2()">📤 Envoyer le message</button>' +
-    '</div></div>';
+    composeHTML +
+    '</div>';
 
   // Scroll to bottom of thread
   var thread = document.getElementById('msg-thread');
@@ -1568,7 +1572,7 @@ async function connecterParTelephone(tel) {
       `<div class="student-pill">👨‍🎓 ${etudiants[0].nom} ${etudiants[0].prenom} · ${etudiants[0].filiere} ${etudiants[0].niveau}</div>`;
     chargerTout();
   } else {
-    showOTPError(2, 'Aucun enfant lié à ce numéro. Contactez l'administration.');
+    showOTPError(2, 'Aucun enfant lie a ce numero. Contactez l\'administration.');
     document.getElementById('btn-verifier-otp').disabled = false;
     document.getElementById('btn-verifier-otp').textContent = '✅ Confirmer le code';
   }
@@ -1849,7 +1853,7 @@ function pdfSafePortail(str) {
     .replace(/Ô|Ö/g, 'O')
     .replace(/Ù|Û|Ü/g, 'U')
     .replace(/Ç/g, 'C')
-    .replace(/[- ]/g, '');
+    .replace(/[-￿]/g, '');
 }
 
 function labelPeriodePDF(p) {
@@ -2436,7 +2440,7 @@ function afficherEmploiPortail() {
     html += `<div class="card" style="margin-bottom:.75rem;overflow:hidden">
       <div class="card-header" style="${isToday ? 'background:var(--teal,#0f6e56);color:#fff;' : ''}">
         <div class="card-title" style="${isToday ? 'color:#fff;' : ''}">
-          ${isToday ? '📍 ' : ''}${jour}${isToday ? ' (Aujourd'hui)' : ''}
+          ${isToday ? '📍 ' : ''}${jour}${isToday ? " (Aujourd'hui)" : ''}
         </div>
         <span style="font-size:11px;${isToday?'color:rgba(255,255,255,.75)':'color:#9ca3af'}">${creneaux.length} cours</span>
       </div>`;
@@ -2624,13 +2628,11 @@ async function telechargerCertPortailV2(id) {
     y += 29;
 
     // Corps
-    const corps = 'Ce document certifie que ' + safe((currentEtudiant?.prenom||'')+' '+(currentEtudiant?.nom||'')) +
-      ' est regulierement inscrit(e) a ' + safe(nomEcole) +
-      ' pour l'annee academique en cours, en ' + safe(currentEtudiant?.filiere||'—') +
-      ', niveau ' + safe(currentEtudiant?.niveau||'—') + '.
-
-' +
-      'Ce document est delivre a la demande de l'interesse(e) et porte la reference ' + cert.reference + '.';
+    const corps = "Ce document certifie que " + safe((currentEtudiant?.prenom||"")+" "+(currentEtudiant?.nom||"")) +
+      " est regulierement inscrit(e) a " + safe(nomEcole) +
+      " pour l'annee academique en cours, en " + safe(currentEtudiant?.filiere||"-") +
+      ", niveau " + safe(currentEtudiant?.niveau||"-") + ".\n\n" +
+      "Ce document est delivre a la demande de l'interesse(e) et porte la reference " + cert.reference + ".";
     doc.setTextColor(55,65,81); doc.setFontSize(10); doc.setFont('helvetica','normal');
     const lines = doc.splitTextToSize(corps, pw-28);
     doc.text(lines, 14, y); y += lines.length*5.5 + 14;
