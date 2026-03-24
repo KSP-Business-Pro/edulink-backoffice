@@ -1376,12 +1376,12 @@ function afficherMessages() {
         const cls = estAdmin ? 'recu' : 'envoye';
         const roleLabel = m.expediteur_role === 'admin' ? '🏫 Admin' :
                           m.expediteur_role === 'enseignant' ? '👨‍🏫 Prof' : '👤 Vous';
-        return `<div class="msg-bubble-v2 ${cls}">
-          <div class="mb2-from">${roleLabel} · ${m.expediteur_nom||''}</div>
-          ${m.objet ? `<div class="mb2-objet">${m.objet}</div>` : ''}
-          <div class="mb2-text">${m.contenu||''}</div>
-          <div class="mb2-date">${fmtDateTime(m.created_at)}</div>
-        </div>`;
+        return '<div class="msg-bubble-v2 ' + cls + '">' +
+          '<div class="mb2-from">' + roleLabel + ' · ' + (m.expediteur_nom||'') + '</div>' +
+          (m.objet ? '<div class="mb2-objet">' + m.objet + '</div>' : '') +
+          '<div class="mb2-text">' + (m.contenu||'') + '</div>' +
+          '<div class="mb2-date">' + fmtDateTime(m.created_at) + '</div>' +
+          '</div>';
       }).join('') : '<div class="empty" style="margin:1.5rem 0"><div class="e-ico">📭</div><p>Aucun message pour l'instant.<br>Envoyez un message à l'administration.</p></div>'}
     </div>
     <!-- Composer -->
