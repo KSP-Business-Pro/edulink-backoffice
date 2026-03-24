@@ -6544,7 +6544,7 @@ function pdfSafe(str) {
     .replace(/[ÔÖ]/g, 'O')
     .replace(/[ÙÛÜ]/g, 'U')
     .replace(/Ç/g, 'C')
-    .replace(/[^ -~]/g, '');
+    .replace(/[^\x00-\x7E]/g, '');
 }
 
 function certGetAnnee() {
