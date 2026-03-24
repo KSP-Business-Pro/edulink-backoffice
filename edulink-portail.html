@@ -953,13 +953,14 @@ async function chargerMessages() {
   if (currentEcoleId) q = q.eq('ecole_id', currentEcoleId);
   const { data } = await q;
   tousMessages = data || [];
-  const nonLus = tousMessages.filter(m => !m.lu).length;
+  // Compter seulement les messages de l'admin non lus
+  const nonLus = tousMessages.filter(m =>
+    (m.expediteur_role === 'admin' || m.expediteur_role === 'enseignant') && !m.lu
+  ).length;
   const b1 = document.getElementById('msg-badge');
   const b2 = document.getElementById('nav-msg-badge');
-  if (nonLus > 0) {
-    b1.style.display = 'flex'; b1.textContent = nonLus;
-    b2.style.display = 'flex'; b2.textContent = nonLus;
-  }
+  if (b1) { b1.style.display = nonLus > 0 ? 'flex' : 'none'; if(nonLus>0) b1.textContent = nonLus; }
+  if (b2) { b2.style.display = nonLus > 0 ? 'flex' : 'none'; if(nonLus>0) b2.textContent = nonLus; }
 }
 
 // ══ NAVIGATION ══
