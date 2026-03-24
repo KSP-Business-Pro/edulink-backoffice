@@ -6532,14 +6532,18 @@ function certHexToRgb(hex) {
 function pdfSafe(str) {
   if (!str) return '';
   return str
-    .replace(/é|è|ê|ë/g, 'e').replace(/É|È|Ê|Ë/g, 'E')
-    .replace(/à|â|ä/g, 'a').replace(/À|Â|Ä/g, 'A')
-    .replace(/î|ï/g, 'i').replace(/Î|Ï/g, 'I')
-    .replace(/ô|ö/g, 'o').replace(/Ô|Ö/g, 'O')
-    .replace(/ù|û|ü/g, 'u').replace(/Ù|Û|Ü/g, 'U')
-    .replace(/ç/g, 'c').replace(/Ç/g, 'C')
-    .replace(/œ/g, 'oe').replace(/Œ/g, 'OE')
-    .replace(/æ/g, 'ae').replace(/Æ/g, 'AE')
+    .replace(/[éèêë]/g, 'e')
+    .replace(/[àâä]/g, 'a')
+    .replace(/[îï]/g, 'i')
+    .replace(/[ôö]/g, 'o')
+    .replace(/[ùûü]/g, 'u')
+    .replace(/ç/g, 'c')
+    .replace(/[ÉÈÊË]/g, 'E')
+    .replace(/[ÀÂÄ]/g, 'A')
+    .replace(/[ÎÏ]/g, 'I')
+    .replace(/[ÔÖ]/g, 'O')
+    .replace(/[ÙÛÜ]/g, 'U')
+    .replace(/Ç/g, 'C')
     .replace(/[^ -~]/g, '');
 }
 
