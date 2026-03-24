@@ -1443,9 +1443,18 @@ async function marquerMessagesAdminLus() {
   const nonLus = tousMessages.filter(m =>
     (m.expediteur_role === 'admin' || m.expediteur_role === 'enseignant') && !m.lu
   );
-  if (!nonLus.length) return;
+  if (!nonLus.length) {
+    // Force hide badges anyway
+    const b1 = document.getElementById('msg-badge');
+    const b2 = document.getElementById('nav-msg-badge');
+    if (b1) b1.style.display = 'none';
+    if (b2) b2.style.display = 'none';
+    return;
+  }
   const ids = nonLus.map(m => m.id);
-  await db.from('messages').update({ lu: true }).in('id', ids).catch(() => {});
+  try {
+    await db.from('messages').update({ lu: true }).in('id', ids);
+  } catch(_) {}
   nonLus.forEach(m => { m.lu = true; });
   const b1 = document.getElementById('msg-badge');
   const b2 = document.getElementById('nav-msg-badge');
