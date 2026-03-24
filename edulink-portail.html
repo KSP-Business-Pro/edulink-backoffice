@@ -1460,6 +1460,9 @@ async function marquerMessagesAdminLus() {
   const b2 = document.getElementById('nav-msg-badge');
   if (b1) b1.style.display = 'none';
   if (b2) b2.style.display = 'none';
+  // Masquer le badge dans le titre de la page messages
+  const inPageBadge = document.querySelector('.msg-unread-badge');
+  if (inPageBadge) inPageBadge.style.display = 'none';
 }
 
 async function envoyerMessage() {
