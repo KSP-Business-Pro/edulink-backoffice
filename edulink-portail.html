@@ -2406,16 +2406,18 @@ const HEURES_EDT = ['07:00','08:00','09:00','10:00','11:00','12:00',
 
 async function chargerEmploiPortail() {
   if (!currentEcoleId) { edtPortailData = []; return; }
-  let q = db.from('emploi_du_temps').select('*').eq('ecole_id', currentEcoleId).order('heure_debut');
-  // Filtrer par classe/niveau de l'étudiant si possible
-  if (currentEtudiant?.niveau) {
-    q = db.from('emploi_du_temps').select('*')
+  try {
+    // Charger tous les créneaux de l'école sans filtre restrictif
+    const { data } = await db.from('emploi_du_temps')
+      .select('*')
       .eq('ecole_id', currentEcoleId)
-      .or(`classe.is.null,classe.eq.${currentEtudiant.niveau}`)
+      .order('jour')
       .order('heure_debut');
+    edtPortailData = data || [];
+  } catch(e) {
+    edtPortailData = [];
+    console.warn('[Emploi]', e.message);
   }
-  const { data } = await q;
-  edtPortailData = data || [];
 }
 
 function afficherEmploiPortail() {
