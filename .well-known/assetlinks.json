@@ -1,0 +1,18 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "app.vercel.edulink_backoffice.twa",
+    "sha256_cert_fingerprints": ["49:AE:35:88:96:8A:0B:F8:11:BC:9C:57:AA:8A:0E:46:41:39:0A:53:D1:EC:D6:57:A8:0D:57:EC:B9:94:F2:39"]
+  }
+}]
+```
+5. Cliquez **"Commit changes"**
+
+---
+
+**Vérification après déploiement Vercel :**
+
+Ouvrez dans votre navigateur :
+```
+https://edulink-backoffice.vercel.app/.well-known/assetlinks.json
