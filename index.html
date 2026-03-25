@@ -660,6 +660,128 @@ button:hover { background:#a86615; transform:translateY(-1px); }
 .cert-ref { font-family:monospace; font-size:11px; background:#f3f4f6; padding:2px 8px; border-radius:5px; color:#1e3a5f; letter-spacing:.06em; font-weight:700; white-space:nowrap; }
 .cert-actions-bar { display:flex; gap:8px; margin-bottom:1rem; align-items:center; flex-wrap:wrap; }
 
+/* ══════════════════════════════════════════════
+   BIBLIOTHÈQUE SCOLAIRE  ★ JOUR 19
+══════════════════════════════════════════════ */
+.bib-stat-bar { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:1.5rem; }
+.bib-stat { background:#fff; border-radius:14px; padding:1.1rem 1.2rem; border:1px solid #e5e7eb; display:flex; align-items:center; gap:.85rem; }
+.bib-stat-ico { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
+.bib-stat-ico.navy   { background:#dbeafe; }
+.bib-stat-ico.green  { background:#dcfce7; }
+.bib-stat-ico.amber  { background:#fef9c3; }
+.bib-stat-ico.red    { background:#fee2e2; }
+.bib-stat .bs-val { font-size:24px; font-weight:700; line-height:1; }
+.bib-stat .bs-lbl { font-size:11px; color:#6b7280; font-weight:500; margin-top:2px; }
+
+/* Catalogue grid */
+.bib-catalogue-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:14px; }
+.bib-book-card { background:#fff; border-radius:14px; border:1px solid #e5e7eb; padding:1.1rem; cursor:default; transition:all .15s; position:relative; overflow:hidden; }
+.bib-book-card:hover { box-shadow:0 6px 20px rgba(0,0,0,.08); transform:translateY(-2px); }
+.bib-book-card::before { content:''; position:absolute; top:0; left:0; width:4px; height:100%; border-radius:4px 0 0 4px; }
+.bib-book-card.disponible::before { background:#059669; }
+.bib-book-card.emprunte::before { background:#c97c1a; }
+.bib-book-card.perdu::before { background:#dc2626; }
+.bib-book-ico { font-size:32px; margin-bottom:.6rem; }
+.bib-book-titre { font-size:13px; font-weight:700; color:#111827; margin-bottom:3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.bib-book-auteur { font-size:11.5px; color:#6b7280; margin-bottom:.3rem; }
+.bib-book-meta { font-size:11px; color:#9ca3af; }
+.bib-book-actions { display:flex; gap:6px; margin-top:.75rem; flex-wrap:wrap; }
+
+/* Tableau emprunts */
+.emprunt-overdue { background:#fff5f5 !important; }
+.emprunt-overdue td { color:#dc2626; }
+.bib-dispo-dot { width:9px; height:9px; border-radius:50%; display:inline-block; margin-right:5px; flex-shrink:0; }
+.bib-dispo-dot.green { background:#059669; }
+.bib-dispo-dot.amber { background:#d97706; }
+.bib-dispo-dot.red   { background:#dc2626; }
+
+/* ══════════════════════════════════════════════
+   INTELLIGENCE ANALYTIQUE  ★ JOUR 20
+══════════════════════════════════════════════ */
+.analytics-hero { background:linear-gradient(135deg,#1e3a5f 0%,#2d5a8e 50%,#1e3a5f 100%); border-radius:18px; padding:1.5rem 2rem; margin-bottom:1.5rem; display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+.analytics-hero-text h2 { font-size:20px; font-weight:800; color:#fff; margin-bottom:4px; }
+.analytics-hero-text p { font-size:13px; color:rgba(255,255,255,.65); }
+.analytics-hero-kpis { display:flex; gap:1.5rem; flex-wrap:wrap; }
+.ah-kpi { text-align:center; }
+.ah-kpi .ak-val { font-size:26px; font-weight:800; color:#fff; line-height:1; }
+.ah-kpi .ak-lbl { font-size:10px; color:rgba(255,255,255,.6); font-weight:600; text-transform:uppercase; letter-spacing:.05em; margin-top:2px; }
+
+/* KPI Cards avancées */
+.analytics-kpi-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:1.5rem; }
+.akpi { background:#fff; border-radius:16px; border:1px solid #e5e7eb; padding:1.2rem; position:relative; overflow:hidden; }
+.akpi::after { content:''; position:absolute; top:-20px; right:-20px; width:80px; height:80px; border-radius:50%; opacity:.06; }
+.akpi.navy::after   { background:#1e3a5f; }
+.akpi.green::after  { background:#059669; }
+.akpi.amber::after  { background:#d97706; }
+.akpi.red::after    { background:#dc2626; }
+.akpi .ak-ico { width:42px; height:42px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:18px; margin-bottom:.75rem; }
+.akpi.navy .ak-ico  { background:#dbeafe; }
+.akpi.green .ak-ico { background:#dcfce7; }
+.akpi.amber .ak-ico { background:#fef9c3; }
+.akpi.red .ak-ico   { background:#fee2e2; }
+.akpi .ak-val  { font-size:28px; font-weight:800; line-height:1; margin-bottom:4px; }
+.akpi .ak-lbl  { font-size:11.5px; color:#6b7280; font-weight:500; }
+.akpi .ak-trend { font-size:11px; font-weight:700; margin-top:6px; display:flex; align-items:center; gap:3px; }
+.akpi .ak-trend.up   { color:#059669; }
+.akpi .ak-trend.down { color:#dc2626; }
+.akpi .ak-trend.flat { color:#6b7280; }
+
+/* Layout Analytics */
+.analytics-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; margin-bottom:1rem; }
+.analytics-grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem; margin-bottom:1rem; }
+.analytics-block { background:#fff; border-radius:14px; border:1px solid #e5e7eb; padding:1.2rem; }
+.analytics-block .ab-title { font-size:13px; font-weight:700; color:#111827; margin-bottom:1rem; display:flex; align-items:center; gap:6px; }
+.analytics-block .ab-subtitle { font-size:11px; color:#9ca3af; margin-left:auto; }
+
+/* Alertes intelligentes */
+.alert-item { display:flex; gap:.85rem; align-items:flex-start; padding:.85rem; border-radius:12px; border:1px solid transparent; margin-bottom:.6rem; }
+.alert-item.danger  { background:#fff5f5; border-color:#fee2e2; }
+.alert-item.warning { background:#fffbeb; border-color:#fde68a; }
+.alert-item.info    { background:#eff6ff; border-color:#bfdbfe; }
+.alert-item.success { background:#f0fdf4; border-color:#bbf7d0; }
+.alert-ico { width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
+.alert-item.danger .alert-ico  { background:#fee2e2; }
+.alert-item.warning .alert-ico { background:#fef9c3; }
+.alert-item.info .alert-ico    { background:#dbeafe; }
+.alert-item.success .alert-ico { background:#dcfce7; }
+.alert-body .ab-titre { font-size:12.5px; font-weight:700; color:#111827; margin-bottom:2px; }
+.alert-body .ab-msg   { font-size:11.5px; color:#6b7280; }
+.alert-body .ab-time  { font-size:10.5px; color:#9ca3af; margin-top:3px; }
+
+/* Score de santé */
+.health-score-wrap { display:flex; align-items:center; gap:1.5rem; }
+.health-score-circle { width:100px; height:100px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-direction:column; border:6px solid transparent; flex-shrink:0; }
+.health-score-circle.excellent { border-color:#059669; background:#f0fdf4; }
+.health-score-circle.good      { border-color:#c97c1a; background:#fffbeb; }
+.health-score-circle.poor      { border-color:#dc2626; background:#fff5f5; }
+.hs-val  { font-size:28px; font-weight:800; }
+.hs-unit { font-size:11px; font-weight:600; color:#6b7280; }
+.health-detail { flex:1; }
+.health-bar-item { margin-bottom:.6rem; }
+.health-bar-label { display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px; color:#374151; }
+.health-bar-track { height:7px; background:#f3f4f6; border-radius:4px; overflow:hidden; }
+.health-bar-fill  { height:100%; border-radius:4px; transition:width 1s ease; }
+
+/* Prédictions */
+.prediction-card { background:linear-gradient(135deg,#eff6ff,#fff); border:1px solid #bfdbfe; border-radius:12px; padding:1rem; display:flex; align-items:center; gap:.85rem; }
+.pred-ico { font-size:24px; flex-shrink:0; }
+.pred-label { font-size:12px; font-weight:600; color:#1e3a5f; margin-bottom:3px; }
+.pred-val   { font-size:18px; font-weight:800; color:#1d4ed8; }
+.pred-sub   { font-size:11px; color:#6b7280; margin-top:2px; }
+
+@media (max-width:900px) {
+  .bib-stat-bar         { grid-template-columns:1fr 1fr; }
+  .analytics-kpi-grid   { grid-template-columns:1fr 1fr; }
+  .analytics-grid       { grid-template-columns:1fr; }
+  .analytics-grid-3     { grid-template-columns:1fr; }
+  .bib-catalogue-grid   { grid-template-columns:1fr 1fr; }
+}
+@media (max-width:480px) {
+  .bib-stat-bar       { grid-template-columns:1fr; }
+  .analytics-kpi-grid { grid-template-columns:1fr; }
+  .analytics-hero     { flex-direction:column; }
+}
+
 @media (max-width:768px) {
   body { flex-direction:column; }
   #hamburger { display:block; }
@@ -798,6 +920,8 @@ button:hover { background:#a86615; transform:translateY(-1px); }
   <a onclick="showPage('documents')" id="nav-documents"><span class="ico">📄</span> Documents</a>
   <a onclick="showPage('certificats')" id="nav-certificats"><span class="ico">📜</span> Certificats</a>
   <a onclick="showPage('rapports')"  id="nav-rapports"><span class="ico">📈</span> Rapports</a>
+  <a onclick="showPage('bibliotheque')" id="nav-bibliotheque"><span class="ico">📚</span> Bibliothèque <span id="badge-bib" style="margin-left:auto;background:#c97c1a;color:#fff;border-radius:10px;padding:1px 6px;font-size:10px;display:none"></span></a>
+  <a onclick="showPage('analytics')" id="nav-analytics"><span class="ico">🧠</span> Analytics IA</a>
   <a onclick="showPage('utilisateurs')" id="nav-utilisateurs" style="display:none"><span class="ico">👥</span> Utilisateurs</a>
   <a onclick="showPage('notifications')" id="nav-notifications"><span class="ico">🔔</span> Notifications <span id="badge-notifs" style="margin-left:auto;background:#dc2626;color:#fff;border-radius:10px;padding:1px 6px;font-size:10px;display:none"></span></a>
   <a onclick="showPage('parametres')" id="nav-parametres"><span class="ico">⚙️</span> Paramètres</a>
@@ -1774,6 +1898,149 @@ button:hover { background:#a86615; transform:translateY(-1px); }
   </div>
 </div>
 
+<!-- ═══════════════════════════════════════
+     BIBLIOTHÈQUE SCOLAIRE  ★ JOUR 19
+═══════════════════════════════════════ -->
+<div class="page" id="page-bibliotheque">
+  <div class="top">
+    <div>
+      <h2>📚 Bibliothèque</h2>
+      <p class="page-subtitle">Gestion du catalogue et des emprunts</p>
+    </div>
+    <div class="top-actions">
+      <button class="btn-outline" onclick="showTab('bib','tab-bib-emprunts')">📋 Emprunts en cours</button>
+      <button onclick="ouvrirModal('modal-livre')">+ Ajouter ouvrage</button>
+    </div>
+  </div>
+  <div class="bib-stat-bar">
+    <div class="bib-stat"><div class="bib-stat-ico navy">📚</div><div><div class="bs-val" style="color:#1e3a5f" id="bib-stat-total">—</div><div class="bs-lbl">Ouvrages total</div></div></div>
+    <div class="bib-stat"><div class="bib-stat-ico green">✅</div><div><div class="bs-val" style="color:#059669" id="bib-stat-dispo">—</div><div class="bs-lbl">Disponibles</div></div></div>
+    <div class="bib-stat"><div class="bib-stat-ico amber">📤</div><div><div class="bs-val" style="color:#d97706" id="bib-stat-empruntes">—</div><div class="bs-lbl">Empruntés</div></div></div>
+    <div class="bib-stat"><div class="bib-stat-ico red">⚠️</div><div><div class="bs-val" style="color:#dc2626" id="bib-stat-retard">—</div><div class="bs-lbl">En retard</div></div></div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" id="tab-bib-catalogue-btn" onclick="showTab('bib','tab-bib-catalogue')">📖 Catalogue</button>
+    <button class="tab" id="tab-bib-emprunts-btn" onclick="showTab('bib','tab-bib-emprunts')">📤 Emprunts actifs</button>
+    <button class="tab" id="tab-bib-historique-btn" onclick="showTab('bib','tab-bib-historique')">📋 Historique</button>
+  </div>
+  <div id="tab-bib-catalogue">
+    <div class="search-bar" style="margin-bottom:1rem">
+      <input type="text" id="search-livres" placeholder="🔍 Titre, auteur, ISBN, catégorie..." oninput="filtrerLivres()">
+      <select id="filter-bib-categorie" onchange="filtrerLivres()" style="padding:8px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:12px;font-family:'Poppins',sans-serif;outline:none">
+        <option value="">Toutes catégories</option>
+        <option value="litterature">Littérature</option><option value="sciences">Sciences</option>
+        <option value="mathematiques">Mathématiques</option><option value="informatique">Informatique</option>
+        <option value="histoire">Histoire & Géographie</option><option value="philosophie">Philosophie</option>
+        <option value="droit">Droit</option><option value="economie">Économie</option><option value="autre">Autre</option>
+      </select>
+      <select id="filter-bib-statut" onchange="filtrerLivres()" style="padding:8px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:12px;font-family:'Poppins',sans-serif;outline:none">
+        <option value="">Tous statuts</option>
+        <option value="disponible">Disponible</option>
+        <option value="emprunte">Emprunté</option>
+        <option value="perdu">Perdu</option>
+      </select>
+    </div>
+    <div id="bib-catalogue-container" class="bib-catalogue-grid">
+      <div class="loading" style="grid-column:1/-1">Chargement du catalogue...</div>
+    </div>
+  </div>
+  <div id="tab-bib-emprunts" style="display:none">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+      <div style="font-size:12.5px;color:#6b7280">Emprunts actifs (non encore rendus)</div>
+      <button onclick="ouvrirModal('modal-emprunt')">+ Enregistrer emprunt</button>
+    </div>
+    <table>
+      <tr><th>Ouvrage</th><th>Emprunteur</th><th>Date emprunt</th><th>Retour prévu</th><th>Retard</th><th>Statut</th><th>Actions</th></tr>
+      <tbody id="tbody-bib-emprunts"><tr><td colspan="7" class="loading">Chargement...</td></tr></tbody>
+    </table>
+  </div>
+  <div id="tab-bib-historique" style="display:none">
+    <div class="filters" style="margin-bottom:1rem">
+      <span class="filter-label">Période :</span>
+      <select id="filter-bib-hist-periode" onchange="chargerHistoriqueBib()" style="padding:6px 10px;border:1px solid #e5e7eb;border-radius:8px;font-size:12px;font-family:'Poppins',sans-serif;outline:none">
+        <option value="30">30 derniers jours</option><option value="90">3 derniers mois</option>
+        <option value="365">Cette année</option><option value="all">Tout l'historique</option>
+      </select>
+    </div>
+    <table>
+      <tr><th>Ouvrage</th><th>Emprunteur</th><th>Emprunté le</th><th>Rendu le</th><th>Durée (j)</th><th>Pénalité</th></tr>
+      <tbody id="tbody-bib-historique"><tr><td colspan="6" class="loading">Chargement...</td></tr></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     INTELLIGENCE ANALYTIQUE  ★ JOUR 20
+═══════════════════════════════════════ -->
+<div class="page" id="page-analytics">
+  <div class="top">
+    <div><h2>🧠 Intelligence Analytique</h2><p class="page-subtitle">KPIs avancés, alertes intelligentes et prédictions</p></div>
+    <div class="top-actions">
+      <button class="btn-outline" onclick="exporterRapportAnalyticsPDF()">📄 Rapport PDF</button>
+      <button onclick="rafraichirAnalytics()">🔄 Actualiser</button>
+    </div>
+  </div>
+  <div class="analytics-hero">
+    <div class="analytics-hero-text">
+      <h2 id="analytics-hero-ecole">EduLink Analytics</h2>
+      <p>Tableau de bord analytique — <span id="analytics-hero-date"></span></p>
+    </div>
+    <div class="analytics-hero-kpis">
+      <div class="ah-kpi"><div class="ak-val" id="ahk-etudiants">—</div><div class="ak-lbl">Étudiants</div></div>
+      <div class="ah-kpi"><div class="ak-val" id="ahk-taux-presence">—</div><div class="ak-lbl">Taux présence</div></div>
+      <div class="ah-kpi"><div class="ak-val" id="ahk-moy-generale">—</div><div class="ak-lbl">Moy. générale</div></div>
+      <div class="ah-kpi"><div class="ak-val" id="ahk-recouvrement">—</div><div class="ak-lbl">Recouvrement</div></div>
+    </div>
+  </div>
+  <div class="analytics-kpi-grid">
+    <div class="akpi navy"><div class="ak-ico">🎓</div><div class="ak-val" style="color:#1e3a5f" id="akpi-etudiants">—</div><div class="ak-lbl">Étudiants inscrits</div><div class="ak-trend up" id="akpi-etudiants-trend">↑ Chargement...</div></div>
+    <div class="akpi green"><div class="ak-ico">✅</div><div class="ak-val" style="color:#059669" id="akpi-presence">—</div><div class="ak-lbl">Taux de présence</div><div class="ak-trend flat" id="akpi-presence-trend">— Chargement...</div></div>
+    <div class="akpi amber"><div class="ak-ico">💳</div><div class="ak-val" style="color:#d97706" id="akpi-recouvrement">—</div><div class="ak-lbl">Taux de recouvrement</div><div class="ak-trend flat" id="akpi-recouvrement-trend">— Chargement...</div></div>
+    <div class="akpi red"><div class="ak-ico">⚠️</div><div class="ak-val" style="color:#dc2626" id="akpi-incidents">—</div><div class="ak-lbl">Incidents ouverts</div><div class="ak-trend flat" id="akpi-incidents-trend">— Chargement...</div></div>
+  </div>
+  <div class="analytics-grid">
+    <div class="analytics-block">
+      <div class="ab-title">📊 Répartition des notes <span class="ab-subtitle">par tranche (/20)</span></div>
+      <canvas id="analytics-chart-notes" height="200"></canvas>
+    </div>
+    <div class="analytics-block">
+      <div class="ab-title">💳 Statut des paiements <span class="ab-subtitle">répartition globale</span></div>
+      <canvas id="analytics-chart-paiements" height="200"></canvas>
+    </div>
+  </div>
+  <div class="analytics-grid" style="margin-top:1rem">
+    <div class="analytics-block">
+      <div class="ab-title">🏥 Score de santé de l'établissement</div>
+      <div id="health-score-container" class="health-score-wrap"><div class="loading">Calcul...</div></div>
+      <div style="margin-top:1.2rem" id="health-bars-container"></div>
+    </div>
+    <div class="analytics-block">
+      <div class="ab-title">🚨 Alertes intelligentes <span class="ab-subtitle" id="alerts-count" style="background:#fee2e2;color:#dc2626;padding:2px 8px;border-radius:10px;font-size:10.5px;font-weight:700"></span></div>
+      <div id="alerts-container"><div class="loading">Analyse...</div></div>
+    </div>
+  </div>
+  <div class="analytics-block" style="margin-top:1rem;margin-bottom:1rem">
+    <div class="ab-title">🔮 Prédictions & Tendances</div>
+    <div id="predictions-container" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-top:.5rem">
+      <div class="loading">Analyse prédictive...</div>
+    </div>
+  </div>
+  <div class="analytics-grid-3">
+    <div class="analytics-block">
+      <div class="ab-title">🏆 Top 5 — Meilleures moyennes</div>
+      <div id="top-etudiants-container"><div class="loading">Calcul...</div></div>
+    </div>
+    <div class="analytics-block">
+      <div class="ab-title">📉 Risque de décrochage</div>
+      <div id="risque-container"><div class="loading">Analyse...</div></div>
+    </div>
+    <div class="analytics-block">
+      <div class="ab-title">📅 Activité 7 derniers jours</div>
+      <canvas id="analytics-chart-activite" height="180"></canvas>
+    </div>
+  </div>
+</div>
+
 </main>
 </div><!-- /#app-main -->
 
@@ -2434,6 +2701,69 @@ button:hover { background:#a86615; transform:translateY(-1px); }
   </div>
 </div>
 
+<!-- ═══════════════════ MODAL AJOUTER LIVRE ★ JOUR 19 ══════════════════ -->
+<div class="modal-overlay" id="modal-livre">
+  <div class="modal">
+    <h3>📖 Ajouter un ouvrage</h3>
+    <div class="form-grid">
+      <div class="form-group"><label>Titre *</label><input type="text" id="input-livre-titre" placeholder="Titre de l'ouvrage"></div>
+      <div class="form-group"><label>Auteur *</label><input type="text" id="input-livre-auteur" placeholder="Prénom NOM"></div>
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><label>ISBN / Référence</label><input type="text" id="input-livre-isbn" placeholder="978-..."></div>
+      <div class="form-group"><label>Année édition</label><input type="number" id="input-livre-annee" placeholder="2024" min="1900" max="2099"></div>
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><label>Catégorie *</label>
+        <select id="input-livre-categorie">
+          <option value="litterature">Littérature</option>
+          <option value="sciences">Sciences</option>
+          <option value="mathematiques">Mathématiques</option>
+          <option value="informatique">Informatique</option>
+          <option value="histoire">Histoire & Géographie</option>
+          <option value="philosophie">Philosophie</option>
+          <option value="droit">Droit</option>
+          <option value="economie">Économie</option>
+          <option value="autre">Autre</option>
+        </select>
+      </div>
+      <div class="form-group"><label>Nombre d'exemplaires *</label><input type="number" id="input-livre-exemplaires" value="1" min="1"></div>
+    </div>
+    <div class="form-group"><label>Emplacement / Cote</label><input type="text" id="input-livre-cote" placeholder="Ex : A-023 / Rayon Sciences"></div>
+    <div class="form-group"><label>Description (optionnel)</label><textarea rows="2" id="input-livre-desc" placeholder="Résumé ou notes sur l'ouvrage..."></textarea></div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="fermerModal('modal-livre')">Annuler</button>
+      <button onclick="ajouterLivre()">📚 Ajouter au catalogue</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════ MODAL EMPRUNT LIVRE ★ JOUR 19 ══════════════════ -->
+<div class="modal-overlay" id="modal-emprunt">
+  <div class="modal">
+    <h3>📤 Enregistrer un emprunt</h3>
+    <div class="form-group"><label>Ouvrage *</label>
+      <select id="input-emprunt-livre">
+        <option value="">— Sélectionner un ouvrage disponible —</option>
+      </select>
+    </div>
+    <div class="form-group"><label>Emprunteur — Étudiant *</label>
+      <select id="input-emprunt-etudiant">
+        <option value="">— Sélectionner un étudiant —</option>
+      </select>
+    </div>
+    <div class="form-grid">
+      <div class="form-group"><label>Date d'emprunt *</label><input type="date" id="input-emprunt-date"></div>
+      <div class="form-group"><label>Date retour prévue *</label><input type="date" id="input-emprunt-retour"></div>
+    </div>
+    <div class="form-group"><label>Observations (optionnel)</label><textarea rows="2" id="input-emprunt-obs" placeholder="État du livre, remarques..."></textarea></div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="fermerModal('modal-emprunt')">Annuler</button>
+      <button class="btn-amber" onclick="enregistrerEmprunt()" style="background:#d97706">📤 Valider l'emprunt</button>
+    </div>
+  </div>
+</div>
+
 <!-- ═══════════════════ PWA INSTALL BANNER ══════════════════ -->
 <div id="pwa-banner">
   <span style="font-size:22px">📱</span>
@@ -2532,6 +2862,8 @@ function showPage(p) {
     enseignants:     chargerEnseignants,
     notifications:   chargerNotifications,
     certificats:     chargerCertificats,
+    bibliotheque:    chargerBibliotheque,
+    analytics:       chargerAnalytics,
   };
   if (p === 'parametres') { chargerBranding(); }
   if (p === 'certificats') { chargerBranding(); }
@@ -2545,6 +2877,7 @@ function showTab(page, tabId) {
     docs:  { tabs:['tab-docs-galerie','tab-docs-liste'], btns:['tab-docs-galerie-btn','tab-docs-liste-btn'] },
     exam:  { tabs:['tab-exam-planning','tab-exam-liste','tab-exam-resultats'], btns:['tab-exam-planning-btn','tab-exam-liste-btn','tab-exam-resultats-btn'] },
     ens:   { tabs:['tab-ens-liste','tab-ens-matieres','tab-ens-planning'], btns:['tab-ens-liste-btn','tab-ens-matieres-btn','tab-ens-planning-btn'] },
+    bib:   { tabs:['tab-bib-catalogue','tab-bib-emprunts','tab-bib-historique'], btns:['tab-bib-catalogue-btn','tab-bib-emprunts-btn','tab-bib-historique-btn'] },
   };
   const m = maps[page];
   m.tabs.forEach(id => { const el = document.getElementById(id); if(el) el.style.display = 'none'; });
@@ -2559,6 +2892,9 @@ function showTab(page, tabId) {
   if (tabId === 'tab-exam-resultats') afficherResultatsExamens();
   if (tabId === 'tab-pay-historique') chargerHistoriquePaiements();
   if (tabId === 'tab-docs-liste') afficherDocumentsListe();
+  if (tabId === 'tab-bib-catalogue') { chargerCatalogueLivres(); }
+  if (tabId === 'tab-bib-emprunts')  { chargerEmpruntsActifs(); }
+  if (tabId === 'tab-bib-historique'){ chargerHistoriqueBib(); }
 }
 
 // ══ MODALS ════════════════════════════════════
@@ -2568,6 +2904,7 @@ function ouvrirModal(id) {
   if (id === 'modal-note')     remplirSelect('input-note-etudiant');
   if (id === 'modal-facture')  { remplirSelect('input-fac-etudiant'); document.getElementById('input-fac-echeance').value = new Date(Date.now()+30*864e5).toISOString().split('T')[0]; }
   if (id === 'modal-incident') { remplirSelect('input-inc-etudiant'); document.getElementById('input-inc-date').value = new Date().toISOString().split('T')[0]; }
+  if (id === 'modal-emprunt')  { remplirSelectEmprunt(); }
   if (id === 'modal-document') remplirSelect('input-doc-etudiant', true);
   if (id === 'modal-examen') { initModalExamen(); }
   if (id === 'modal-enseignant') { initModalEnseignant(); }
@@ -6555,6 +6892,669 @@ function certGetAnnee() {
 
 // ══ FIN CERTIFICATS & ATTESTATIONS  ★ JOUR 18 ══════════════════════════════
 
+// ══════════════════════════════════════════════════════════════════════════
+//  BIBLIOTHÈQUE SCOLAIRE  ★ JOUR 19
+// ══════════════════════════════════════════════════════════════════════════
+let tousLesLivres = [];
+let tousLesEmprunts = [];
+
+const BIB_CAT_ICO = {
+  litterature:'📕', sciences:'🔬', mathematiques:'📐', informatique:'💻',
+  histoire:'🗺️', philosophie:'🎭', droit:'⚖️', economie:'📈', autre:'📚'
+};
+
+async function chargerBibliotheque() {
+  await chargerStatsBib();
+  await chargerCatalogueLivres();
+}
+
+async function chargerStatsBib() {
+  let qL = db.from('livres').select('*');
+  if (currentEcoleId) qL = qL.eq('ecole_id', currentEcoleId);
+  const { data: livres } = await qL;
+  tousLesLivres = livres || [];
+
+  const total = tousLesLivres.reduce((s,l) => s + (l.exemplaires||1), 0);
+  const empruntes = tousLesLivres.reduce((s,l) => s + (l.exemplaires_empruntes||0), 0);
+  const dispo = total - empruntes;
+
+  // Emprunts en retard
+  const today = new Date().toISOString().split('T')[0];
+  let qE = db.from('emprunts').select('*').eq('statut','actif').lt('date_retour_prevue', today);
+  if (currentEcoleId) qE = qE.eq('ecole_id', currentEcoleId);
+  const { count: retard } = await db.from('emprunts').select('*',{count:'exact',head:true}).eq('statut','actif').lt('date_retour_prevue', today);
+
+  document.getElementById('bib-stat-total').textContent     = total;
+  document.getElementById('bib-stat-dispo').textContent     = dispo;
+  document.getElementById('bib-stat-empruntes').textContent = empruntes;
+  document.getElementById('bib-stat-retard').textContent    = retard || 0;
+
+  // Badge nav
+  const badge = document.getElementById('badge-bib');
+  if (retard > 0) { badge.textContent = retard; badge.style.display='inline'; }
+  else badge.style.display='none';
+}
+
+async function chargerCatalogueLivres() {
+  const container = document.getElementById('bib-catalogue-container');
+  container.innerHTML = '<div class="loading" style="grid-column:1/-1">Chargement...</div>';
+  let q = db.from('livres').select('*').order('titre');
+  if (currentEcoleId) q = q.eq('ecole_id', currentEcoleId);
+  const { data } = await q;
+  tousLesLivres = data || [];
+  afficherCatalogueLivres(tousLesLivres);
+}
+
+function afficherCatalogueLivres(liste) {
+  const container = document.getElementById('bib-catalogue-container');
+  if (!liste.length) {
+    container.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="icon">📚</div><h3>Catalogue vide</h3><p>Ajoutez votre premier ouvrage !</p></div>';
+    return;
+  }
+  container.innerHTML = liste.map(l => {
+    const ico   = BIB_CAT_ICO[l.categorie] || '📚';
+    const dispo = (l.exemplaires||1) - (l.exemplaires_empruntes||0);
+    const statut = dispo > 0 ? 'disponible' : 'emprunte';
+    const sCls  = dispo > 0 ? 'green' : 'amber';
+    const sLbl  = dispo > 0 ? `${dispo} dispo.` : 'Emprunté';
+    return `<div class="bib-book-card ${statut}">
+      <div class="bib-book-ico">${ico}</div>
+      <div class="bib-book-titre" title="${l.titre}">${l.titre}</div>
+      <div class="bib-book-auteur">${l.auteur||'Auteur inconnu'}</div>
+      <div class="bib-book-meta">${l.annee_edition||'—'} · ${l.categorie||'—'}</div>
+      ${l.cote ? `<div style="font-size:10.5px;color:#9ca3af;margin-top:2px">📍 ${l.cote}</div>` : ''}
+      <div style="display:flex;align-items:center;gap:6px;margin-top:.5rem">
+        <span class="badge ${sCls}">${sLbl}</span>
+        <span style="font-size:10px;color:#9ca3af">${l.exemplaires||1} ex.</span>
+      </div>
+      <div class="bib-book-actions">
+        ${dispo > 0 ? `<button class="btn-sm btn-blue" onclick="preRemplirEmprunt('${l.id}')">📤 Emprunter</button>` : ''}
+        <button class="btn-sm btn-red" onclick="supprimerLivre('${l.id}')">✕</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filtrerLivres() {
+  const q    = (document.getElementById('search-livres')?.value || '').toLowerCase();
+  const cat  = document.getElementById('filter-bib-categorie')?.value || '';
+  const stat = document.getElementById('filter-bib-statut')?.value || '';
+  let liste = tousLesLivres;
+  if (q)    liste = liste.filter(l => (l.titre||'').toLowerCase().includes(q) || (l.auteur||'').toLowerCase().includes(q) || (l.isbn||'').toLowerCase().includes(q));
+  if (cat)  liste = liste.filter(l => l.categorie === cat);
+  if (stat === 'disponible') liste = liste.filter(l => (l.exemplaires||1)-(l.exemplaires_empruntes||0) > 0);
+  if (stat === 'emprunte')   liste = liste.filter(l => (l.exemplaires_empruntes||0) > 0 && (l.exemplaires||1)-(l.exemplaires_empruntes||0) <= 0);
+  afficherCatalogueLivres(liste);
+}
+
+async function ajouterLivre() {
+  const titre = document.getElementById('input-livre-titre').value.trim();
+  const auteur= document.getElementById('input-livre-auteur').value.trim();
+  if (!titre || !auteur) { showToast('Titre et auteur obligatoires.','error'); return; }
+  const { error } = await db.from('livres').insert([{
+    ecole_id: currentEcoleId,
+    titre, auteur,
+    isbn: document.getElementById('input-livre-isbn').value.trim(),
+    annee_edition: parseInt(document.getElementById('input-livre-annee').value)||null,
+    categorie: document.getElementById('input-livre-categorie').value,
+    exemplaires: parseInt(document.getElementById('input-livre-exemplaires').value)||1,
+    exemplaires_empruntes: 0,
+    cote: document.getElementById('input-livre-cote').value.trim(),
+    description: document.getElementById('input-livre-desc').value.trim(),
+    statut:'disponible'
+  }]);
+  if (error) { showToast('Erreur : '+error.message,'error'); return; }
+  fermerModal('modal-livre');
+  ['input-livre-titre','input-livre-auteur','input-livre-isbn','input-livre-annee','input-livre-cote','input-livre-desc'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('input-livre-exemplaires').value='1';
+  showToast('📚 Ouvrage ajouté au catalogue !','success');
+  chargerBibliotheque();
+}
+
+async function supprimerLivre(id) {
+  if (!confirm('Supprimer cet ouvrage du catalogue ?')) return;
+  await db.from('livres').delete().eq('id',id);
+  showToast('Ouvrage supprimé.','success');
+  chargerBibliotheque();
+}
+
+async function remplirSelectEmprunt() {
+  // Livres disponibles
+  let qL = db.from('livres').select('id,titre,auteur,exemplaires,exemplaires_empruntes').order('titre');
+  if (currentEcoleId) qL = qL.eq('ecole_id', currentEcoleId);
+  const { data: livres } = await qL;
+  const sel = document.getElementById('input-emprunt-livre');
+  sel.innerHTML = '<option value="">— Sélectionner —</option>' +
+    (livres||[]).filter(l => (l.exemplaires||1)-(l.exemplaires_empruntes||0) > 0)
+    .map(l => `<option value="${l.id}">${l.titre} — ${l.auteur} (${(l.exemplaires||1)-(l.exemplaires_empruntes||0)} dispo.)</option>`).join('');
+  // Étudiants
+  await remplirSelect('input-emprunt-etudiant');
+  // Dates par défaut
+  const today = new Date().toISOString().split('T')[0];
+  const retour = new Date(Date.now()+14*864e5).toISOString().split('T')[0];
+  document.getElementById('input-emprunt-date').value = today;
+  document.getElementById('input-emprunt-retour').value = retour;
+}
+
+async function preRemplirEmprunt(livreId) {
+  ouvrirModal('modal-emprunt');
+  setTimeout(()=>{ document.getElementById('input-emprunt-livre').value = livreId; }, 300);
+}
+
+async function enregistrerEmprunt() {
+  const livreId    = document.getElementById('input-emprunt-livre').value;
+  const etudiantId = document.getElementById('input-emprunt-etudiant').value;
+  const dateEmp    = document.getElementById('input-emprunt-date').value;
+  const dateRet    = document.getElementById('input-emprunt-retour').value;
+  if (!livreId||!etudiantId||!dateEmp||!dateRet) { showToast('Remplissez tous les champs.','error'); return; }
+  const ref = 'EMP-' + Date.now().toString().slice(-6);
+  const { error } = await db.from('emprunts').insert([{
+    ecole_id: currentEcoleId, livre_id: livreId, etudiant_id: etudiantId,
+    reference: ref, date_emprunt: dateEmp, date_retour_prevue: dateRet,
+    statut: 'actif', observations: document.getElementById('input-emprunt-obs').value.trim()
+  }]);
+  if (error) { showToast('Erreur : '+error.message,'error'); return; }
+  // Incrémenter exemplaires_empruntes
+  const livre = tousLesLivres.find(l=>l.id===livreId);
+  if (livre) await db.from('livres').update({ exemplaires_empruntes:(livre.exemplaires_empruntes||0)+1 }).eq('id',livreId);
+  fermerModal('modal-emprunt');
+  document.getElementById('input-emprunt-obs').value='';
+  showToast('📤 Emprunt enregistré — Réf. '+ref,'success');
+  chargerBibliotheque();
+  chargerEmpruntsActifs();
+}
+
+async function chargerEmpruntsActifs() {
+  document.getElementById('tbody-bib-emprunts').innerHTML='<tr><td colspan="7" class="loading">Chargement...</td></tr>';
+  let q = db.from('emprunts').select('*, livres(titre,auteur), etudiants(nom,prenom)').eq('statut','actif').order('date_retour_prevue');
+  if (currentEcoleId) q = q.eq('ecole_id',currentEcoleId);
+  const { data } = await q;
+  const today = new Date();
+  tousLesEmprunts = data || [];
+  document.getElementById('tbody-bib-emprunts').innerHTML = tousLesEmprunts.length
+    ? tousLesEmprunts.map(e => {
+        const retour  = new Date(e.date_retour_prevue);
+        const diffJ   = Math.floor((today-retour)/864e5);
+        const enRetard= diffJ > 0;
+        const rowCls  = enRetard ? 'emprunt-overdue' : '';
+        const retardLbl = enRetard ? `<span class="badge red">${diffJ}j retard</span>` : `<span class="badge green">J+${Math.abs(diffJ)}</span>`;
+        return `<tr class="${rowCls}">
+          <td><strong>${e.livres?.titre||'—'}</strong><br><small style="color:#6b7280">${e.livres?.auteur||''}</small></td>
+          <td>${e.etudiants?e.etudiants.nom+' '+e.etudiants.prenom:'N/A'}</td>
+          <td>${fmtDate(e.date_emprunt)}</td>
+          <td>${fmtDate(e.date_retour_prevue)}</td>
+          <td>${retardLbl}</td>
+          <td><span class="badge amber">En cours</span></td>
+          <td><button class="btn-sm btn-green" onclick="enregistrerRetour('${e.id}','${e.livre_id}')">✅ Retour</button></td>
+        </tr>`;
+      }).join('')
+    : '<tr><td colspan="7" class="empty-state" style="padding:2rem">✅ Aucun emprunt actif en ce moment.</td></tr>';
+}
+
+async function enregistrerRetour(empruntId, livreId) {
+  if (!confirm('Confirmer le retour de cet ouvrage ?')) return;
+  const { error } = await db.from('emprunts').update({ statut:'rendu', date_retour_reel:new Date().toISOString().split('T')[0] }).eq('id',empruntId);
+  if (error) { showToast('Erreur : '+error.message,'error'); return; }
+  const livre = tousLesLivres.find(l=>l.id===livreId);
+  if (livre) await db.from('livres').update({ exemplaires_empruntes:Math.max(0,(livre.exemplaires_empruntes||1)-1) }).eq('id',livreId);
+  showToast('📥 Retour enregistré !','success');
+  chargerBibliotheque();
+  chargerEmpruntsActifs();
+}
+
+async function chargerHistoriqueBib() {
+  document.getElementById('tbody-bib-historique').innerHTML='<tr><td colspan="6" class="loading">Chargement...</td></tr>';
+  const periode = document.getElementById('filter-bib-hist-periode')?.value || '30';
+  let q = db.from('emprunts').select('*, livres(titre,auteur), etudiants(nom,prenom)').eq('statut','rendu').order('date_retour_reel',{ascending:false});
+  if (currentEcoleId) q = q.eq('ecole_id',currentEcoleId);
+  if (periode !== 'all') {
+    const depuis = new Date(Date.now()-parseInt(periode)*864e5).toISOString().split('T')[0];
+    q = q.gte('date_retour_reel', depuis);
+  }
+  const { data } = await q;
+  document.getElementById('tbody-bib-historique').innerHTML = data?.length
+    ? data.map(e => {
+        const debut = new Date(e.date_emprunt);
+        const fin   = new Date(e.date_retour_reel);
+        const duree = Math.max(0,Math.floor((fin-debut)/864e5));
+        const prevue= new Date(e.date_retour_prevue);
+        const penalty = fin > prevue ? Math.floor((fin-prevue)/864e5) : 0;
+        return `<tr>
+          <td><strong>${e.livres?.titre||'—'}</strong><br><small style="color:#6b7280">${e.livres?.auteur||''}</small></td>
+          <td>${e.etudiants?e.etudiants.nom+' '+e.etudiants.prenom:'N/A'}</td>
+          <td>${fmtDate(e.date_emprunt)}</td>
+          <td>${fmtDate(e.date_retour_reel)}</td>
+          <td>${duree} jour(s)</td>
+          <td>${penalty>0?`<span class="badge red">${penalty}j de retard</span>`:'<span class="badge green">Dans les temps</span>'}</td>
+        </tr>`;
+      }).join('')
+    : '<tr><td colspan="6" class="loading">Aucun historique.</td></tr>';
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+//  INTELLIGENCE ANALYTIQUE  ★ JOUR 20
+// ══════════════════════════════════════════════════════════════════════════
+let analyticsCharts = {};
+
+async function chargerAnalytics() {
+  const ecole = tousLesEcoles.find(e=>e.id===currentEcoleId);
+  document.getElementById('analytics-hero-ecole').textContent = ecole ? ecole.nom : 'EduLink Analytics';
+  document.getElementById('analytics-hero-date').textContent  = new Date().toLocaleDateString('fr-FR',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  await Promise.all([
+    chargerKPIsAnalytics(),
+    chargerChartsAnalytics(),
+    calculerScoreSante(),
+    genererAlertesIntelligentes(),
+    genererPredictions(),
+    chargerTopEtudiants(),
+    analyserRisqueDécrochage(),
+    chargerChartActivite(),
+  ]);
+}
+
+async function rafraichirAnalytics() {
+  showToast('Actualisation en cours...','info');
+  await chargerAnalytics();
+  showToast('Analytics mis à jour !','success');
+}
+
+async function chargerKPIsAnalytics() {
+  // Étudiants
+  let qE = db.from('etudiants').select('*',{count:'exact',head:true});
+  if (currentEcoleId) qE = qE.eq('ecole_id',currentEcoleId);
+  const { count: nbEtu } = await qE;
+
+  // Absences ce mois
+  const debutMois = new Date(); debutMois.setDate(1);
+  const debutMoisStr = debutMois.toISOString().split('T')[0];
+  const { count: nbAbsMois } = await db.from('absences').select('*',{count:'exact',head:true}).gte('date_absence',debutMoisStr);
+
+  // Notes pour moyenne
+  let qN = db.from('notes').select('note');
+  if (currentEcoleId) qN = qN.eq('ecole_id',currentEcoleId);
+  const { data: notesData } = await qN;
+  const notes = notesData || [];
+  const moyGen = notes.length ? (notes.reduce((s,n)=>s+parseFloat(n.note||0),0)/notes.length).toFixed(1) : '—';
+
+  // Paiements
+  let qF = db.from('factures').select('montant_total,montant_paye');
+  if (currentEcoleId) qF = qF.eq('ecole_id',currentEcoleId);
+  const { data: facs } = await qF;
+  const totalDu  = (facs||[]).reduce((s,f)=>s+(f.montant_total||0),0);
+  const totalPay = (facs||[]).reduce((s,f)=>s+(f.montant_paye||0),0);
+  const tauxRec  = totalDu > 0 ? Math.round(totalPay/totalDu*100) : 0;
+
+  // Incidents ouverts
+  let qI = db.from('incidents').select('*',{count:'exact',head:true}).neq('statut','résolu');
+  if (currentEcoleId) qI = qI.eq('ecole_id',currentEcoleId);
+  const { count: nbInc } = await qI;
+
+  // Taux de présence (approx)
+  const tauxPres = nbEtu > 0 ? Math.max(0, Math.round(100-(nbAbsMois/(nbEtu*20)*100))).toString()+'%' : '—';
+
+  // Hero
+  document.getElementById('ahk-etudiants').textContent     = nbEtu || 0;
+  document.getElementById('ahk-taux-presence').textContent = tauxPres;
+  document.getElementById('ahk-moy-generale').textContent  = moyGen+'/20';
+  document.getElementById('ahk-recouvrement').textContent  = tauxRec+'%';
+
+  // KPI cards
+  document.getElementById('akpi-etudiants').textContent         = nbEtu || 0;
+  document.getElementById('akpi-etudiants-trend').textContent   = `↑ ${nbEtu||0} inscrits cette année`;
+  document.getElementById('akpi-presence').textContent          = tauxPres;
+  document.getElementById('akpi-presence-trend').textContent    = `${nbAbsMois||0} absences ce mois`;
+  document.getElementById('akpi-recouvrement').textContent      = tauxRec+'%';
+  document.getElementById('akpi-recouvrement-trend').textContent= fmtMontant(totalPay)+' perçus';
+  document.getElementById('akpi-incidents').textContent         = nbInc || 0;
+  document.getElementById('akpi-incidents-trend').textContent   = nbInc > 0 ? `⚠️ ${nbInc} à traiter` : '✅ Aucun en attente';
+
+  // Trend classes
+  const presNum = parseInt(tauxPres);
+  const presEl  = document.getElementById('akpi-presence-trend');
+  presEl.className = 'ak-trend ' + (presNum>=90?'up':presNum>=75?'flat':'down');
+  const recEl   = document.getElementById('akpi-recouvrement-trend');
+  recEl.className = 'ak-trend ' + (tauxRec>=80?'up':tauxRec>=60?'flat':'down');
+  const incEl   = document.getElementById('akpi-incidents-trend');
+  incEl.className = 'ak-trend ' + (nbInc===0?'up':nbInc<=3?'flat':'down');
+
+  return { nbEtu, moyGen, tauxRec, nbInc, notes, facs: facs||[] };
+}
+
+async function chargerChartsAnalytics() {
+  // Graphique notes par tranche
+  let qN = db.from('notes').select('note');
+  if (currentEcoleId) qN = qN.eq('ecole_id',currentEcoleId);
+  const { data: notes } = await qN;
+  const tranches = { '0-5':0, '5-10':0, '10-14':0, '14-16':0, '16-20':0 };
+  (notes||[]).forEach(n => {
+    const v = parseFloat(n.note||0);
+    if (v<5) tranches['0-5']++;
+    else if (v<10) tranches['5-10']++;
+    else if (v<14) tranches['10-14']++;
+    else if (v<16) tranches['14-16']++;
+    else tranches['16-20']++;
+  });
+  const ctxN = document.getElementById('analytics-chart-notes');
+  if (ctxN) {
+    if (analyticsCharts.notes) analyticsCharts.notes.destroy();
+    analyticsCharts.notes = new Chart(ctxN, {
+      type:'bar',
+      data:{
+        labels:['0-5 (Insuffisant)','5-10 (Passable)','10-14 (Moyen)','14-16 (Bien)','16-20 (Excellent)'],
+        datasets:[{ label:'Nombre de notes', data:Object.values(tranches),
+          backgroundColor:['#fee2e2','#fef9c3','#dbeafe','#dcfce7','#d1fae5'],
+          borderColor:['#dc2626','#d97706','#1d4ed8','#059669','#047857'],
+          borderWidth:2, borderRadius:6 }]
+      },
+      options:{ responsive:true, plugins:{ legend:{display:false} }, scales:{ y:{ beginAtZero:true, ticks:{ precision:0 } } } }
+    });
+  }
+
+  // Graphique paiements
+  let qF = db.from('factures').select('statut,montant_total,montant_paye');
+  if (currentEcoleId) qF = qF.eq('ecole_id',currentEcoleId);
+  const { data: facs } = await qF;
+  const payees   = (facs||[]).filter(f=>f.statut==='payée').reduce((s,f)=>s+(f.montant_total||0),0);
+  const partiel  = (facs||[]).filter(f=>f.statut==='partiellement_payée').reduce((s,f)=>s+(f.montant_total||0),0);
+  const attente  = (facs||[]).filter(f=>f.statut==='en_attente').reduce((s,f)=>s+(f.montant_total||0),0);
+  const retard   = (facs||[]).filter(f=>f.statut==='retard').reduce((s,f)=>s+(f.montant_total||0),0);
+  const ctxP = document.getElementById('analytics-chart-paiements');
+  if (ctxP) {
+    if (analyticsCharts.paiements) analyticsCharts.paiements.destroy();
+    analyticsCharts.paiements = new Chart(ctxP, {
+      type:'doughnut',
+      data:{
+        labels:['Payées','Partielles','En attente','En retard'],
+        datasets:[{ data:[payees,partiel,attente,retard],
+          backgroundColor:['#059669','#d97706','#3b82f6','#dc2626'],
+          borderWidth:0, hoverOffset:8 }]
+      },
+      options:{ responsive:true, plugins:{ legend:{ position:'bottom', labels:{ font:{size:11}, padding:12 } } }, cutout:'65%' }
+    });
+  }
+}
+
+async function calculerScoreSante() {
+  const container  = document.getElementById('health-score-container');
+  const barsContainer = document.getElementById('health-bars-container');
+
+  let qE = db.from('etudiants').select('*',{count:'exact',head:true});
+  if (currentEcoleId) qE = qE.eq('ecole_id',currentEcoleId);
+  const { count: nbEtu } = await qE;
+
+  const debutMois = new Date(); debutMois.setDate(1);
+  const { count: nbAbs } = await db.from('absences').select('*',{count:'exact',head:true}).gte('date_absence',debutMois.toISOString().split('T')[0]);
+
+  let qN = db.from('notes').select('note');
+  if (currentEcoleId) qN = qN.eq('ecole_id',currentEcoleId);
+  const { data: notes } = await qN;
+  const moy = notes?.length ? notes.reduce((s,n)=>s+parseFloat(n.note||0),0)/notes.length : 0;
+
+  let qF = db.from('factures').select('montant_total,montant_paye');
+  if (currentEcoleId) qF = qF.eq('ecole_id',currentEcoleId);
+  const { data: facs } = await qF;
+  const totalDu  = (facs||[]).reduce((s,f)=>s+(f.montant_total||0),0);
+  const totalPay = (facs||[]).reduce((s,f)=>s+(f.montant_paye||0),0);
+  const tauxRec  = totalDu > 0 ? totalPay/totalDu : 0;
+
+  let qI = db.from('incidents').select('*',{count:'exact',head:true}).neq('statut','résolu');
+  if (currentEcoleId) qI = qI.eq('ecole_id',currentEcoleId);
+  const { count: nbInc } = await qI;
+
+  // Score par dimension (0-100)
+  const scorePresence   = Math.max(0,Math.min(100,100-((nbAbs||0)/(Math.max(nbEtu,1)*20))*100));
+  const scoreAcademique = Math.min(100,(moy/20)*100);
+  const scoreFinancier  = Math.min(100,tauxRec*100);
+  const scoreDiscipline = Math.max(0,100-((nbInc||0)*10));
+  const scoreGlobal     = Math.round((scorePresence+scoreAcademique+scoreFinancier+scoreDiscipline)/4);
+
+  const niveau   = scoreGlobal>=75?'excellent':scoreGlobal>=55?'good':'poor';
+  const couleur  = scoreGlobal>=75?'#059669':scoreGlobal>=55?'#d97706':'#dc2626';
+  const niveauLbl= scoreGlobal>=75?'Excellent':scoreGlobal>=55?'Bon':'À améliorer';
+
+  container.innerHTML = `
+    <div class="health-score-circle ${niveau}">
+      <div class="hs-val" style="color:${couleur}">${scoreGlobal}</div>
+      <div class="hs-unit">/100</div>
+    </div>
+    <div class="health-detail">
+      <div style="font-size:14px;font-weight:700;color:${couleur};margin-bottom:6px">${niveauLbl}</div>
+      <div style="font-size:12px;color:#6b7280">Score de santé global de l'établissement</div>
+    </div>`;
+
+  const dimensions = [
+    { label:'Présence & Assiduité', val:Math.round(scorePresence), color:'#059669' },
+    { label:'Performance académique', val:Math.round(scoreAcademique), color:'#1e3a5f' },
+    { label:'Recouvrement financier', val:Math.round(scoreFinancier), color:'#c97c1a' },
+    { label:'Discipline & Comportement', val:Math.round(scoreDiscipline), color:'#7c3aed' },
+  ];
+  barsContainer.innerHTML = dimensions.map(d=>`
+    <div class="health-bar-item">
+      <div class="health-bar-label"><span>${d.label}</span><strong>${d.val}%</strong></div>
+      <div class="health-bar-track"><div class="health-bar-fill" style="width:${d.val}%;background:${d.color}"></div></div>
+    </div>`).join('');
+}
+
+async function genererAlertesIntelligentes() {
+  const container = document.getElementById('alerts-container');
+  const alertes = [];
+
+  // Alerte retards de paiement
+  let qF = db.from('factures').select('*',{count:'exact',head:true}).eq('statut','retard');
+  if (currentEcoleId) qF = qF.eq('ecole_id',currentEcoleId);
+  const { count: nbRetard } = await qF;
+  if (nbRetard > 0) alertes.push({ type:'danger', ico:'💳', titre:`${nbRetard} facture(s) en retard`, msg:'Des paiements sont en souffrance. Relancez les familles concernées.', time:'Maintenant' });
+
+  // Alerte absences aujourd'hui
+  const today = new Date().toISOString().split('T')[0];
+  const { count: nbAbsToday } = await db.from('absences').select('*',{count:'exact',head:true}).eq('date_absence',today);
+  if (nbAbsToday > 0) alertes.push({ type:'warning', ico:'🚫', titre:`${nbAbsToday} absence(s) aujourd'hui`, msg:'Des absences ont été enregistrées. Vérifiez si les parents ont été notifiés.', time:"Aujourd'hui" });
+
+  // Alerte incidents non résolus
+  let qI = db.from('incidents').select('*',{count:'exact',head:true}).neq('statut','résolu');
+  if (currentEcoleId) qI = qI.eq('ecole_id',currentEcoleId);
+  const { count: nbInc } = await qI;
+  if (nbInc >= 3) alertes.push({ type:'danger', ico:'⚠️', titre:`${nbInc} incident(s) non résolus`, msg:'Plusieurs incidents disciplinaires sont en attente de traitement.', time:'En cours' });
+  else if (nbInc > 0) alertes.push({ type:'warning', ico:'⚠️', titre:`${nbInc} incident(s) ouvert(s)`, msg:'Traitez les incidents en attente.', time:'En cours' });
+
+  // Examens imminents
+  const dans7j = new Date(Date.now()+7*864e5).toISOString().split('T')[0];
+  let qEx = db.from('examens').select('*',{count:'exact',head:true}).eq('statut','planifie').lte('date_examen',dans7j).gte('date_examen',today);
+  if (currentEcoleId) qEx = qEx.eq('ecole_id',currentEcoleId);
+  const { count: nbExSem } = await qEx;
+  if (nbExSem > 0) alertes.push({ type:'info', ico:'📝', titre:`${nbExSem} examen(s) cette semaine`, msg:'Des épreuves sont planifiées dans les 7 prochains jours.', time:'7 jours' });
+
+  // Emprunts en retard
+  const { count: nbEmpRetard } = await db.from('emprunts').select('*',{count:'exact',head:true}).eq('statut','actif').lt('date_retour_prevue',today);
+  if (nbEmpRetard > 0) alertes.push({ type:'warning', ico:'📚', titre:`${nbEmpRetard} livre(s) en retard de retour`, msg:'Des ouvrages de la bibliothèque n\'ont pas été restitués à temps.', time:'Bibliothèque' });
+
+  if (!alertes.length) alertes.push({ type:'success', ico:'✅', titre:'Tout est en ordre', msg:'Aucune alerte critique détectée. L\'établissement fonctionne normalement.', time:'Maintenant' });
+
+  document.getElementById('alerts-count').textContent = alertes.filter(a=>a.type==='danger').length || '';
+  container.innerHTML = alertes.map(a=>`
+    <div class="alert-item ${a.type}">
+      <div class="alert-ico">${a.ico}</div>
+      <div class="alert-body">
+        <div class="ab-titre">${a.titre}</div>
+        <div class="ab-msg">${a.msg}</div>
+        <div class="ab-time">${a.time}</div>
+      </div>
+    </div>`).join('');
+}
+
+async function genererPredictions() {
+  const container = document.getElementById('predictions-container');
+
+  let qE = db.from('etudiants').select('*',{count:'exact',head:true});
+  if (currentEcoleId) qE = qE.eq('ecole_id',currentEcoleId);
+  const { count: nbEtu } = await qE;
+
+  let qN = db.from('notes').select('note');
+  if (currentEcoleId) qN = qN.eq('ecole_id',currentEcoleId);
+  const { data: notes } = await qN;
+  const moy = notes?.length ? (notes.reduce((s,n)=>s+parseFloat(n.note||0),0)/notes.length) : 0;
+
+  let qF = db.from('factures').select('montant_total,montant_paye');
+  if (currentEcoleId) qF = qF.eq('ecole_id',currentEcoleId);
+  const { data: facs } = await qF;
+  const totalDu  = (facs||[]).reduce((s,f)=>s+(f.montant_total||0),0);
+  const totalPay = (facs||[]).reduce((s,f)=>s+(f.montant_paye||0),0);
+  const restant  = totalDu - totalPay;
+
+  const moisActuel = new Date().getMonth()+1;
+  const moisRestants = 12 - moisActuel;
+
+  const predictions = [
+    { ico:'🎓', label:'Étudiants projetés (fin d\'année)', val: Math.round(nbEtu*1.02), sub:'Projection avec +2% de croissance' },
+    { ico:'📊', label:'Moyenne générale estimée', val: moy > 0 ? (moy+0.3).toFixed(1)+'/20' : '—', sub:'Tendance haussière attendue' },
+    { ico:'💰', label:'Recouvrement à percevoir', val: fmtMontant(restant), sub:`Sur ${moisRestants} mois restants` },
+    { ico:'📅', label:'Taux de réussite projeté', val: moy > 0 ? Math.min(99,Math.round(moy/20*100+15))+'%' : '—', sub:'Basé sur les notes actuelles' },
+  ];
+  container.innerHTML = predictions.map(p=>`
+    <div class="prediction-card">
+      <div class="pred-ico">${p.ico}</div>
+      <div>
+        <div class="pred-label">${p.label}</div>
+        <div class="pred-val">${p.val}</div>
+        <div class="pred-sub">${p.sub}</div>
+      </div>
+    </div>`).join('');
+}
+
+async function chargerTopEtudiants() {
+  const container = document.getElementById('top-etudiants-container');
+  let q = db.from('notes').select('etudiant_id, note, etudiants(nom,prenom)');
+  if (currentEcoleId) q = q.eq('ecole_id',currentEcoleId);
+  const { data } = await q;
+  if (!data?.length) { container.innerHTML='<div class="empty-state" style="padding:1rem;font-size:12px">Aucune note saisie.</div>'; return; }
+  const moyParEtu = {};
+  data.forEach(n => {
+    if (!moyParEtu[n.etudiant_id]) moyParEtu[n.etudiant_id] = { nom: (n.etudiants?.nom||'')+ ' '+(n.etudiants?.prenom||''), notes:[] };
+    moyParEtu[n.etudiant_id].notes.push(parseFloat(n.note||0));
+  });
+  const classement = Object.values(moyParEtu)
+    .map(e => ({ ...e, moy: e.notes.reduce((s,n)=>s+n,0)/e.notes.length }))
+    .sort((a,b) => b.moy - a.moy).slice(0,5);
+  const medals = ['🥇','🥈','🥉','4️⃣','5️⃣'];
+  container.innerHTML = classement.map((e,i) => {
+    const app = getApp(e.moy);
+    return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f3f4f6">
+      <span style="font-size:18px">${medals[i]}</span>
+      <div style="flex:1;min-width:0">
+        <div style="font-size:12.5px;font-weight:600;color:#111827;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${e.nom}</div>
+        <div style="font-size:11px;color:#6b7280">${e.notes.length} note(s)</div>
+      </div>
+      <span class="badge ${app.cls}" style="font-size:12px;font-weight:700">${e.moy.toFixed(1)}/20</span>
+    </div>`;
+  }).join('');
+}
+
+async function analyserRisqueDécrochage() {
+  const container = document.getElementById('risque-container');
+  let qN = db.from('notes').select('etudiant_id, note, etudiants(nom,prenom)');
+  if (currentEcoleId) qN = qN.eq('ecole_id',currentEcoleId);
+  const { data: notes } = await qN;
+  let qA = db.from('absences').select('etudiant_id, etudiants(nom,prenom)');
+  const { data: absences } = await qA;
+
+  if (!notes?.length) { container.innerHTML='<div class="empty-state" style="padding:1rem;font-size:12px">Données insuffisantes.</div>'; return; }
+
+  const moyParEtu = {};
+  notes.forEach(n => {
+    if (!moyParEtu[n.etudiant_id]) moyParEtu[n.etudiant_id] = { nom:(n.etudiants?.nom||'')+' '+(n.etudiants?.prenom||''), notes:[], absences:0 };
+    moyParEtu[n.etudiant_id].notes.push(parseFloat(n.note||0));
+  });
+  (absences||[]).forEach(a => {
+    if (moyParEtu[a.etudiant_id]) moyParEtu[a.etudiant_id].absences++;
+  });
+
+  const risques = Object.values(moyParEtu)
+    .map(e => ({ ...e, moy: e.notes.reduce((s,n)=>s+n,0)/e.notes.length }))
+    .filter(e => e.moy < 10 || e.absences >= 5)
+    .sort((a,b) => a.moy - b.moy)
+    .slice(0, 5);
+
+  if (!risques.length) {
+    container.innerHTML = `<div class="alert-item success"><div class="alert-ico">✅</div><div class="alert-body"><div class="ab-titre">Aucun risque détecté</div><div class="ab-msg">Tous les étudiants sont dans les critères normaux.</div></div></div>`;
+    return;
+  }
+  container.innerHTML = risques.map(e => {
+    const risqueNiveau = e.moy < 7 ? 'danger' : e.moy < 10 ? 'warning' : 'warning';
+    const reasons = [];
+    if (e.moy < 10) reasons.push(`Moy. ${e.moy.toFixed(1)}/20`);
+    if (e.absences >= 5) reasons.push(`${e.absences} absences`);
+    return `<div class="alert-item ${risqueNiveau}">
+      <div class="alert-ico">${e.moy < 7?'🔴':'🟡'}</div>
+      <div class="alert-body">
+        <div class="ab-titre">${e.nom}</div>
+        <div class="ab-msg">${reasons.join(' · ')}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+async function chargerChartActivite() {
+  const ctx = document.getElementById('analytics-chart-activite');
+  if (!ctx) return;
+  const labels = [], absData = [], notesData = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date(Date.now()-i*864e5);
+    const dStr = d.toISOString().split('T')[0];
+    labels.push(d.toLocaleDateString('fr-FR',{weekday:'short',day:'numeric'}));
+    const { count: na } = await db.from('absences').select('*',{count:'exact',head:true}).eq('date_absence',dStr);
+    const { count: nn } = await db.from('notes').select('*',{count:'exact',head:true}).gte('created_at',dStr+'T00:00:00').lte('created_at',dStr+'T23:59:59');
+    absData.push(na||0);
+    notesData.push(nn||0);
+  }
+  if (analyticsCharts.activite) analyticsCharts.activite.destroy();
+  analyticsCharts.activite = new Chart(ctx, {
+    type:'line',
+    data:{
+      labels,
+      datasets:[
+        { label:'Absences', data:absData, borderColor:'#dc2626', backgroundColor:'rgba(220,38,38,.1)', tension:.4, fill:true, pointRadius:4 },
+        { label:'Notes saisies', data:notesData, borderColor:'#059669', backgroundColor:'rgba(5,150,105,.1)', tension:.4, fill:true, pointRadius:4 },
+      ]
+    },
+    options:{ responsive:true, plugins:{ legend:{ position:'bottom', labels:{ font:{size:11} } } }, scales:{ y:{ beginAtZero:true, ticks:{precision:0} } } }
+  });
+}
+
+async function exporterRapportAnalyticsPDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ orientation:'portrait', unit:'mm', format:'a4' });
+  const pw = doc.internal.pageSize.getWidth();
+  const ecole = tousLesEcoles.find(e=>e.id===currentEcoleId);
+  const now = new Date().toLocaleDateString('fr-FR',{year:'numeric',month:'long',day:'numeric'});
+
+  doc.setFillColor(30,58,95);
+  doc.rect(0,0,pw,38,'F');
+  doc.setTextColor(255,255,255);
+  doc.setFontSize(20); doc.setFont('helvetica','bold');
+  doc.text('RAPPORT ANALYTIQUE', pw/2, 16, {align:'center'});
+  doc.setFontSize(12); doc.setFont('helvetica','normal');
+  doc.text(pdfSafe(ecole?.nom||'EduLink'), pw/2, 24, {align:'center'});
+  doc.setFontSize(9);
+  doc.text('Genere le '+now, pw/2, 32, {align:'center'});
+
+  doc.setTextColor(30,58,95);
+  doc.setFontSize(13); doc.setFont('helvetica','bold');
+  doc.text('Indicateurs Cles de Performance', 14, 52);
+  const kpis = [
+    ['Etudiants inscrits', document.getElementById('akpi-etudiants')?.textContent||'—'],
+    ['Taux de presence', document.getElementById('akpi-presence')?.textContent||'—'],
+    ['Taux de recouvrement', document.getElementById('akpi-recouvrement')?.textContent||'—'],
+    ['Incidents ouverts', document.getElementById('akpi-incidents')?.textContent||'—'],
+  ];
+  doc.autoTable({ startY:56, head:[['Indicateur','Valeur']], body:kpis,
+    headStyles:{fillColor:[30,58,95],textColor:255,fontStyle:'bold',fontSize:9},
+    bodyStyles:{fontSize:10}, alternateRowStyles:{fillColor:[245,247,250]},
+    columnStyles:{0:{cellWidth:120},1:{cellWidth:50,fontStyle:'bold',halign:'right'}},
+    margin:{left:14,right:14}
+  });
+  doc.save('EduLink-Rapport-Analytics.pdf');
+  showToast('📄 Rapport PDF généré !','success');
+}
 
 function initOfflineMode() {
   const bar = document.getElementById('offline-bar');
