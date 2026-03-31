@@ -21,8 +21,7 @@
 <!-- Firebase SDK ★ JOUR 15 -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging-compat.js"></script>
-<script data-cfasync="false" src="edulink-auth.js" defer></script>
-<script data-cfasync="false" src="edulink-notif.js" defer></script>
+<!-- Scripts auth et notif intégrés inline dans ce fichier -->
 <style>
 /* ══════════════════════════════════════════════
    BASE
@@ -6239,6 +6238,15 @@ function showPage(p) {
     'portail-ens':   chargerPortailEnseignant,
     rh:              chargerRH,
     admissions:      chargerAdmissions,
+    'bibliotheque-num': chargerBibliothequeNum,
+    cantine:         chargerCantine,
+    transport:       chargerTransport,
+    infirmerie:      chargerInfirmerie,
+    orientation:     chargerOrientation,
+    reseau:          chargerReseau,
+    'portail-etudiant':  () => chargerPortailEtudiant(1),
+    'dashboard-reseau':  chargerDashReseau,
+    'parametres-avances': chargerParamAvances,
   };
   if (p === 'parametres') { chargerBranding(); }
   if (p === 'certificats') { chargerBranding(); }
