@@ -6156,6 +6156,68 @@ const SUPABASE_KEY = 'sb_publishable_8e4xKWS3YpfwGFAQlZ7lgQ_9hDx8ljQ';
 const { createClient } = supabase;
 const db = createClient(SUPABASE_URL, SUPABASE_KEY);
 
+// ══ AUTH ═══════════════════════════════════════
+function fillDemo(email, pwd) {
+  document.getElementById('login-email').value = email;
+  document.getElementById('login-pwd').value = pwd;
+}
+
+async function seConnecter() {
+  const email = document.getElementById('login-email').value.trim();
+  const pwd   = document.getElementById('login-pwd').value.trim();
+  const btn   = document.getElementById('login-btn');
+  const err   = document.getElementById('login-error');
+  if (!email || !pwd) { err.textContent = 'Email et mot de passe requis.'; err.style.display='block'; return; }
+  btn.textContent = 'Connexion...'; btn.disabled = true; err.style.display = 'none';
+  try {
+    const { data, error } = await db.auth.signInWithPassword({ email, password: pwd });
+    if (error) throw error;
+    const user = data.user;
+    // Récupérer le profil
+    const { data: profil } = await db.from('utilisateurs').select('*').eq('auth_id', user.id).single();
+    const nom = profil?.nom || user.email;
+    const role = profil?.role || 'admin';
+    document.getElementById('nav-user-name').textContent = nom;
+    document.getElementById('nav-user-role').textContent = role;
+    document.getElementById('nav-avatar').textContent = nom[0]?.toUpperCase() || 'U';
+    // Afficher l'app
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app-main').style.display = 'flex';
+    await chargerEcoles();
+    initOfflineMode();
+    initSuite8?.();
+  } catch(e) {
+    err.textContent = e.message || 'Identifiants incorrects.';
+    err.style.display = 'block';
+    btn.textContent = 'Se connecter →'; btn.disabled = false;
+  }
+}
+
+async function seDeconnecter() {
+  await db.auth.signOut();
+  document.getElementById('app-main').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('login-pwd').value = '';
+}
+
+// Vérifier session existante au chargement
+window.addEventListener('load', async () => {
+  const { data: { session } } = await db.auth.getSession();
+  if (session) {
+    const user = session.user;
+    const { data: profil } = await db.from('utilisateurs').select('*').eq('auth_id', user.id).single();
+    const nom = profil?.nom || user.email;
+    const role = profil?.role || 'admin';
+    document.getElementById('nav-user-name').textContent = nom;
+    document.getElementById('nav-user-role').textContent = role;
+    document.getElementById('nav-avatar').textContent = nom[0]?.toUpperCase() || 'U';
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app-main').style.display = 'flex';
+    await chargerEcoles();
+    initOfflineMode();
+  }
+});
+
 // ══ ÉTAT GLOBAL ═══════════════════════════════
 let currentEcoleId   = null;
 let tousLesEcoles    = [];
@@ -12814,8 +12876,8 @@ async function exporterRapportAdmissions() {
 /* ══════════════════════════════════════════════════════════════════
    SUITE 8 — BIBLIOTHÈQUE NUMÉRIQUE ★ JOUR 26
 ══════════════════════════════════════════════════════════════════ */
-let tousLesLivres = [];
-let tousLesEmprunts = [];
+let bib8Livres = [];
+let bib8Emprunts = [];
 
 const LIVRES_DEMO = [
   { id:1, titre:'Mathématiques Terminale', auteur:'Paul Koudjo', categorie:'Mathématiques', isbn:'978-2-07-040850-4', exemplaires:4, disponibles:2, annee:2022, emoji:'📐', couleur:'bleu' },
@@ -12839,24 +12901,24 @@ const EMPRUNTS_DEMO = [
 ];
 
 function chargerBibliothequeNum() {
-  tousLesLivres = [...LIVRES_DEMO];
-  tousLesEmprunts = [...EMPRUNTS_DEMO];
+  bib8Livres = [...LIVRES_DEMO];
+  bib8Emprunts = [...EMPRUNTS_DEMO];
 
-  const total = tousLesLivres.length;
-  const emprunts = tousLesEmprunts.filter(e=>!e.retourne).length;
-  const retards = tousLesEmprunts.filter(e=>!e.retourne && e.retard_jours>0).length;
+  const total = bib8Livres.length;
+  const emprunts = bib8Emprunts.filter(e=>!e.retourne).length;
+  const retards = bib8Emprunts.filter(e=>!e.retourne && e.retard_jours>0).length;
   const reserves = 3;
 
   document.getElementById('bib-total-livres').textContent = total;
   document.getElementById('bib-total-emprunts').textContent = emprunts;
   document.getElementById('bib-total-retards').textContent = retards;
-  document.getElementById('bib-kpi-livres').textContent = tousLesLivres.reduce((s,l)=>s+l.disponibles,0);
+  document.getElementById('bib-kpi-livres').textContent = bib8Livres.reduce((s,l)=>s+l.disponibles,0);
   document.getElementById('bib-kpi-emprunts').textContent = emprunts;
   document.getElementById('bib-kpi-retards').textContent = retards;
   document.getElementById('bib-kpi-reserves').textContent = reserves;
 
-  renderLivres(tousLesLivres);
-  renderEmprunts(tousLesEmprunts.filter(e=>!e.retourne));
+  renderLivres(bib8Livres);
+  renderEmprunts(bib8Emprunts.filter(e=>!e.retourne));
   renderRetoursHistorique();
   renderReservations();
   peuplerSelectLivres();
@@ -12883,7 +12945,7 @@ function filtrerLivres() {
   const q = (document.getElementById('bib-search').value||'').toLowerCase();
   const cat = document.getElementById('bib-filter-cat').value;
   const dispo = document.getElementById('bib-filter-dispo').value;
-  let res = tousLesLivres.filter(l=>{
+  let res = bib8Livres.filter(l=>{
     const matchQ = !q || l.titre.toLowerCase().includes(q) || l.auteur.toLowerCase().includes(q) || (l.isbn||'').includes(q);
     const matchCat = !cat || l.categorie===cat;
     const matchDispo = !dispo || (dispo==='disponible'&&l.disponibles>0) || (dispo==='emprunte'&&l.disponibles===0);
@@ -12952,7 +13014,7 @@ function peuplerSelectLivres() {
   const sel = document.getElementById('emprunt-livre-id');
   if (!sel) return;
   sel.innerHTML = '<option value="">Sélectionner un livre...</option>' +
-    tousLesLivres.filter(l=>l.disponibles>0).map(l=>`<option value="${l.id}">${l.titre} — ${l.auteur} (${l.disponibles} dispo.)</option>`).join('');
+    bib8Livres.filter(l=>l.disponibles>0).map(l=>`<option value="${l.id}">${l.titre} — ${l.auteur} (${l.disponibles} dispo.)</option>`).join('');
 }
 
 function bibSwitchTab(tab, btn) {
@@ -12984,9 +13046,9 @@ function ajouterLivre() {
   const couleurs = {Mathématiques:'bleu',Sciences:'vert',Littérature:'or',Philosophie:'violet',Informatique:'bleu','Histoire-Géographie':'or',Langues:'vert',Autres:'gris'};
   const emojis = {Mathématiques:'📐',Sciences:'⚗️',Littérature:'📖',Philosophie:'🧠',Informatique:'💻','Histoire-Géographie':'🌍',Langues:'🗣️',Autres:'📄'};
   const newLivre = { id:Date.now(), titre, auteur, categorie:cat, isbn:document.getElementById('livre-isbn').value, exemplaires:nb, disponibles:nb, annee:parseInt(document.getElementById('livre-annee').value)||new Date().getFullYear(), emoji:emojis[cat]||'📄', couleur:couleurs[cat]||'gris' };
-  tousLesLivres.unshift(newLivre);
+  bib8Livres.unshift(newLivre);
   fermerModal('modal-add-livre');
-  renderLivres(tousLesLivres);
+  renderLivres(bib8Livres);
   peuplerSelectLivres();
   showToast('📚 Livre ajouté au catalogue !','success');
 }
@@ -13009,36 +13071,36 @@ function enregistrerEmprunt() {
   const dateEmp = document.getElementById('emprunt-date').value;
   const dateRet = document.getElementById('emprunt-retour').value;
   if (!livreId||!etId||!dateEmp||!dateRet) { showToast('Tous les champs requis sont obligatoires','error'); return; }
-  const livre = tousLesLivres.find(l=>l.id===livreId);
+  const livre = bib8Livres.find(l=>l.id===livreId);
   if (!livre||livre.disponibles<=0) { showToast('Ce livre n\'est plus disponible','error'); return; }
   livre.disponibles--;
   const etOpt = document.getElementById('emprunt-etudiant-id').options;
   const etTxt = etOpt[etOpt.selectedIndex].text;
   const newEmp = { id:Date.now(), livre_id:livreId, livre:livre.titre, etudiant:etTxt.split(' — ')[0], classe:etTxt.split(' — ')[1]||'', date_emprunt:dateEmp, date_retour_prevue:dateRet, retourne:false, retard_jours:0 };
-  tousLesEmprunts.unshift(newEmp);
+  bib8Emprunts.unshift(newEmp);
   fermerModal('modal-emprunt');
-  renderLivres(tousLesLivres);
-  renderEmprunts(tousLesEmprunts.filter(e=>!e.retourne));
+  renderLivres(bib8Livres);
+  renderEmprunts(bib8Emprunts.filter(e=>!e.retourne));
   peuplerSelectLivres();
-  document.getElementById('bib-kpi-emprunts').textContent = tousLesEmprunts.filter(e=>!e.retourne).length;
+  document.getElementById('bib-kpi-emprunts').textContent = bib8Emprunts.filter(e=>!e.retourne).length;
   showToast('📖 Emprunt enregistré !','success');
 }
 
 function retournerLivre(empId) {
-  const emp = tousLesEmprunts.find(e=>e.id===empId);
+  const emp = bib8Emprunts.find(e=>e.id===empId);
   if (!emp) return;
   emp.retourne = true;
-  const livre = tousLesLivres.find(l=>l.id===emp.livre_id);
+  const livre = bib8Livres.find(l=>l.id===emp.livre_id);
   if (livre) livre.disponibles++;
-  renderEmprunts(tousLesEmprunts.filter(e=>!e.retourne));
-  renderLivres(tousLesLivres);
+  renderEmprunts(bib8Emprunts.filter(e=>!e.retourne));
+  renderLivres(bib8Livres);
   peuplerSelectLivres();
-  document.getElementById('bib-kpi-emprunts').textContent = tousLesEmprunts.filter(e=>!e.retourne).length;
+  document.getElementById('bib-kpi-emprunts').textContent = bib8Emprunts.filter(e=>!e.retourne).length;
   showToast(`✅ "${emp.livre}" retourné avec succès !`,'success');
 }
 
 function voirLivreDetail(id) {
-  const l = tousLesLivres.find(b=>b.id===id);
+  const l = bib8Livres.find(b=>b.id===id);
   if (!l) return;
   showToast(`📚 ${l.titre} — ${l.disponibles}/${l.exemplaires} disponible(s)`,'info');
 }
