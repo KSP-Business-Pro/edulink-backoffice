@@ -1633,178 +1633,75 @@ button:hover { background:#a86615; transform:translateY(-1px); }
 
 @media(max-width:900px){ .mdb-layout { grid-template-columns:1fr; } .mdb-kpi-grid { grid-template-columns:1fr; } }
 /* ══════════════════════════════════════════════
-   ASSISTANT IA  ★ JOUR 35
+   ASSISTANT IA EDULINK  ★ JOUR 35
 ══════════════════════════════════════════════ */
-/* Bouton flottant IA */
-.ia-fab {
-  position:fixed; bottom:2rem; right:2rem; z-index:200;
-  width:56px; height:56px; border-radius:50%;
-  background:linear-gradient(135deg,#7c3aed,#1e3a5f);
-  display:flex; align-items:center; justify-content:center;
-  font-size:24px; cursor:pointer; border:none;
-  box-shadow:0 8px 24px rgba(124,58,237,.45);
-  transition:all .25s; font-family:'Poppins',sans-serif;
-  color:#fff;
-}
-.ia-fab:hover { transform:scale(1.1); box-shadow:0 12px 32px rgba(124,58,237,.65); }
-.ia-fab .ia-fab-badge {
-  position:absolute; top:-2px; right:-2px;
-  width:16px; height:16px; border-radius:50%;
-  background:#059669; border:2px solid #fff;
-  animation:pulse 2s ease infinite;
-}
+.ia-layout { display:grid; grid-template-columns:1fr 300px; gap:1rem; height:calc(100vh - 200px); min-height:500px; }
+.ia-chat    { background:#fff; border-radius:14px; border:1px solid #e5e7eb; display:flex; flex-direction:column; overflow:hidden; }
+.ia-chat-header { background:linear-gradient(135deg,#1e3a5f,#7c3aed); padding:1rem 1.4rem; display:flex; align-items:center; gap:.85rem; flex-shrink:0; }
+.ia-avatar  { width:42px; height:42px; border-radius:50%; background:rgba(255,255,255,.2); border:2px solid rgba(255,255,255,.35); display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
+.ia-chat-header .ia-nom { font-size:14px; font-weight:700; color:#fff; }
+.ia-chat-header .ia-sub { font-size:11.5px; color:rgba(255,255,255,.6); margin-top:1px; }
+.ia-online  { display:flex; align-items:center; gap:5px; font-size:11px; font-weight:600; color:#4ADE80; margin-left:auto; }
+.ia-online-dot { width:7px; height:7px; border-radius:50%; background:#4ADE80; animation:pulse 1.5s ease infinite; }
 
-/* Panel chatbot */
-.ia-panel {
-  position:fixed; bottom:5.5rem; right:2rem; z-index:200;
-  width:380px; max-height:600px;
-  background:#fff; border-radius:20px;
-  box-shadow:0 20px 60px rgba(0,0,0,.18);
-  display:flex; flex-direction:column;
-  transform:scale(.9) translateY(20px); opacity:0;
-  pointer-events:none;
-  transition:all .3s cubic-bezier(.4,0,.2,1);
-  overflow:hidden;
-}
-.ia-panel.open {
-  transform:scale(1) translateY(0); opacity:1;
-  pointer-events:all;
-}
-.ia-panel-header {
-  background:linear-gradient(135deg,#7c3aed,#1e3a5f);
-  padding:1rem 1.2rem; display:flex; align-items:center; gap:.85rem;
-}
-.ia-avatar {
-  width:38px; height:38px; border-radius:50%;
-  background:rgba(255,255,255,.2);
-  display:flex; align-items:center; justify-content:center;
-  font-size:20px; flex-shrink:0;
-  border:2px solid rgba(255,255,255,.3);
-}
-.ia-header-info { flex:1; }
-.ia-header-info .ia-name { font-size:13.5px; font-weight:700; color:#fff; }
-.ia-header-info .ia-status { font-size:11px; color:rgba(255,255,255,.65); display:flex; align-items:center; gap:4px; }
-.ia-status-dot { width:6px; height:6px; border-radius:50%; background:#4ade80; animation:pulse 1.5s ease infinite; }
-.ia-close { background:rgba(255,255,255,.15); border:none; color:#fff; width:28px; height:28px; border-radius:8px; cursor:pointer; font-size:14px; display:flex; align-items:center; justify-content:center; flex-shrink:0; transition:background .15s; }
-.ia-close:hover { background:rgba(255,255,255,.25); }
-
-/* Messages chat */
-.ia-messages {
-  flex:1; overflow-y:auto; padding:1rem;
-  display:flex; flex-direction:column; gap:.75rem;
-  max-height:400px;
-  background:#f8f9fb;
-}
-.ia-msg { display:flex; gap:.6rem; align-items:flex-end; }
+.ia-messages { flex:1; overflow-y:auto; padding:1rem; display:flex; flex-direction:column; gap:.85rem; }
+.ia-msg { display:flex; gap:.75rem; align-items:flex-end; }
 .ia-msg.user { flex-direction:row-reverse; }
-.ia-msg-avatar { width:28px; height:28px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:13px; flex-shrink:0; }
-.ia-msg.bot .ia-msg-avatar { background:linear-gradient(135deg,#7c3aed,#1e3a5f); color:#fff; }
-.ia-msg.user .ia-msg-avatar { background:#e5e7eb; }
-.ia-msg-bubble {
-  max-width:75%; padding:.65rem .9rem;
-  border-radius:14px; font-size:13px; line-height:1.55;
-}
-.ia-msg.bot .ia-msg-bubble {
-  background:#fff; color:#374151;
-  border-radius:4px 14px 14px 14px;
-  box-shadow:0 1px 4px rgba(0,0,0,.08);
-}
-.ia-msg.user .ia-msg-bubble {
-  background:linear-gradient(135deg,#7c3aed,#1e3a5f);
-  color:#fff; border-radius:14px 4px 14px 14px;
-}
-.ia-msg-time { font-size:10px; color:#9ca3af; margin-top:3px; }
-
-/* Typing indicator */
-.ia-typing { display:flex; gap:4px; padding:.5rem .75rem; }
-.ia-typing span {
-  width:7px; height:7px; border-radius:50%; background:#9ca3af;
-  animation:ia-bounce .8s ease infinite;
-}
+.ia-msg-avatar { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0; }
+.ia-msg-avatar.bot  { background:linear-gradient(135deg,#1e3a5f,#7c3aed); }
+.ia-msg-avatar.user { background:#c97c1a; }
+.ia-bubble { max-width:75%; padding:.75rem 1rem; border-radius:16px; font-size:13.5px; line-height:1.6; }
+.ia-bubble.bot  { background:#f3f4f6; color:#111827; border-bottom-left-radius:4px; }
+.ia-bubble.user { background:#1e3a5f; color:#fff; border-bottom-right-radius:4px; }
+.ia-bubble.bot strong { color:#1e3a5f; }
+.ia-bubble.bot code { background:#e5e7eb; padding:1px 5px; border-radius:4px; font-size:12px; }
+.ia-time { font-size:10px; color:#9ca3af; margin-top:4px; text-align:right; }
+.ia-typing { display:flex; gap:4px; align-items:center; padding:.75rem 1rem; }
+.ia-typing span { width:7px; height:7px; border-radius:50%; background:#9ca3af; animation:typing-bounce .9s ease infinite; }
 .ia-typing span:nth-child(2) { animation-delay:.15s; }
 .ia-typing span:nth-child(3) { animation-delay:.3s; }
-@keyframes ia-bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
+@keyframes typing-bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-6px)} }
+
+.ia-input-area { padding:.85rem 1rem; border-top:1px solid #f3f4f6; display:flex; gap:.75rem; flex-shrink:0; }
+.ia-input { flex:1; padding:10px 14px; border:1.5px solid #e5e7eb; border-radius:24px; font-size:13.5px; font-family:'Poppins',sans-serif; outline:none; transition:border-color .15s; }
+.ia-input:focus { border-color:#7c3aed; box-shadow:0 0 0 3px rgba(124,58,237,.08); }
+.ia-send-btn { width:40px; height:40px; border-radius:50%; background:linear-gradient(135deg,#1e3a5f,#7c3aed); border:none; color:#fff; font-size:16px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all .2s; flex-shrink:0; }
+.ia-send-btn:hover { transform:scale(1.08); }
 
 /* Suggestions rapides */
-.ia-suggestions { padding:.75rem 1rem; display:flex; gap:.5rem; flex-wrap:wrap; border-top:1px solid #f3f4f6; background:#fff; }
-.ia-sug-btn {
-  font-size:11.5px; font-weight:600; padding:5px 12px;
-  border-radius:20px; border:1.5px solid #ede9fe;
-  color:#7c3aed; background:#faf5ff; cursor:pointer;
-  font-family:'Poppins',sans-serif; transition:all .15s;
-  white-space:nowrap;
-}
-.ia-sug-btn:hover { background:#ede9fe; }
+.ia-suggestions { padding:.5rem 1rem .75rem; display:flex; gap:.5rem; flex-wrap:wrap; flex-shrink:0; border-top:1px solid #f3f4f6; }
+.ia-suggest-btn { font-size:11.5px; font-weight:600; padding:5px 12px; border-radius:20px; border:1.5px solid #e5e7eb; background:#fff; color:#374151; cursor:pointer; font-family:'Poppins',sans-serif; transition:all .15s; }
+.ia-suggest-btn:hover { border-color:#7c3aed; color:#7c3aed; background:#faf5ff; }
 
-/* Input zone */
-.ia-input-zone {
-  padding:.75rem 1rem; border-top:1px solid #f3f4f6;
-  display:flex; gap:.5rem; background:#fff; align-items:center;
-}
-.ia-input {
-  flex:1; padding:8px 12px; border:1.5px solid #e5e7eb;
-  border-radius:12px; font-size:13px; font-family:'Poppins',sans-serif;
-  outline:none; transition:border-color .15s; resize:none;
-}
-.ia-input:focus { border-color:#7c3aed; }
-.ia-send {
-  width:36px; height:36px; border-radius:10px;
-  background:linear-gradient(135deg,#7c3aed,#1e3a5f);
-  border:none; color:#fff; cursor:pointer;
-  display:flex; align-items:center; justify-content:center;
-  font-size:16px; flex-shrink:0; transition:all .2s;
-}
-.ia-send:hover { transform:scale(1.08); }
-
-/* Page Assistant IA (pleine page) */
-.ia-hero { background:linear-gradient(135deg,#7c3aed 0%,#1e3a5f 100%); border-radius:18px; padding:1.5rem 2rem; margin-bottom:1.5rem; display:flex; align-items:center; gap:1.5rem; }
-.ia-hero-avatar { width:64px; height:64px; border-radius:50%; background:rgba(255,255,255,.15); display:flex; align-items:center; justify-content:center; font-size:30px; border:3px solid rgba(255,255,255,.25); flex-shrink:0; }
-.ia-hero-info h2 { font-size:20px; font-weight:800; color:#fff; margin-bottom:3px; }
-.ia-hero-info p { font-size:13px; color:rgba(255,255,255,.65); }
-.ia-hero-stats { display:flex; gap:2rem; margin-left:auto; flex-wrap:wrap; }
-.ia-hero-stat .is-val { font-size:22px; font-weight:800; color:#fff; line-height:1; }
-.ia-hero-stat .is-lbl { font-size:10px; color:rgba(255,255,255,.55); text-transform:uppercase; font-weight:600; letter-spacing:.04em; }
-
-.ia-full-layout { display:grid; grid-template-columns:1fr 300px; gap:1rem; }
-.ia-full-main { display:flex; flex-direction:column; gap:1rem; }
-.ia-full-side { display:flex; flex-direction:column; gap:1rem; }
-.ia-full-block { background:#fff; border-radius:14px; border:1px solid #e5e7eb; overflow:hidden; }
-.ia-full-block-header { padding:.9rem 1.2rem; border-bottom:1px solid #f3f4f6; font-size:13px; font-weight:700; color:#374151; display:flex; align-items:center; justify-content:space-between; }
-
-/* Capacités IA grid */
-.ia-cap-grid { display:grid; grid-template-columns:1fr 1fr; gap:.75rem; padding:1rem; }
-.ia-cap-card { background:#f9fafb; border-radius:12px; border:1px solid #e5e7eb; padding:.9rem 1rem; cursor:pointer; transition:all .15s; }
-.ia-cap-card:hover { border-color:#7c3aed; background:#faf5ff; transform:translateY(-2px); }
-.ia-cap-ico { font-size:22px; margin-bottom:.5rem; }
-.ia-cap-titre { font-size:13px; font-weight:700; color:#111827; margin-bottom:3px; }
-.ia-cap-desc { font-size:11.5px; color:#6b7280; line-height:1.5; }
+/* Sidebar IA */
+.ia-side { display:flex; flex-direction:column; gap:1rem; }
+.ia-side-block { background:#fff; border-radius:14px; border:1px solid #e5e7eb; overflow:hidden; }
+.ia-side-header { padding:.85rem 1.2rem; border-bottom:1px solid #f3f4f6; font-size:13px; font-weight:700; color:#374151; }
+.ia-stat-item { display:flex; align-items:center; gap:.75rem; padding:.7rem 1.2rem; border-bottom:1px solid #f3f4f6; }
+.ia-stat-item:last-child { border-bottom:none; }
+.ia-stat-ico { width:34px; height:34px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0; }
+.ia-stat-body { flex:1; }
+.ia-stat-label { font-size:12px; font-weight:600; color:#374151; }
+.ia-stat-val   { font-size:11px; color:#9ca3af; }
 
 /* Historique conversations */
-.ia-hist-item { display:flex; gap:.75rem; align-items:flex-start; padding:.75rem 1.2rem; border-bottom:1px solid #f3f4f6; cursor:pointer; transition:background .1s; }
-.ia-hist-item:hover { background:#fafafa; }
+.ia-hist-item { display:flex; gap:.75rem; padding:.75rem 1.2rem; border-bottom:1px solid #f3f4f6; cursor:pointer; transition:background .1s; }
+.ia-hist-item:hover { background:#faf5ff; }
 .ia-hist-item:last-child { border-bottom:none; }
-.ia-hist-ico { width:34px; height:34px; border-radius:10px; background:#ede9fe; display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0; }
-.ia-hist-body { flex:1; min-width:0; }
-.ia-hist-question { font-size:12.5px; font-weight:600; color:#111827; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.ia-hist-resume { font-size:11.5px; color:#6b7280; margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.ia-hist-date { font-size:10.5px; color:#9ca3af; flex-shrink:0; }
+.ia-hist-preview { font-size:12px; color:#374151; font-weight:500; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.ia-hist-time   { font-size:10.5px; color:#9ca3af; margin-top:2px; }
 
-@media(max-width:900px){ .ia-full-layout{grid-template-columns:1fr} .ia-panel{width:320px} .ia-cap-grid{grid-template-columns:1fr} }
-@media(max-width:480px){ .ia-panel{width:calc(100vw - 2rem);right:1rem} }
+@media(max-width:900px){ .ia-layout { grid-template-columns:1fr; height:auto; } }
 
 /* ══════════════════════════════════════════════
-   MODULE SMS & COMMUNICATION PARENTS  ★ JOUR 36
+   SMS & COMMUNICATION PARENTS  ★ JOUR 36
 ══════════════════════════════════════════════ */
-.sms-hero { background:linear-gradient(135deg,#059669 0%,#0f6e56 50%,#1e3a5f 100%); border-radius:18px; padding:1.5rem 2rem; margin-bottom:1.5rem; display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+.sms-hero { background:linear-gradient(135deg,#059669 0%,#1e3a5f 100%); border-radius:18px; padding:1.5rem 2rem; margin-bottom:1.5rem; display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
 .sms-hero h2 { font-size:18px; font-weight:800; color:#fff; margin-bottom:4px; }
-.sms-hero p { font-size:12.5px; color:rgba(255,255,255,.65); }
+.sms-hero p  { font-size:12.5px; color:rgba(255,255,255,.65); }
 .sms-hero-kpis { display:flex; gap:2rem; flex-wrap:wrap; }
 .sms-kpi .sk-val { font-size:24px; font-weight:800; color:#fff; line-height:1; }
 .sms-kpi .sk-lbl { font-size:10px; color:rgba(255,255,255,.6); text-transform:uppercase; font-weight:600; letter-spacing:.05em; margin-top:2px; }
-
-.sms-stat-bar { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:1.5rem; }
-.sms-stat { background:#fff; border-radius:14px; border:1px solid #e5e7eb; padding:1.1rem 1.2rem; display:flex; align-items:center; gap:.85rem; }
-.sms-stat-ico { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
 
 .sms-layout { display:grid; grid-template-columns:1fr 320px; gap:1rem; }
 .sms-main { display:flex; flex-direction:column; gap:1rem; }
@@ -1813,92 +1710,290 @@ button:hover { background:#a86615; transform:translateY(-1px); }
 .sms-block-header { padding:.9rem 1.2rem; border-bottom:1px solid #f3f4f6; font-size:13px; font-weight:700; color:#374151; display:flex; align-items:center; justify-content:space-between; }
 
 /* Composer SMS */
-.sms-compose { background:linear-gradient(135deg,#f0fdf4,#eff6ff); border-radius:14px; border:1.5px solid #bbf7d0; padding:1.2rem; margin-bottom:1rem; }
-.sms-compose h4 { font-size:13px; font-weight:700; color:#374151; margin-bottom:1rem; display:flex; align-items:center; gap:6px; }
-.sms-dest-chips { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:.75rem; }
-.sms-chip { display:inline-flex; align-items:center; gap:5px; background:#fff; border:1.5px solid #e5e7eb; border-radius:20px; padding:4px 12px; font-size:12px; font-weight:600; color:#374151; cursor:pointer; transition:all .15s; }
-.sms-chip.selected { background:#dcfce7; border-color:#059669; color:#059669; }
-.sms-chip:hover { border-color:#059669; }
-.sms-counter { font-size:11px; color:#9ca3af; text-align:right; margin-top:3px; }
+.sms-composer { padding:1.2rem; }
+.sms-destinataires { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:.75rem; }
+.sms-dest-tag { display:inline-flex; align-items:center; gap:5px; background:#eff6ff; border:1px solid #bfdbfe; color:#1d4ed8; border-radius:20px; padding:4px 10px; font-size:12px; font-weight:600; }
+.sms-dest-tag .remove { cursor:pointer; font-size:14px; line-height:1; }
+.sms-dest-tag .remove:hover { color:#dc2626; }
+.sms-counter { display:flex; justify-content:space-between; font-size:11px; color:#9ca3af; margin-top:.4rem; }
+.sms-counter .chars { font-weight:600; }
+.sms-counter .chars.warning { color:#d97706; }
+.sms-counter .chars.danger  { color:#dc2626; }
 
 /* Templates SMS */
-.sms-template-item { display:flex; align-items:center; gap:.75rem; padding:.75rem 1.2rem; border-bottom:1px solid #f3f4f6; cursor:pointer; transition:background .1s; }
-.sms-template-item:hover { background:#f0fdf4; }
-.sms-template-item:last-child { border-bottom:none; }
-.sms-tpl-ico { width:36px; height:36px; border-radius:10px; background:#dcfce7; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
-.sms-tpl-body { flex:1; min-width:0; }
-.sms-tpl-titre { font-size:12.5px; font-weight:700; color:#111827; }
-.sms-tpl-preview { font-size:11.5px; color:#6b7280; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-.sms-tpl-dest { font-size:10.5px; color:#059669; font-weight:600; margin-top:2px; }
+.sms-template-grid { display:grid; grid-template-columns:1fr 1fr; gap:.75rem; padding:1rem; }
+.sms-template-card { background:#f9fafb; border:1.5px solid #e5e7eb; border-radius:10px; padding:.85rem; cursor:pointer; transition:all .15s; }
+.sms-template-card:hover { border-color:#059669; background:#f0fdf4; }
+.sms-template-card .st-ico { font-size:20px; margin-bottom:.4rem; }
+.sms-template-card .st-nom { font-size:12.5px; font-weight:700; color:#111827; margin-bottom:3px; }
+.sms-template-card .st-preview { font-size:11px; color:#9ca3af; line-height:1.4; }
 
-/* Historique SMS */
-.sms-hist-item { display:flex; gap:.85rem; align-items:flex-start; padding:.85rem 1.2rem; border-bottom:1px solid #f3f4f6; }
-.sms-hist-item:last-child { border-bottom:none; }
-.sms-hist-ico { width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
-.sms-hist-body { flex:1; min-width:0; }
-.sms-hist-titre { font-size:12.5px; font-weight:700; color:#111827; margin-bottom:2px; }
-.sms-hist-dest { font-size:11.5px; color:#6b7280; }
-.sms-hist-right { text-align:right; flex-shrink:0; }
-.sms-hist-date { font-size:11px; color:#9ca3af; }
-.sms-hist-nb { font-size:13px; font-weight:700; color:#059669; }
-.sms-taux-bar { height:4px; background:#e5e7eb; border-radius:2px; margin-top:5px; overflow:hidden; }
-.sms-taux-fill { height:100%; background:#059669; border-radius:2px; }
+/* Historique envois SMS */
+.sms-envoi-item { display:flex; gap:.85rem; align-items:flex-start; padding:.85rem 1.2rem; border-bottom:1px solid #f3f4f6; transition:background .1s; }
+.sms-envoi-item:last-child { border-bottom:none; }
+.sms-envoi-item:hover { background:#fafafa; }
+.sms-envoi-ico { width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+.sms-envoi-body { flex:1; min-width:0; }
+.sms-envoi-titre { font-size:12.5px; font-weight:700; color:#111827; }
+.sms-envoi-preview { font-size:11.5px; color:#6b7280; margin-top:1px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.sms-envoi-right { text-align:right; flex-shrink:0; }
+.sms-envoi-date { font-size:11px; color:#9ca3af; }
+.sms-taux-bar { height:4px; background:#f3f4f6; border-radius:2px; margin-top:5px; overflow:hidden; }
+.sms-taux-fill { height:100%; border-radius:2px; background:#059669; }
 
-@media(max-width:900px){ .sms-stat-bar{grid-template-columns:1fr 1fr} .sms-layout{grid-template-columns:1fr} }
+/* Contact parent card */
+.parent-contact-item { display:flex; align-items:center; gap:.85rem; padding:.75rem 1.2rem; border-bottom:1px solid #f3f4f6; }
+.parent-contact-item:last-child { border-bottom:none; }
+.pc-ava2 { width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; color:#fff; flex-shrink:0; }
+.pc-body2 { flex:1; min-width:0; }
+.pc-parent-nom { font-size:12.5px; font-weight:700; color:#111827; }
+.pc-enfant-nom { font-size:11px; color:#6b7280; margin-top:1px; }
+.pc-tel { font-size:12px; font-weight:600; color:#059669; flex-shrink:0; }
+
+@media(max-width:900px){ .sms-layout { grid-template-columns:1fr; } .sms-template-grid { grid-template-columns:1fr; } }
 
 /* ══════════════════════════════════════════════
    PWA AVANCÉE  ★ JOUR 37
 ══════════════════════════════════════════════ */
-.pwa-hero { background:linear-gradient(135deg,#c97c1a 0%,#1e3a5f 100%); border-radius:18px; padding:1.5rem 2rem; margin-bottom:1.5rem; display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+.pwa-hero { background:linear-gradient(135deg,#7c3aed 0%,#1e3a5f 60%,#059669 100%); border-radius:18px; padding:1.5rem 2rem; margin-bottom:1.5rem; display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; position:relative; overflow:hidden; }
+.pwa-hero::after { content:'📱'; position:absolute; right:2rem; top:50%; transform:translateY(-50%); font-size:80px; opacity:.08; }
 .pwa-hero h2 { font-size:18px; font-weight:800; color:#fff; margin-bottom:4px; }
-.pwa-hero p { font-size:12.5px; color:rgba(255,255,255,.65); }
+.pwa-hero p  { font-size:12.5px; color:rgba(255,255,255,.65); }
+.pwa-hero-kpis { display:flex; gap:2rem; flex-wrap:wrap; }
+.pwa-kpi .wk-val { font-size:24px; font-weight:800; color:#fff; line-height:1; }
+.pwa-kpi .wk-lbl { font-size:10px; color:rgba(255,255,255,.6); text-transform:uppercase; font-weight:600; letter-spacing:.05em; margin-top:2px; }
 
-.pwa-layout { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+.pwa-layout { display:grid; grid-template-columns:1fr 300px; gap:1rem; }
+.pwa-main { display:flex; flex-direction:column; gap:1rem; }
+.pwa-side { display:flex; flex-direction:column; gap:1rem; }
 .pwa-block { background:#fff; border-radius:14px; border:1px solid #e5e7eb; overflow:hidden; }
 .pwa-block-header { padding:.9rem 1.2rem; border-bottom:1px solid #f3f4f6; font-size:13px; font-weight:700; color:#374151; display:flex; align-items:center; justify-content:space-between; }
-.pwa-block-body { padding:1.2rem; }
 
-/* Score PWA */
-.pwa-score-ring { position:relative; width:140px; height:140px; margin:0 auto 1rem; }
-.pwa-score-ring svg { transform:rotate(-90deg); }
-.pwa-score-ring .psr-val { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
-.psr-val .sv { font-size:32px; font-weight:800; color:#059669; }
-.psr-val .sl { font-size:11px; color:#6b7280; font-weight:600; }
+/* Installations */
+.install-device-card { display:flex; align-items:center; gap:1rem; padding:1.1rem 1.2rem; border-bottom:1px solid #f3f4f6; transition:background .1s; }
+.install-device-card:last-child { border-bottom:none; }
+.idc-ico { width:48px; height:48px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0; }
+.idc-body { flex:1; }
+.idc-nom { font-size:13.5px; font-weight:700; color:#111827; }
+.idc-desc { font-size:12px; color:#6b7280; margin-top:1px; }
+.idc-steps { margin-top:.6rem; display:flex; flex-direction:column; gap:4px; }
+.idc-step { font-size:11.5px; color:#374151; display:flex; align-items:center; gap:6px; }
+.idc-step::before { content:''; width:18px; height:18px; border-radius:50%; background:#dcfce7; border:1.5px solid #bbf7d0; display:flex; align-items:center; justify-content:center; font-size:10px; flex-shrink:0; }
 
-/* Checklist PWA */
-.pwa-check-item { display:flex; align-items:center; gap:.85rem; padding:.7rem 0; border-bottom:1px solid #f3f4f6; }
-.pwa-check-item:last-child { border-bottom:none; }
-.pwa-check-ico { width:28px; height:28px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:14px; flex-shrink:0; }
-.pwa-check-ico.ok { background:#dcfce7; }
-.pwa-check-ico.warn { background:#fef9c3; }
-.pwa-check-ico.err { background:#fee2e2; }
-.pwa-check-body { flex:1; }
-.pwa-check-label { font-size:13px; font-weight:600; color:#111827; }
-.pwa-check-detail { font-size:11.5px; color:#6b7280; margin-top:1px; }
+/* Performance PWA */
+.perf-score { display:grid; grid-template-columns:repeat(4,1fr); gap:1rem; padding:1rem; }
+.perf-item { text-align:center; }
+.perf-ring { width:64px; height:64px; border-radius:50%; margin:0 auto .5rem; display:flex; align-items:center; justify-content:center; font-size:18px; font-weight:800; position:relative; }
+.perf-ring.excellent { background:conic-gradient(#059669 var(--pct),#f3f4f6 0); color:#059669; }
+.perf-ring.good      { background:conic-gradient(#1d4ed8 var(--pct),#f3f4f6 0); color:#1d4ed8; }
+.perf-ring.warn      { background:conic-gradient(#d97706 var(--pct),#f3f4f6 0); color:#d97706; }
+.perf-ring-inner { width:48px; height:48px; border-radius:50%; background:#fff; display:flex; align-items:center; justify-content:center; position:absolute; }
+.perf-label { font-size:11px; font-weight:600; color:#374151; }
 
-/* Appareils installés */
-.pwa-device-item { display:flex; align-items:center; gap:.85rem; padding:.75rem 1.2rem; border-bottom:1px solid #f3f4f6; }
-.pwa-device-item:last-child { border-bottom:none; }
-.pwa-dev-ico { font-size:22px; flex-shrink:0; }
-.pwa-dev-body { flex:1; }
-.pwa-dev-nom { font-size:12.5px; font-weight:700; color:#111827; }
-.pwa-dev-ua { font-size:11px; color:#9ca3af; }
-.pwa-dev-last { font-size:10.5px; color:#9ca3af; }
-.pwa-dev-statut { font-size:11px; font-weight:600; }
+/* Cache & Offline */
+.cache-item { display:flex; align-items:center; gap:.75rem; padding:.7rem 1.2rem; border-bottom:1px solid #f3f4f6; }
+.cache-item:last-child { border-bottom:none; }
+.cache-ico { width:34px; height:34px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0; }
+.cache-body { flex:1; }
+.cache-nom  { font-size:12.5px; font-weight:600; color:#111827; }
+.cache-size { font-size:11px; color:#9ca3af; }
+.cache-bar  { height:4px; background:#f3f4f6; border-radius:2px; margin-top:4px; overflow:hidden; }
+.cache-fill { height:100%; border-radius:2px; }
 
-/* Cache stats */
-.pwa-cache-bar { margin-bottom:.85rem; }
-.pwa-cache-label { display:flex; justify-content:space-between; font-size:12px; font-weight:600; color:#374151; margin-bottom:4px; }
-.pwa-cache-track { height:8px; background:#f3f4f6; border-radius:4px; overflow:hidden; }
-.pwa-cache-fill { height:100%; border-radius:4px; }
+/* Notifications push */
+.push-stat-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; padding:1rem; }
+.push-stat-card { background:#f9fafb; border-radius:10px; border:1px solid #e5e7eb; padding:.85rem; text-align:center; }
+.push-stat-card .psc-val { font-size:22px; font-weight:800; color:#7c3aed; }
+.push-stat-card .psc-lbl { font-size:11px; color:#9ca3af; font-weight:500; margin-top:2px; }
 
-/* Notifications push config */
-.push-config-item { display:flex; align-items:center; justify-content:space-between; padding:.75rem 0; border-bottom:1px solid #f3f4f6; }
-.push-config-item:last-child { border-bottom:none; }
-.pci-body .pci-label { font-size:13px; font-weight:600; color:#111827; }
-.pci-body .pci-sub { font-size:11.5px; color:#9ca3af; margin-top:2px; }
+@media(max-width:900px){ .pwa-layout { grid-template-columns:1fr; } .perf-score { grid-template-columns:1fr 1fr; } }
+/* ══════════════════════════════════════════════
+   DASHBOARD DIRECTEUR  ★ JOUR 38
+══════════════════════════════════════════════ */
+.exec-hero {
+  background:linear-gradient(135deg,#0f2040 0%,#1e3a5f 50%,#0f6e56 100%);
+  border-radius:18px; padding:1.8rem 2rem; margin-bottom:1.5rem;
+  display:flex; align-items:center; justify-content:space-between; gap:1.5rem; flex-wrap:wrap;
+  position:relative; overflow:hidden;
+}
+.exec-hero::after { content:'📊'; position:absolute; right:2rem; top:50%; transform:translateY(-50%); font-size:90px; opacity:.05; }
+.exec-hero-left h2 { font-size:22px; font-weight:800; color:#fff; margin-bottom:4px; }
+.exec-hero-left p  { font-size:13px; color:rgba(255,255,255,.55); }
+.exec-hero-date    { font-size:11px; color:rgba(255,255,255,.4); margin-top:6px; }
+.exec-kpi-row { display:flex; gap:2.5rem; flex-wrap:wrap; }
+.exec-kpi .ek-val { font-size:28px; font-weight:800; color:#fff; line-height:1; }
+.exec-kpi .ek-lbl { font-size:10px; color:rgba(255,255,255,.5); font-weight:600; text-transform:uppercase; letter-spacing:.05em; margin-top:3px; }
+.exec-kpi .ek-trend { font-size:11px; font-weight:700; margin-top:2px; }
+.exec-kpi .ek-trend.up   { color:#4ADE80; }
+.exec-kpi .ek-trend.down { color:#F87171; }
 
-@media(max-width:900px){ .pwa-layout{grid-template-columns:1fr} }
+/* Grille executive 3 colonnes */
+.exec-grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:1rem; margin-bottom:1rem; }
+.exec-grid-2 { display:grid; grid-template-columns:2fr 1fr; gap:1rem; margin-bottom:1rem; }
+
+/* Scorecard KPI */
+.exec-scorecard {
+  background:#fff; border-radius:14px; border:1px solid #e5e7eb; padding:1.2rem;
+  display:flex; align-items:center; gap:1rem; transition:all .15s;
+}
+.exec-scorecard:hover { box-shadow:0 6px 20px rgba(0,0,0,.08); transform:translateY(-2px); }
+.exec-sc-ico { width:52px; height:52px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:24px; flex-shrink:0; }
+.exec-sc-val { font-size:26px; font-weight:800; color:#111827; line-height:1; }
+.exec-sc-lbl { font-size:11.5px; color:#6b7280; font-weight:500; margin-top:2px; }
+.exec-sc-trend { font-size:11px; font-weight:700; margin-top:4px; display:flex; align-items:center; gap:3px; }
+.exec-sc-trend.up   { color:#059669; }
+.exec-sc-trend.down { color:#dc2626; }
+.exec-sc-trend.flat { color:#d97706; }
+
+/* Graphique donut exec */
+.exec-donut-wrap { position:relative; width:120px; height:120px; margin:0 auto; }
+.exec-donut-center { position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+.exec-donut-val  { font-size:22px; font-weight:800; color:#1e3a5f; }
+.exec-donut-sub  { font-size:10px; color:#9ca3af; font-weight:500; }
+
+/* Rapport exec */
+.exec-rapport-item { display:flex; align-items:center; gap:.85rem; padding:.85rem 1.2rem; border-bottom:1px solid #f3f4f6; cursor:pointer; transition:background .1s; }
+.exec-rapport-item:hover { background:#f8faff; }
+.exec-rapport-item:last-child { border-bottom:none; }
+.eri-ico { width:40px; height:40px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
+.eri-body { flex:1; }
+.eri-titre { font-size:13px; font-weight:700; color:#111827; }
+.eri-desc  { font-size:11.5px; color:#6b7280; margin-top:1px; }
+.eri-date  { font-size:11px; color:#9ca3af; flex-shrink:0; }
+
+/* Alerte direction */
+.exec-alerte { background:linear-gradient(90deg,#fff5f5,#fff); border-left:4px solid #dc2626; border-radius:0 12px 12px 0; border:1px solid #fecaca; border-left-width:4px; padding:.85rem 1.2rem; margin-bottom:.6rem; display:flex; gap:.75rem; align-items:flex-start; }
+.exec-alerte.warning { border-left-color:#d97706; border-color:#fde68a; background:linear-gradient(90deg,#fffbf0,#fff); }
+.exec-alerte.info    { border-left-color:#1d4ed8; border-color:#bfdbfe; background:linear-gradient(90deg,#eff6ff,#fff); }
+
+@media(max-width:1024px){ .exec-grid-3{grid-template-columns:1fr 1fr} .exec-grid-2{grid-template-columns:1fr} }
+@media(max-width:600px) { .exec-grid-3{grid-template-columns:1fr} }
+
+/* ══════════════════════════════════════════════
+   PORTAIL WEB PUBLIC  ★ JOUR 39
+══════════════════════════════════════════════ */
+.portail-pub-hero { background:linear-gradient(135deg,#059669 0%,#1e3a5f 100%); border-radius:18px; padding:1.5rem 2rem; margin-bottom:1.5rem; display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; }
+.portail-pub-hero h2 { font-size:18px; font-weight:800; color:#fff; margin-bottom:4px; }
+.portail-pub-hero p  { font-size:12.5px; color:rgba(255,255,255,.65); }
+.portail-pub-kpis { display:flex; gap:2rem; flex-wrap:wrap; }
+.pp-kpi .ppk-val { font-size:24px; font-weight:800; color:#fff; line-height:1; }
+.pp-kpi .ppk-lbl { font-size:10px; color:rgba(255,255,255,.6); text-transform:uppercase; font-weight:600; letter-spacing:.05em; margin-top:2px; }
+
+/* Preview du site public */
+.site-preview-wrap { background:#f3f4f6; border-radius:16px; padding:1rem; position:relative; overflow:hidden; }
+.site-preview-bar  { background:#fff; border-radius:8px; padding:.5rem 1rem; display:flex; align-items:center; gap:.75rem; margin-bottom:.75rem; box-shadow:0 1px 4px rgba(0,0,0,.08); }
+.spb-dots { display:flex; gap:4px; }
+.spb-dot  { width:10px; height:10px; border-radius:50%; }
+.spb-url  { flex:1; background:#f3f4f6; border-radius:4px; padding:4px 10px; font-size:11px; color:#6b7280; font-family:monospace; }
+.site-preview-frame { background:#fff; border-radius:10px; overflow:hidden; box-shadow:0 4px 16px rgba(0,0,0,.08); }
+
+/* Éditeur de contenu */
+.content-editor-block { background:#fff; border-radius:14px; border:1px solid #e5e7eb; overflow:hidden; margin-bottom:1rem; }
+.ceb-header { padding:.9rem 1.2rem; border-bottom:1px solid #f3f4f6; font-size:13px; font-weight:700; color:#374151; display:flex; align-items:center; justify-content:space-between; }
+.ceb-body   { padding:1.2rem; }
+
+/* Page publique sections */
+.page-section-item { display:flex; align-items:center; gap:.85rem; padding:.75rem 1.2rem; border-bottom:1px solid #f3f4f6; transition:background .1s; }
+.page-section-item:hover { background:#fafafa; }
+.page-section-item:last-child { border-bottom:none; }
+.psi-handle { color:#d1d5db; cursor:grab; font-size:18px; flex-shrink:0; }
+.psi-ico    { font-size:18px; flex-shrink:0; }
+.psi-body   { flex:1; }
+.psi-titre  { font-size:13px; font-weight:700; color:#111827; }
+.psi-desc   { font-size:11.5px; color:#9ca3af; }
+
+/* Formulaire inscription en ligne */
+.inscr-step { display:flex; align-items:center; gap:1rem; padding:.85rem 1.2rem; border-bottom:1px solid #f3f4f6; }
+.inscr-step:last-child { border-bottom:none; }
+.inscr-num  { width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:13px; font-weight:800; color:#fff; flex-shrink:0; background:#1e3a5f; }
+.inscr-body { flex:1; }
+.inscr-titre{ font-size:13px; font-weight:700; color:#111827; }
+.inscr-desc { font-size:11.5px; color:#9ca3af; }
+
+/* Demandes inscription reçues */
+.inscr-demande-item { display:flex; gap:.85rem; align-items:center; padding:.85rem 1.2rem; border-bottom:1px solid #f3f4f6; transition:background .1s; }
+.inscr-demande-item:hover { background:#fafafa; }
+.inscr-demande-item:last-child { border-bottom:none; }
+.idi-ava { width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:16px; font-weight:700; color:#fff; flex-shrink:0; }
+.idi-body { flex:1; min-width:0; }
+.idi-nom   { font-size:13px; font-weight:700; color:#111827; }
+.idi-meta  { font-size:11.5px; color:#6b7280; margin-top:1px; }
+.idi-right { text-align:right; flex-shrink:0; }
+.idi-date  { font-size:11px; color:#9ca3af; }
+
+@media(max-width:900px){ .portail-pub-hero{flex-direction:column} }
+
+/* ══════════════════════════════════════════════
+   CONTRÔLE D'ACCÈS & SÉCURITÉ CAMPUS  ★ JOUR 40
+══════════════════════════════════════════════ */
+.acces-hero { background:linear-gradient(135deg,#dc2626 0%,#7c3aed 50%,#1e3a5f 100%); border-radius:18px; padding:1.5rem 2rem; margin-bottom:1.5rem; display:flex; align-items:center; justify-content:space-between; gap:1rem; flex-wrap:wrap; position:relative; overflow:hidden; }
+.acces-hero::after { content:'🔒'; position:absolute; right:2rem; top:50%; transform:translateY(-50%); font-size:80px; opacity:.07; }
+.acces-hero h2 { font-size:18px; font-weight:800; color:#fff; margin-bottom:4px; }
+.acces-hero p  { font-size:12.5px; color:rgba(255,255,255,.65); }
+.acces-hero-kpis { display:flex; gap:2rem; flex-wrap:wrap; }
+.acces-kpi .ak2-val { font-size:24px; font-weight:800; color:#fff; line-height:1; }
+.acces-kpi .ak2-lbl { font-size:10px; color:rgba(255,255,255,.6); text-transform:uppercase; font-weight:600; letter-spacing:.05em; margin-top:2px; }
+
+.acces-layout { display:grid; grid-template-columns:1fr 300px; gap:1rem; }
+.acces-main { display:flex; flex-direction:column; gap:1rem; }
+.acces-side { display:flex; flex-direction:column; gap:1rem; }
+.acces-block { background:#fff; border-radius:14px; border:1px solid #e5e7eb; overflow:hidden; }
+.acces-block-header { padding:.9rem 1.2rem; border-bottom:1px solid #f3f4f6; font-size:13px; font-weight:700; color:#374151; display:flex; align-items:center; justify-content:space-between; }
+
+/* Journal entrées/sorties */
+.acces-log-item { display:flex; align-items:center; gap:.85rem; padding:.75rem 1.2rem; border-bottom:1px solid #f3f4f6; transition:background .1s; }
+.acces-log-item:hover { background:#fafafa; }
+.acces-log-item:last-child { border-bottom:none; }
+.acces-log-ico { width:38px; height:38px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:17px; flex-shrink:0; }
+.acces-log-ico.entree { background:#dcfce7; }
+.acces-log-ico.sortie { background:#fee2e2; }
+.acces-log-ico.alerte { background:#fef9c3; }
+.acces-log-body { flex:1; min-width:0; }
+.acces-log-nom   { font-size:12.5px; font-weight:700; color:#111827; }
+.acces-log-meta  { font-size:11.5px; color:#6b7280; margin-top:1px; }
+.acces-log-right { text-align:right; flex-shrink:0; }
+.acces-log-heure { font-size:12px; font-weight:700; color:#374151; }
+.acces-log-porte { font-size:11px; color:#9ca3af; margin-top:2px; }
+
+/* Badge étudiant / personnel */
+.badge-card { background:linear-gradient(135deg,#1e3a5f,#2d5a8e); border-radius:16px; padding:1.2rem; color:#fff; position:relative; overflow:hidden; width:200px; flex-shrink:0; }
+.badge-card::after { content:'EduLink'; position:absolute; bottom:.5rem; right:.75rem; font-size:9px; font-weight:700; opacity:.3; letter-spacing:.08em; }
+.bc-logo  { font-size:28px; margin-bottom:.5rem; }
+.bc-nom   { font-size:14px; font-weight:800; margin-bottom:2px; }
+.bc-role  { font-size:10px; opacity:.65; font-weight:600; letter-spacing:.06em; text-transform:uppercase; }
+.bc-classe{ font-size:11px; opacity:.7; margin-top:4px; }
+.bc-id    { font-family:monospace; font-size:11px; opacity:.5; margin-top:.5rem; }
+.bc-qr    { width:44px; height:44px; background:rgba(255,255,255,.15); border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:22px; position:absolute; bottom:1rem; right:1rem; }
+
+/* Portes / zones */
+.porte-item { display:flex; align-items:center; gap:.85rem; padding:.75rem 1.2rem; border-bottom:1px solid #f3f4f6; }
+.porte-item:last-child { border-bottom:none; }
+.porte-ico  { width:36px; height:36px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:17px; flex-shrink:0; }
+.porte-body { flex:1; }
+.porte-nom  { font-size:13px; font-weight:700; color:#111827; }
+.porte-meta { font-size:11.5px; color:#9ca3af; }
+.porte-statut { font-size:11px; font-weight:700; padding:3px 8px; border-radius:6px; flex-shrink:0; }
+.porte-statut.ouverte { background:#dcfce7; color:#059669; }
+.porte-statut.fermee  { background:#fee2e2; color:#dc2626; }
+.porte-statut.alerte  { background:#fef9c3; color:#d97706; }
+
+/* Présence live campus */
+.presence-live-grid { display:grid; grid-template-columns:1fr 1fr; gap:1rem; padding:1rem; }
+.plg-item { background:#f9fafb; border-radius:10px; border:1px solid #e5e7eb; padding:.85rem; text-align:center; }
+.plg-val  { font-size:24px; font-weight:800; color:#1e3a5f; }
+.plg-lbl  { font-size:11px; color:#6b7280; font-weight:500; margin-top:2px; }
+
+/* Incident sécurité */
+.incident-sec-item { display:flex; gap:.85rem; align-items:flex-start; padding:.85rem 1.2rem; border-bottom:1px solid #f3f4f6; }
+.incident-sec-item:last-child { border-bottom:none; }
+.isi-ico  { width:36px; height:36px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
+.isi-body { flex:1; }
+.isi-titre{ font-size:12.5px; font-weight:700; color:#111827; }
+.isi-desc { font-size:11.5px; color:#6b7280; margin-top:1px; }
+.isi-right{ text-align:right; flex-shrink:0; }
+.isi-heure{ font-size:11px; color:#9ca3af; }
+
+@media(max-width:900px){ .acces-layout{grid-template-columns:1fr} .presence-live-grid{grid-template-columns:1fr} }
 </style>
 </head>
 <body>
@@ -1961,27 +2056,6 @@ button:hover { background:#a86615; transform:translateY(-1px); }
 <!-- ═══════════════════════ APPLICATION PRINCIPALE ═══════════════════════ -->
 <div id="app-main">
 
-<!-- ═══ WIDGET CHATBOT FLOTTANT IA ═══ -->
-<button class="ia-fab" id="ia-fab-btn" onclick="toggleIAPanel()" title="Assistant EduBot">
-  🤖<div class="ia-fab-badge"></div>
-</button>
-<div class="ia-panel" id="ia-panel">
-  <div class="ia-panel-header">
-    <div class="ia-avatar">🤖</div>
-    <div class="ia-header-info">
-      <div class="ia-name">EduBot IA</div>
-      <div class="ia-status"><span class="ia-status-dot"></span> En ligne · Prêt à vous aider</div>
-    </div>
-    <button class="ia-close" onclick="toggleIAPanel()">✕</button>
-  </div>
-  <div class="ia-messages" id="ia-mini-messages"></div>
-  <div class="ia-suggestions" id="ia-mini-suggestions"></div>
-  <div class="ia-input-zone">
-    <input class="ia-input" id="ia-mini-input" placeholder="Posez une question..." onkeypress="if(event.key==='Enter')envoyerMiniMessage()" />
-    <button class="ia-send" onclick="envoyerMiniMessage()">➤</button>
-  </div>
-</div>
-
 <!-- ═══════════════════════════════════════
      NAVIGATION
 ═══════════════════════════════════════ -->
@@ -2038,7 +2112,10 @@ button:hover { background:#a86615; transform:translateY(-1px); }
   <a onclick="showPage('parametres-avances')" id="nav-parametres-avances"><span class="ico">🔧</span> Paramètres Avancés <span class="badge amber" style="margin-left:auto;font-size:9px;padding:1px 5px">J32</span></a>
   <a onclick="showPage('assistant-ia')" id="nav-assistant-ia"><span class="ico">🤖</span> Assistant IA <span class="badge purple" style="margin-left:auto;font-size:9px;padding:1px 5px">J35</span></a>
   <a onclick="showPage('sms-parents')" id="nav-sms-parents"><span class="ico">📞</span> SMS Parents <span class="badge green" style="margin-left:auto;font-size:9px;padding:1px 5px">J36</span></a>
-  <a onclick="showPage('pwa-config')" id="nav-pwa-config"><span class="ico">📱</span> PWA Mobile <span class="badge blue" style="margin-left:auto;font-size:9px;padding:1px 5px">J37</span></a>
+  <a onclick="showPage('pwa-avancee')" id="nav-pwa-avancee"><span class="ico">📱</span> PWA Avancée <span class="badge blue" style="margin-left:auto;font-size:9px;padding:1px 5px">J37</span></a>
+  <a onclick="showPage('exec-dashboard')" id="nav-exec-dashboard"><span class="ico">📊</span> Dashboard Directeur <span class="badge blue" style="margin-left:auto;font-size:9px;padding:1px 5px">J38</span></a>
+  <a onclick="showPage('portail-public')" id="nav-portail-public"><span class="ico">🌎</span> Portail Public <span class="badge green" style="margin-left:auto;font-size:9px;padding:1px 5px">J39</span></a>
+  <a onclick="showPage('controle-acces')" id="nav-controle-acces"><span class="ico">🔒</span> Contrôle Accès <span class="badge red" style="margin-left:auto;font-size:9px;padding:1px 5px">J40</span></a>
   <a onclick="showPage('parametres')" id="nav-parametres"><span class="ico">⚙️</span> Paramètres</a>
 
   <div class="nav-bottom">
@@ -4194,119 +4271,125 @@ button:hover { background:#a86615; transform:translateY(-1px); }
 
 
 <!-- ═══════════════════════════════════════
-     ASSISTANT IA  ★ JOUR 35
+     ASSISTANT IA EDULINK  ★ JOUR 35
 ═══════════════════════════════════════ -->
 <div class="page" id="page-assistant-ia">
   <div class="top">
-    <div><h2>🤖 Assistant IA EduLink</h2><p class="page-subtitle">Votre assistant intelligent — questions scolaires, aide administrative, analyses</p></div>
+    <div><h2>🤖 Assistant IA EduLink</h2><p class="page-subtitle">Posez vos questions sur les notes, absences, paiements et plus</p></div>
     <div class="top-actions">
-      <button class="btn-purple" onclick="nouvelleConversation()">+ Nouvelle conversation</button>
-      <button class="btn-secondary" onclick="exporterConversations()">📥 Exporter</button>
+      <button class="btn-secondary" onclick="effacerConversation()">🗑️ Nouvelle conversation</button>
+      <button class="btn-purple" onclick="showToast('📥 Historique exporté en PDF','success')">📥 Exporter</button>
     </div>
   </div>
 
-  <!-- Hero IA -->
-  <div class="ia-hero">
-    <div class="ia-hero-avatar">🤖</div>
-    <div class="ia-hero-info">
-      <h2>EduBot — Assistant IA EduLink</h2>
-      <p>Posez vos questions en français · Analyse vos données scolaires · Disponible 24h/24</p>
-    </div>
-    <div class="ia-hero-stats">
-      <div class="ia-hero-stat"><div class="is-val" id="ia-nb-conversations">0</div><div class="is-lbl">Conversations</div></div>
-      <div class="ia-hero-stat"><div class="is-val" id="ia-nb-questions">0</div><div class="is-lbl">Questions répondues</div></div>
-      <div class="ia-hero-stat"><div class="is-val">98%</div><div class="is-lbl">Satisfaction</div></div>
-    </div>
-  </div>
-
-  <!-- Layout -->
-  <div class="ia-full-layout">
-    <div class="ia-full-main">
-
-      <!-- Capacités IA -->
-      <div class="ia-full-block">
-        <div class="ia-full-block-header">
-          <span>⚡ Ce que je peux faire pour vous</span>
+  <div class="ia-layout">
+    <!-- Zone de chat -->
+    <div class="ia-chat">
+      <div class="ia-chat-header">
+        <div class="ia-avatar">🤖</div>
+        <div>
+          <div class="ia-nom">EduLink AI</div>
+          <div class="ia-sub">Assistant intelligent · Powered by Claude</div>
         </div>
-        <div class="ia-cap-grid">
-          <div class="ia-cap-card" onclick="lancerConversationIA('Analyse les résultats scolaires de ce mois')">
-            <div class="ia-cap-ico">📊</div>
-            <div class="ia-cap-titre">Analyse des résultats</div>
-            <div class="ia-cap-desc">Interprétez les notes, identifiez les élèves en difficulté, analysez les tendances</div>
-          </div>
-          <div class="ia-cap-card" onclick="lancerConversationIA('Quels élèves sont absents le plus souvent cette semaine ?')">
-            <div class="ia-cap-ico">📅</div>
-            <div class="ia-cap-titre">Suivi des absences</div>
-            <div class="ia-cap-desc">Identifiez les patterns d'absentéisme, alertez les familles, générez des rapports</div>
-          </div>
-          <div class="ia-cap-card" onclick="lancerConversationIA('Rédige un message pour informer les parents des résultats du 2ème trimestre')">
-            <div class="ia-cap-ico">✉️</div>
-            <div class="ia-cap-titre">Rédaction de messages</div>
-            <div class="ia-cap-desc">Rédigez des circulaires, convocations, emails aux parents en quelques secondes</div>
-          </div>
-          <div class="ia-cap-card" onclick="lancerConversationIA('Donne-moi des conseils pour améliorer le taux de paiement des frais')">
-            <div class="ia-cap-ico">💳</div>
-            <div class="ia-cap-titre">Conseils financiers</div>
-            <div class="ia-cap-desc">Optimisez le recouvrement des frais, analysez les impayés, anticipez les besoins</div>
-          </div>
-          <div class="ia-cap-card" onclick="lancerConversationIA('Génère un rapport de performance pour ce trimestre')">
-            <div class="ia-cap-ico">📈</div>
-            <div class="ia-cap-titre">Rapports automatiques</div>
-            <div class="ia-cap-desc">Générez des rapports complets sur demande — performances, finances, présences</div>
-          </div>
-          <div class="ia-cap-card" onclick="lancerConversationIA('Quelles améliorations recommandes-tu pour notre école ?')">
-            <div class="ia-cap-ico">🎯</div>
-            <div class="ia-cap-titre">Recommandations IA</div>
-            <div class="ia-cap-desc">Obtenez des suggestions personnalisées basées sur vos données scolaires réelles</div>
-          </div>
-        </div>
+        <div class="ia-online"><div class="ia-online-dot"></div>En ligne</div>
       </div>
 
-      <!-- Zone de chat principale -->
-      <div class="ia-full-block">
-        <div class="ia-full-block-header">
-          <span>💬 Conversation en cours</span>
-          <div style="display:flex;align-items:center;gap:6px;font-size:11.5px;color:#059669;font-weight:600">
-            <span style="width:7px;height:7px;border-radius:50%;background:#059669;animation:pulse 1.5s ease infinite;display:inline-block"></span>
-            EduBot en ligne
-          </div>
-        </div>
-        <div class="ia-messages" id="ia-full-messages" style="max-height:320px;padding:1.2rem"></div>
-        <div id="ia-full-suggestions" class="ia-suggestions"></div>
-        <div class="ia-input-zone" style="padding:1rem 1.2rem">
-          <input class="ia-input" id="ia-full-input" placeholder="Posez votre question à EduBot..." onkeypress="if(event.key==='Enter')envoyerMessageIA()" />
-          <button class="ia-send" onclick="envoyerMessageIA()">➤</button>
-        </div>
+      <div class="ia-messages" id="ia-messages-list">
+        <!-- Messages chargés dynamiquement -->
+      </div>
+
+      <!-- Suggestions rapides -->
+      <div class="ia-suggestions" id="ia-suggestions">
+        <button class="ia-suggest-btn" onclick="envoyerSuggestion(this)">📊 Quelle est la moyenne de la classe ?</button>
+        <button class="ia-suggest-btn" onclick="envoyerSuggestion(this)">🚫 Combien d'absences aujourd'hui ?</button>
+        <button class="ia-suggest-btn" onclick="envoyerSuggestion(this)">💳 Factures impayées ce mois ?</button>
+        <button class="ia-suggest-btn" onclick="envoyerSuggestion(this)">🎓 Meilleur élève de Tle D ?</button>
+        <button class="ia-suggest-btn" onclick="envoyerSuggestion(this)">📅 Prochain examen ?</button>
+        <button class="ia-suggest-btn" onclick="envoyerSuggestion(this)">📈 Taux de réussite par filière</button>
+      </div>
+
+      <!-- Zone de saisie -->
+      <div class="ia-input-area">
+        <input class="ia-input" id="ia-input" placeholder="Posez votre question à EduLink AI..." onkeypress="if(event.key==='Enter')envoyerMessage()" />
+        <button class="ia-send-btn" onclick="envoyerMessage()" title="Envoyer">➤</button>
       </div>
     </div>
 
     <!-- Sidebar IA -->
-    <div class="ia-full-side">
-      <!-- Historique -->
-      <div class="ia-full-block">
-        <div class="ia-full-block-header">
-          <span>🕐 Conversations récentes</span>
-          <button class="btn-sm btn-secondary" onclick="nouvelleConversation()">+</button>
-        </div>
-        <div id="ia-historique-list"></div>
-      </div>
-
+    <div class="ia-side">
       <!-- Stats IA -->
-      <div class="ia-full-block">
-        <div class="ia-full-block-header"><span>📊 Statistiques EduBot</span></div>
-        <div style="padding:1rem">
-          <div class="kpi-row"><span class="kpi-label">Questions aujourd'hui</span><span class="kpi-value" id="ia-stat-jour">—</span></div>
-          <div class="kpi-row"><span class="kpi-label">Temps de réponse moy.</span><span class="kpi-value">1.2s</span></div>
-          <div class="kpi-row"><span class="kpi-label">Sujets les plus demandés</span><span class="kpi-value" style="color:#7c3aed">Notes</span></div>
-          <div class="kpi-row"><span class="kpi-label">Langue de conversation</span><span class="kpi-value">Français</span></div>
-          <div class="kpi-row"><span class="kpi-label">Modèle IA</span><span class="kpi-value" style="color:#7c3aed">Claude 3.5</span></div>
+      <div class="ia-side-block">
+        <div class="ia-side-header">📊 Statistiques IA</div>
+        <div class="ia-stat-item">
+          <div class="ia-stat-ico" style="background:#ede9fe">💬</div>
+          <div class="ia-stat-body">
+            <div class="ia-stat-label" id="ia-stat-questions">0 questions</div>
+            <div class="ia-stat-val">Cette session</div>
+          </div>
+        </div>
+        <div class="ia-stat-item">
+          <div class="ia-stat-ico" style="background:#dcfce7">⚡</div>
+          <div class="ia-stat-body">
+            <div class="ia-stat-label">~1.2 sec</div>
+            <div class="ia-stat-val">Temps de réponse moyen</div>
+          </div>
+        </div>
+        <div class="ia-stat-item">
+          <div class="ia-stat-ico" style="background:#dbeafe">🎯</div>
+          <div class="ia-stat-body">
+            <div class="ia-stat-label">94% de précision</div>
+            <div class="ia-stat-val">Sur les données EduLink</div>
+          </div>
+        </div>
+        <div class="ia-stat-item">
+          <div class="ia-stat-ico" style="background:#fef9c3">🔍</div>
+          <div class="ia-stat-body">
+            <div class="ia-stat-label" id="ia-stat-modules">6 modules</div>
+            <div class="ia-stat-val">Connectés à l'IA</div>
+          </div>
         </div>
       </div>
 
-      <!-- Topics suggérés -->
-      <div class="ia-full-block">
-        <div class="ia-full-block-header"><span>💡 Idées de questions</span></div>
-        <div style="padding:.75rem 1rem" id="ia-idees-list"></div>
+      <!-- Capacités IA -->
+      <div class="ia-side-block">
+        <div class="ia-side-header">💡 Ce que je sais faire</div>
+        <div style="padding:.75rem 1.2rem">
+          <div style="font-size:12.5px;color:#374151;line-height:2">
+            ✅ Statistiques des notes<br>
+            ✅ Suivi des absences<br>
+            ✅ État des paiements<br>
+            ✅ Informations étudiants<br>
+            ✅ Planning des examens<br>
+            ✅ Rapports automatiques<br>
+            ✅ Prédictions de réussite<br>
+            ✅ Alertes et recommandations
+          </div>
+        </div>
+      </div>
+
+      <!-- Historique -->
+      <div class="ia-side-block">
+        <div class="ia-side-header">🕐 Conversations récentes</div>
+        <div id="ia-historique-list">
+          <div class="ia-hist-item">
+            <div style="flex:1">
+              <div class="ia-hist-preview">Moyenne classe Tle D</div>
+              <div class="ia-hist-time">Il y a 2h</div>
+            </div>
+          </div>
+          <div class="ia-hist-item">
+            <div style="flex:1">
+              <div class="ia-hist-preview">Absences du 30/03/2026</div>
+              <div class="ia-hist-time">Hier</div>
+            </div>
+          </div>
+          <div class="ia-hist-item">
+            <div style="flex:1">
+              <div class="ia-hist-preview">Factures impayées mars</div>
+              <div class="ia-hist-time">Il y a 3j</div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -4317,10 +4400,10 @@ button:hover { background:#a86615; transform:translateY(-1px); }
 ═══════════════════════════════════════ -->
 <div class="page" id="page-sms-parents">
   <div class="top">
-    <div><h2>📞 SMS & Communication Parents</h2><p class="page-subtitle">Alertes automatiques, messages groupés et suivi des communications</p></div>
+    <div><h2>📞 SMS & Communication Parents</h2><p class="page-subtitle">Envois groupés, alertes automatiques et suivi des accusés</p></div>
     <div class="top-actions">
-      <button class="btn-green" onclick="ouvrirModalSmsCompose()">📤 Envoyer SMS</button>
-      <button class="btn-blue" onclick="configurerSmsAuto()">⚙️ SMS automatiques</button>
+      <button onclick="ouvrirComposerSMS()">+ Nouveau SMS</button>
+      <button class="btn-blue" onclick="envoyerAlertesAuto()">⚡ Alertes auto</button>
     </div>
   </div>
 
@@ -4328,171 +4411,142 @@ button:hover { background:#a86615; transform:translateY(-1px); }
   <div class="sms-hero">
     <div>
       <h2>📞 Centre de Communication</h2>
-      <p>SMS, emails et notifications — Restez connecté avec les familles</p>
+      <p>Contactez tous les parents en quelques secondes</p>
     </div>
     <div class="sms-hero-kpis">
-      <div class="sms-kpi"><div class="sk-val" id="sms-envoyes">0</div><div class="sk-lbl">SMS envoyés (mois)</div></div>
-      <div class="sms-kpi"><div class="sk-val" id="sms-taux-livr">0%</div><div class="sk-lbl">Taux livraison</div></div>
-      <div class="sms-kpi"><div class="sk-val" id="sms-parents-abonnes">0</div><div class="sk-lbl">Parents abonnés</div></div>
+      <div class="sms-kpi"><div class="sk-val" id="sms-envoyes">0</div><div class="sk-lbl">SMS envoyés</div></div>
+      <div class="sms-kpi"><div class="sk-val" id="sms-taux">0%</div><div class="sk-lbl">Taux réception</div></div>
+      <div class="sms-kpi"><div class="sk-val" id="sms-parents">0</div><div class="sk-lbl">Parents inscrits</div></div>
     </div>
   </div>
 
-  <!-- KPI bar -->
-  <div class="sms-stat-bar">
-    <div class="sms-stat">
-      <div class="sms-stat-ico" style="background:#dcfce7">📨</div>
-      <div><div class="n" id="sms-kpi-envoyes" style="color:#059669;font-size:22px;font-weight:700">—</div><div class="l" style="font-size:11px;color:#6b7280">Messages envoyés</div></div>
-    </div>
-    <div class="sms-stat">
-      <div class="sms-stat-ico" style="background:#dbeafe">✅</div>
-      <div><div class="n" id="sms-kpi-livres" style="color:#1d4ed8;font-size:22px;font-weight:700">—</div><div class="l" style="font-size:11px;color:#6b7280">Livrés avec succès</div></div>
-    </div>
-    <div class="sms-stat">
-      <div class="sms-stat-ico" style="background:#fef9c3">⏳</div>
-      <div><div class="n" id="sms-kpi-attente" style="color:#d97706;font-size:22px;font-weight:700">—</div><div class="l" style="font-size:11px;color:#6b7280">En attente envoi</div></div>
-    </div>
-    <div class="sms-stat">
-      <div class="sms-stat-ico" style="background:#fee2e2">❌</div>
-      <div><div class="n" id="sms-kpi-echecs" style="color:#dc2626;font-size:22px;font-weight:700">—</div><div class="l" style="font-size:11px;color:#6b7280">Échecs de livraison</div></div>
-    </div>
+  <!-- KPI bar SMS -->
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:1.5rem" id="sms-kpi-bar"></div>
+
+  <!-- Onglets SMS -->
+  <div class="tabs" style="margin-bottom:1.2rem">
+    <button class="tab active" onclick="smsSwitchTab('composer',this)">✍️ Composer</button>
+    <button class="tab" onclick="smsSwitchTab('historique',this)">📋 Historique</button>
+    <button class="tab" onclick="smsSwitchTab('contacts',this)">👥 Contacts parents</button>
+    <button class="tab" onclick="smsSwitchTab('automatique',this)">⚙️ SMS Automatiques</button>
   </div>
 
   <!-- Layout SMS -->
   <div class="sms-layout">
     <div class="sms-main">
 
-      <!-- Composer SMS -->
-      <div class="sms-compose">
-        <h4>📤 Composer un SMS</h4>
-        <div class="form-group">
-          <label>Destinataires</label>
-          <div class="sms-dest-chips" id="sms-dest-chips">
-            <div class="sms-chip selected" onclick="toggleSmsChip(this,'tous')">👥 Tous les parents</div>
-            <div class="sms-chip" onclick="toggleSmsChip(this,'terminale')">🎓 Terminales</div>
-            <div class="sms-chip" onclick="toggleSmsChip(this,'premiere')">📚 Premières</div>
-            <div class="sms-chip" onclick="toggleSmsChip(this,'seconde')">📖 Secondes</div>
-            <div class="sms-chip" onclick="toggleSmsChip(this,'impayes')">💸 Impayés</div>
-            <div class="sms-chip" onclick="toggleSmsChip(this,'absents')">🚫 Parents absents</div>
+      <!-- TAB Composer -->
+      <div id="sms-tab-composer">
+        <div class="sms-block">
+          <div class="sms-block-header"><span>✍️ Composer un SMS</span></div>
+          <div class="sms-composer">
+            <!-- Destinataires -->
+            <div class="form-group">
+              <label>Destinataires</label>
+              <div style="display:flex;gap:8px;margin-bottom:.5rem;flex-wrap:wrap" id="sms-dest-tags"></div>
+              <div style="display:flex;gap:8px">
+                <select id="sms-dest-selector" style="flex:1;padding:8px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:13px;font-family:'Poppins',sans-serif;outline:none">
+                  <option value="">Ajouter des destinataires...</option>
+                  <option value="tous">👨‍👩‍👧 Tous les parents</option>
+                  <option value="tleD">Tle D — Parents</option>
+                  <option value="tleC">Tle C — Parents</option>
+                  <option value="1ereA">1ère A — Parents</option>
+                  <option value="2ndeB">2nde B — Parents</option>
+                  <option value="absences">🚫 Parents des absents du jour</option>
+                  <option value="impayes">💳 Parents avec factures impayées</option>
+                </select>
+                <button class="btn-sm btn-blue" onclick="ajouterDestinataire()">+ Ajouter</button>
+              </div>
+            </div>
+
+            <!-- Templates -->
+            <div class="section-label">Templates rapides</div>
+            <div class="sms-template-grid" id="sms-templates-grid"></div>
+
+            <!-- Message -->
+            <div class="form-group" style="margin-top:1rem">
+              <label>Message SMS</label>
+              <textarea id="sms-message" rows="4" placeholder="Rédigez votre message..." style="width:100%;padding:10px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:13px;font-family:'Poppins',sans-serif;outline:none;resize:vertical" oninput="compterCaracteres()"></textarea>
+              <div class="sms-counter">
+                <span>💡 Utilisez {nom_parent}, {nom_eleve}, {classe} pour personnaliser</span>
+                <span class="chars" id="sms-chars">0 / 160</span>
+              </div>
+            </div>
+
+            <div style="display:flex;gap:8px;justify-content:flex-end;margin-top:1rem">
+              <button class="btn-secondary" onclick="previsualiserSMS()">👁️ Prévisualiser</button>
+              <button onclick="envoyerSMS()">📤 Envoyer maintenant</button>
+              <button class="btn-blue" onclick="programmerSMS()">⏰ Programmer</button>
+            </div>
           </div>
         </div>
-        <div class="form-group">
-          <label>Message</label>
-          <textarea id="sms-message-text" rows="3" style="width:100%;padding:8px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:13px;font-family:'Poppins',sans-serif;outline:none;resize:none" placeholder="Cher parent, nous vous informons que..." oninput="updateSmsCounter(this)"></textarea>
-          <div class="sms-counter"><span id="sms-char-count">0</span>/160 caractères · <span id="sms-nb-sms">1</span> SMS</div>
-        </div>
-        <div style="display:flex;gap:.75rem;align-items:center">
-          <button class="btn-green" onclick="envoyerSmsGroupe()">📤 Envoyer maintenant</button>
-          <button class="btn-secondary" onclick="planifierSms()">📅 Planifier</button>
-          <span id="sms-dest-count" style="font-size:12.5px;color:#6b7280;margin-left:auto">👥 <strong>0</strong> destinataire(s)</span>
-        </div>
-      </div>
-
-      <!-- Onglets SMS -->
-      <div class="tabs">
-        <button class="tab active" onclick="smsSwitchTab('historique',this)">📋 Historique</button>
-        <button class="tab" onclick="smsSwitchTab('templates',this)">📝 Templates</button>
-        <button class="tab" onclick="smsSwitchTab('auto',this)">⚡ SMS automatiques</button>
-        <button class="tab" onclick="smsSwitchTab('contacts',this)">👥 Contacts</button>
       </div>
 
       <!-- TAB Historique -->
-      <div id="sms-tab-historique">
+      <div id="sms-tab-historique" style="display:none">
         <div class="sms-block">
-          <div class="sms-block-header"><span>📋 Messages envoyés</span><button class="btn-sm btn-secondary" onclick="exporterHistoriqueSms()">📥 Export</button></div>
-          <div id="sms-historique-list"></div>
-        </div>
-      </div>
-
-      <!-- TAB Templates -->
-      <div id="sms-tab-templates" style="display:none">
-        <div class="sms-block">
-          <div class="sms-block-header"><span>📝 Modèles de messages</span><button class="btn-sm btn-green" onclick="creerTemplate()">+ Créer</button></div>
-          <div id="sms-templates-list"></div>
-        </div>
-      </div>
-
-      <!-- TAB Auto -->
-      <div id="sms-tab-auto" style="display:none">
-        <div class="sms-block">
-          <div class="sms-block-header"><span>⚡ SMS automatiques configurés</span></div>
-          <div style="padding:1rem">
-            <div class="toggle-row"><div class="toggle-info"><div class="tl">Absence du jour</div><div class="ts">SMS aux parents dès qu'une absence est enregistrée</div></div><label class="toggle-sw"><input type="checkbox" checked><span class="toggle-sl"></span></label></div>
-            <div class="toggle-row"><div class="toggle-info"><div class="tl">Résultats disponibles</div><div class="ts">SMS quand les notes du trimestre sont publiées</div></div><label class="toggle-sw"><input type="checkbox" checked><span class="toggle-sl"></span></label></div>
-            <div class="toggle-row"><div class="toggle-info"><div class="tl">Rappel paiement J-3</div><div class="ts">Rappel 3 jours avant l'échéance des frais</div></div><label class="toggle-sw"><input type="checkbox" checked><span class="toggle-sl"></span></label></div>
-            <div class="toggle-row"><div class="toggle-info"><div class="tl">Bulletin disponible</div><div class="ts">SMS quand le bulletin est prêt à télécharger</div></div><label class="toggle-sw"><input type="checkbox"><span class="toggle-sl"></span></label></div>
-            <div class="toggle-row"><div class="toggle-info"><div class="tl">Incident disciplinaire</div><div class="ts">Alert immédiat aux parents en cas d'incident</div></div><label class="toggle-sw"><input type="checkbox" checked><span class="toggle-sl"></span></label></div>
-            <div class="toggle-row"><div class="toggle-info"><div class="tl">Convocation réunion</div><div class="ts">SMS 48h avant toute réunion de parents</div></div><label class="toggle-sw"><input type="checkbox"><span class="toggle-sl"></span></label></div>
+          <div class="sms-block-header">
+            <span>📋 Historique des envois</span>
+            <button class="btn-sm btn-secondary" onclick="showToast('📥 Export CSV en cours...','info')">📥 Export</button>
           </div>
+          <div id="sms-historique-list"></div>
         </div>
       </div>
 
       <!-- TAB Contacts -->
       <div id="sms-tab-contacts" style="display:none">
+        <div class="search-bar" style="margin-bottom:1rem">
+          <input id="sms-search-parent" placeholder="🔍 Rechercher un parent..." oninput="filtrerContacts()" />
+        </div>
         <div class="sms-block">
           <div class="sms-block-header"><span>👥 Annuaire des parents</span><span id="sms-contacts-count" class="badge green">0 contacts</span></div>
-          <div style="padding:.75rem 1.2rem 0"><input id="sms-search-contact" placeholder="🔍 Rechercher un parent..." oninput="filtrerContactsSms()" style="width:100%;padding:8px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:13px;font-family:'Poppins',sans-serif;outline:none" /></div>
-          <div style="overflow-x:auto">
-            <table><thead><tr><th>Parent</th><th>Élève</th><th>Téléphone</th><th>Classe</th><th>Statut</th><th>Actions</th></tr></thead>
-            <tbody id="sms-contacts-tbody"></tbody></table>
-          </div>
+          <div id="sms-contacts-list"></div>
         </div>
       </div>
+
+      <!-- TAB Automatique -->
+      <div id="sms-tab-automatique" style="display:none">
+        <div class="sms-block">
+          <div class="sms-block-header"><span>⚙️ SMS Automatiques configurés</span></div>
+          <div style="padding:1rem" id="sms-auto-list"></div>
+        </div>
+      </div>
+
     </div>
 
     <!-- Sidebar SMS -->
     <div class="sms-side">
-      <!-- Stats aujourd'hui -->
       <div class="sms-block">
-        <div class="sms-block-header"><span>📊 Stats aujourd'hui</span></div>
+        <div class="sms-block-header"><span>📊 Stats du mois</span></div>
         <div style="padding:1rem">
-          <div class="kpi-row"><span class="kpi-label">SMS envoyés</span><span class="kpi-value" id="sms-stat-jour">—</span></div>
-          <div class="kpi-row"><span class="kpi-label">Taux de livraison</span><span class="kpi-value" id="sms-stat-livr">—</span></div>
-          <div class="kpi-row"><span class="kpi-label">Opérateur MTN</span><span class="kpi-value" style="color:#d97706">—</span></div>
-          <div class="kpi-row"><span class="kpi-label">Opérateur Moov</span><span class="kpi-value" style="color:#1d4ed8">—</span></div>
-          <div class="kpi-row"><span class="kpi-label">Crédit SMS restant</span><span class="kpi-value" id="sms-credit">—</span></div>
+          <div class="kpi-row"><span class="kpi-label">SMS envoyés</span><span class="kpi-value" id="sms-stat-envoyes">—</span></div>
+          <div class="kpi-row"><span class="kpi-label">Taux de réception</span><span class="kpi-value" id="sms-stat-taux">—</span></div>
+          <div class="kpi-row"><span class="kpi-label">Coût total</span><span class="kpi-value" id="sms-stat-cout">—</span></div>
+          <div class="kpi-row"><span class="kpi-label">Alertes auto envoyées</span><span class="kpi-value" id="sms-stat-auto">—</span></div>
         </div>
       </div>
 
-      <!-- Derniers envois -->
       <div class="sms-block">
-        <div class="sms-block-header"><span>🕐 Derniers envois</span></div>
-        <div id="sms-derniers-list"></div>
-      </div>
-
-      <!-- Alerte crédit -->
-      <div class="sms-block" id="sms-alerte-credit">
-        <div class="sms-block-header" style="background:#fef9c3;border-bottom-color:#fde68a"><span style="color:#d97706">⚠️ Crédit SMS</span></div>
-        <div style="padding:1rem;font-size:13px;color:#6b7280">
-          <div style="font-size:24px;font-weight:800;color:#d97706" id="sms-credit-val">—</div>
-          <div>SMS restants</div>
-          <button class="btn-sm" style="margin-top:.75rem;background:#d97706" onclick="rechargerCredit()">💳 Recharger</button>
+        <div class="sms-block-header"><span>⚡ Envois rapides</span></div>
+        <div style="padding:1rem;display:flex;flex-direction:column;gap:.6rem">
+          <button class="btn-green" onclick="envoyerAlertesAbsences()">🚫 Alertes absences du jour</button>
+          <button class="btn-blue" onclick="envoyerRappelPaiements()">💳 Rappel paiements</button>
+          <button onclick="envoyerConvocationParents()">📅 Convocation réunion</button>
+          <button class="btn-secondary" onclick="envoyerResultatsBulletins()">📊 Bulletins disponibles</button>
         </div>
       </div>
-    </div>
-  </div>
-</div>
 
-<!-- Modal Composer SMS -->
-<div class="modal-overlay" id="modal-sms-compose">
-  <div class="modal">
-    <h3>📤 Envoyer un SMS</h3>
-    <div class="form-group"><label>Destinataires *</label>
-      <select id="modal-sms-dest">
-        <option value="tous">Tous les parents (198)</option>
-        <option value="terminale">Parents Terminales (62)</option>
-        <option value="premiere">Parents 1ères (58)</option>
-        <option value="seconde">Parents 2ndes (78)</option>
-        <option value="impayes">Parents avec impayés (23)</option>
-      </select>
-    </div>
-    <div class="form-group"><label>Message *</label>
-      <textarea id="modal-sms-text" rows="4" placeholder="Votre message SMS..."></textarea>
-    </div>
-    <div class="form-group"><label>Planifier l'envoi (optionnel)</label>
-      <input type="datetime-local" id="modal-sms-datetime" /></div>
-    <div class="modal-footer">
-      <button class="btn-secondary" onclick="fermerModal('modal-sms-compose')">Annuler</button>
-      <button class="btn-green" onclick="confirmerEnvoiSms()">📤 Envoyer</button>
+      <div class="sms-block">
+        <div class="sms-block-header"><span>📡 Crédit SMS restant</span></div>
+        <div style="padding:1rem;text-align:center">
+          <div style="font-size:36px;font-weight:800;color:#059669" id="sms-credit">450</div>
+          <div style="font-size:12px;color:#6b7280;margin-bottom:.75rem">SMS disponibles</div>
+          <div style="height:8px;background:#f3f4f6;border-radius:4px;overflow:hidden;margin-bottom:.75rem">
+            <div style="height:100%;width:45%;background:linear-gradient(90deg,#059669,#1d9e75);border-radius:4px"></div>
+          </div>
+          <button class="btn-green" style="width:100%" onclick="showToast('💳 Rechargement SMS — Contactez votre opérateur','info')">+ Recharger</button>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -4500,126 +4554,557 @@ button:hover { background:#a86615; transform:translateY(-1px); }
 <!-- ═══════════════════════════════════════
      PWA AVANCÉE  ★ JOUR 37
 ═══════════════════════════════════════ -->
-<div class="page" id="page-pwa-config">
+<div class="page" id="page-pwa-avancee">
   <div class="top">
-    <div><h2>📱 PWA Mobile Avancée</h2><p class="page-subtitle">Configuration, performances et suivi des installations mobiles</p></div>
+    <div><h2>📱 PWA Avancée</h2><p class="page-subtitle">Installation mobile, performances, cache hors-ligne et notifications push</p></div>
     <div class="top-actions">
-      <button onclick="testerPWA()">🔍 Tester la PWA</button>
-      <button class="btn-blue" onclick="forcerInstallation()">📲 Forcer installation</button>
+      <button class="btn-secondary" onclick="actualiserPWA()">🔄 Actualiser</button>
+      <button class="btn-purple" onclick="showToast('📤 Rapport PWA exporté','success')">📥 Rapport</button>
     </div>
   </div>
 
   <!-- Hero PWA -->
   <div class="pwa-hero">
     <div>
-      <h2>📱 EduLink — Application Mobile</h2>
-      <p>Progressive Web App installable sur Android, iOS et Desktop</p>
+      <h2>📱 EduLink PWA — Mobile First</h2>
+      <p>Application installable · Hors-ligne · Notifications push</p>
     </div>
-    <div style="display:flex;gap:1rem;flex-wrap:wrap">
-      <div style="background:rgba(255,255,255,.15);border-radius:12px;padding:.75rem 1.2rem;text-align:center">
-        <div style="font-size:24px;font-weight:800;color:#fff" id="pwa-installations">0</div>
-        <div style="font-size:10px;color:rgba(255,255,255,.6);text-transform:uppercase;font-weight:600">Installations</div>
-      </div>
-      <div style="background:rgba(255,255,255,.15);border-radius:12px;padding:.75rem 1.2rem;text-align:center">
-        <div style="font-size:24px;font-weight:800;color:#4ade80" id="pwa-score-hero">98</div>
-        <div style="font-size:10px;color:rgba(255,255,255,.6);text-transform:uppercase;font-weight:600">Score PWA</div>
-      </div>
-      <div style="background:rgba(255,255,255,.15);border-radius:12px;padding:.75rem 1.2rem;text-align:center">
-        <div style="font-size:24px;font-weight:800;color:#fff" id="pwa-cache-size">0 MB</div>
-        <div style="font-size:10px;color:rgba(255,255,255,.6);text-transform:uppercase;font-weight:600">Cache local</div>
-      </div>
-    </div>
+    <div class="pwa-hero-kpis" id="pwa-hero-kpis"></div>
+  </div>
+
+  <!-- Onglets PWA -->
+  <div class="tabs" style="margin-bottom:1.2rem">
+    <button class="tab active" onclick="pwaSwitchTab('installation',this)">📲 Installation</button>
+    <button class="tab" onclick="pwaSwitchTab('performance',this)">⚡ Performance</button>
+    <button class="tab" onclick="pwaSwitchTab('cache',this)">💾 Cache & Hors-ligne</button>
+    <button class="tab" onclick="pwaSwitchTab('push',this)">🔔 Notifications Push</button>
   </div>
 
   <!-- Layout PWA -->
   <div class="pwa-layout">
+    <div class="pwa-main">
 
-    <!-- Score & Checklist -->
-    <div class="pwa-block">
-      <div class="pwa-block-header"><span>✅ Conformité PWA</span><span class="badge green">Score : 98/100</span></div>
-      <div class="pwa-block-body">
-        <div class="pwa-score-ring">
-          <svg width="140" height="140" viewBox="0 0 140 140">
-            <circle cx="70" cy="70" r="60" fill="none" stroke="#f3f4f6" stroke-width="12"/>
-            <circle cx="70" cy="70" r="60" fill="none" stroke="#059669" stroke-width="12"
-              stroke-dasharray="377" stroke-dashoffset="8" stroke-linecap="round"/>
-          </svg>
-          <div class="psr-val"><div class="sv">98</div><div class="sl">/ 100</div></div>
+      <!-- TAB Installation -->
+      <div id="pwa-tab-installation">
+        <div class="pwa-block">
+          <div class="pwa-block-header"><span>📲 Guide d'installation par appareil</span></div>
+          <div id="pwa-install-devices"></div>
         </div>
-        <div id="pwa-checklist"></div>
-      </div>
-    </div>
-
-    <!-- Appareils installés -->
-    <div class="pwa-block">
-      <div class="pwa-block-header"><span>📲 Appareils avec EduLink installé</span><span class="badge blue" id="pwa-nb-devices">0</span></div>
-      <div id="pwa-devices-list"></div>
-    </div>
-
-    <!-- Cache & Performance -->
-    <div class="pwa-block">
-      <div class="pwa-block-header"><span>⚡ Cache & Performance hors-ligne</span><button class="btn-sm btn-red" onclick="viderCache()">🗑️ Vider</button></div>
-      <div class="pwa-block-body" id="pwa-cache-stats"></div>
-    </div>
-
-    <!-- Config notifications push -->
-    <div class="pwa-block">
-      <div class="pwa-block-header"><span>🔔 Notifications Push</span><span class="badge green">Actif</span></div>
-      <div class="pwa-block-body">
-        <div id="pwa-push-config"></div>
-        <div style="margin-top:1rem;padding-top:1rem;border-top:1px solid #f3f4f6">
-          <button class="btn-sm btn-blue" onclick="envoyerNotifTest()" style="width:100%">🔔 Envoyer notification test</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Manifest & Service Worker -->
-    <div class="pwa-block" style="grid-column:1/-1">
-      <div class="pwa-block-header"><span>⚙️ Configuration technique</span><button class="btn-sm btn-secondary" onclick="voirManifest()">📄 Voir manifest.json</button></div>
-      <div class="pwa-block-body">
-        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1rem">
-          <div>
-            <div class="section-label">Service Worker</div>
-            <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:.75rem 1rem">
-              <div style="font-size:12.5px;font-weight:700;color:#059669">✅ Enregistré & Actif</div>
-              <div style="font-size:11.5px;color:#6b7280;margin-top:3px">Version : v3.2.1 · ./service-worker.js</div>
-              <div style="font-size:11.5px;color:#6b7280">Stratégie : Cache First</div>
-            </div>
-          </div>
-          <div>
-            <div class="section-label">Manifest PWA</div>
-            <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:.75rem 1rem">
-              <div style="font-size:12.5px;font-weight:700;color:#059669">✅ Valide</div>
-              <div style="font-size:11.5px;color:#6b7280;margin-top:3px">Nom : EduLink · Icônes : 192 & 512px</div>
-              <div style="font-size:11.5px;color:#6b7280">Display : standalone</div>
-            </div>
-          </div>
-          <div>
-            <div class="section-label">HTTPS</div>
-            <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:10px;padding:.75rem 1rem">
-              <div style="font-size:12.5px;font-weight:700;color:#059669">✅ Sécurisé</div>
-              <div style="font-size:11.5px;color:#6b7280;margin-top:3px">TLS 1.3 · Certificat valide</div>
-              <div style="font-size:11.5px;color:#6b7280">Expire : Déc. 2026</div>
-            </div>
-          </div>
-        </div>
-        <div style="margin-top:1.2rem">
-          <div class="section-label">URL de téléchargement Android (.apk/.aab)</div>
-          <div style="display:flex;gap:.75rem;flex-wrap:wrap">
-            <a href="#" style="display:inline-flex;align-items:center;gap:8px;background:#1e3a5f;color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:700;text-decoration:none" onclick="showToast('📱 Téléchargement APK EduLink','info');return false">
-              🤖 Télécharger APK Android
-            </a>
-            <a href="https://play.google.com/store" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:#059669;color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:700;text-decoration:none">
-              ▶ Google Play Store
-            </a>
-            <button onclick="showToast('📲 Lien d\'installation PWA copié !','success')" style="background:#c97c1a;color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;font-weight:700">
-              🔗 Copier lien PWA
-            </button>
+        <div class="pwa-block" style="margin-top:1rem">
+          <div class="pwa-block-header"><span>📊 Appareils installés</span></div>
+          <div style="overflow-x:auto">
+            <table>
+              <thead><tr><th>Utilisateur</th><th>Rôle</th><th>Appareil</th><th>Système</th><th>Installé le</th><th>Dernière synchro</th></tr></thead>
+              <tbody id="pwa-devices-tbody"></tbody>
+            </table>
           </div>
         </div>
       </div>
+
+      <!-- TAB Performance -->
+      <div id="pwa-tab-performance" style="display:none">
+        <div class="pwa-block">
+          <div class="pwa-block-header"><span>⚡ Score Lighthouse</span></div>
+          <div class="perf-score" id="pwa-perf-scores"></div>
+        </div>
+        <div class="pwa-block" style="margin-top:1rem">
+          <div class="pwa-block-header"><span>📈 Temps de chargement</span></div>
+          <div style="padding:1rem" id="pwa-load-times"></div>
+        </div>
+      </div>
+
+      <!-- TAB Cache -->
+      <div id="pwa-tab-cache" style="display:none">
+        <div class="pwa-block">
+          <div class="pwa-block-header">
+            <span>💾 Fichiers en cache</span>
+            <div style="display:flex;gap:6px;align-items:center">
+              <span class="badge green" id="pwa-cache-total">0 MB total</span>
+              <button class="btn-sm btn-red" onclick="viderCache()">🗑️ Vider</button>
+            </div>
+          </div>
+          <div id="pwa-cache-list"></div>
+        </div>
+        <div class="pwa-block" style="margin-top:1rem">
+          <div class="pwa-block-header"><span>🔄 Synchronisation hors-ligne</span></div>
+          <div style="padding:1rem" id="pwa-sync-list"></div>
+        </div>
+      </div>
+
+      <!-- TAB Notifications Push -->
+      <div id="pwa-tab-push" style="display:none">
+        <div class="pwa-block">
+          <div class="pwa-block-header">
+            <span>🔔 Statistiques notifications push</span>
+          </div>
+          <div class="push-stat-grid" id="pwa-push-stats"></div>
+        </div>
+        <div class="pwa-block" style="margin-top:1rem">
+          <div class="pwa-block-header">
+            <span>📤 Envoyer une notification push test</span>
+          </div>
+          <div style="padding:1rem">
+            <div class="form-group"><label>Titre</label><input id="push-titre" value="EduLink — Notification test" /></div>
+            <div class="form-group"><label>Message</label><textarea id="push-message" rows="2" style="width:100%;padding:8px 12px;border:1px solid #e5e7eb;border-radius:8px;font-size:13px;font-family:'Poppins',sans-serif;outline:none">Ceci est un test de notification push EduLink !</textarea></div>
+            <div style="display:flex;gap:8px;justify-content:flex-end">
+              <button class="btn-purple" onclick="envoyerPushTest()">📤 Envoyer test</button>
+              <button class="btn-blue" onclick="showToast('📤 Push envoyé à tous les appareils !','success')">📢 Envoyer à tous</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
 
+    <!-- Sidebar PWA -->
+    <div class="pwa-side">
+      <div class="pwa-block">
+        <div class="pwa-block-header"><span>📊 Résumé PWA</span></div>
+        <div style="padding:1rem" id="pwa-resume"></div>
+      </div>
+      <div class="pwa-block">
+        <div class="pwa-block-header"><span>🔒 Sécurité & HTTPS</span></div>
+        <div style="padding:1rem" id="pwa-securite"></div>
+      </div>
+      <div class="pwa-block">
+        <div class="pwa-block-header"><span>📱 QR Code d'installation</span></div>
+        <div style="padding:1.5rem;text-align:center">
+          <div style="width:120px;height:120px;border:2px solid #e5e7eb;border-radius:12px;margin:0 auto 1rem;display:flex;align-items:center;justify-content:center;font-size:56px;background:#f9fafb">📱</div>
+          <div style="font-size:12.5px;font-weight:600;color:#374151;margin-bottom:.4rem">Scanner pour installer</div>
+          <div style="font-size:11px;color:#9ca3af">app.afryx.io</div>
+          <button class="btn-sm btn-blue" style="margin-top:.75rem;width:100%" onclick="showToast('📥 QR Code téléchargé !','success')">📥 Télécharger QR</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ═══════════════════════════════════════
+     DASHBOARD DIRECTEUR (EXECUTIVE)  ★ JOUR 38
+═══════════════════════════════════════ -->
+<div class="page" id="page-exec-dashboard">
+  <div class="top">
+    <div><h2>📊 Dashboard Directeur</h2><p class="page-subtitle">Vue executive — Indicateurs stratégiques et pilotage de l'établissement</p></div>
+    <div class="top-actions">
+      <button class="btn-secondary" onclick="actualiserExec()">🔄 Actualiser</button>
+      <button class="btn-blue" onclick="exporterRapportDirecteur()">📥 Rapport direction</button>
+    </div>
+  </div>
+
+  <!-- Hero exec -->
+  <div class="exec-hero">
+    <div class="exec-hero-left">
+      <h2 id="exec-ecole-nom">🏫 EduLink — Tableau de Bord Direction</h2>
+      <p>Vue consolidée en temps réel · Accès restreint Directeur</p>
+      <div class="exec-date" id="exec-date-now"></div>
+    </div>
+    <div class="exec-kpi-row" id="exec-hero-kpis"></div>
+  </div>
+
+  <!-- Scorecards KPI executive -->
+  <div class="exec-grid-3" id="exec-scorecards"></div>
+
+  <!-- Onglets exec -->
+  <div class="tabs" style="margin-bottom:1.2rem">
+    <button class="tab active" onclick="execSwitchTab('vue-gen',this)">📊 Vue générale</button>
+    <button class="tab" onclick="execSwitchTab('finance',this)">💰 Finance</button>
+    <button class="tab" onclick="execSwitchTab('pedagogie',this)">🎓 Pédagogie</button>
+    <button class="tab" onclick="execSwitchTab('rh-exec',this)">👥 Ressources humaines</button>
+    <button class="tab" onclick="execSwitchTab('rapports-dir',this)">📋 Rapports</button>
+  </div>
+
+  <!-- Vue générale -->
+  <div id="exec-tab-vue-gen">
+    <div class="exec-grid-2">
+      <div>
+        <!-- Alertes direction -->
+        <div style="background:#fff;border-radius:14px;border:1px solid #e5e7eb;overflow:hidden;margin-bottom:1rem">
+          <div style="padding:.9rem 1.2rem;border-bottom:1px solid #f3f4f6;font-size:13px;font-weight:700;color:#374151;display:flex;align-items:center;justify-content:space-between">
+            <span>🚨 Alertes direction</span>
+            <span id="exec-nb-alertes" class="badge red">0</span>
+          </div>
+          <div id="exec-alertes-list"></div>
+        </div>
+        <!-- Top 5 étudiants -->
+        <div style="background:#fff;border-radius:14px;border:1px solid #e5e7eb;overflow:hidden">
+          <div style="padding:.9rem 1.2rem;border-bottom:1px solid #f3f4f6;font-size:13px;font-weight:700;color:#374151">🏆 Top 5 étudiants — Mois en cours</div>
+          <div id="exec-top-etudiants"></div>
+        </div>
+      </div>
+      <div>
+        <!-- Objectifs annuels -->
+        <div style="background:#fff;border-radius:14px;border:1px solid #e5e7eb;overflow:hidden;margin-bottom:1rem">
+          <div style="padding:.9rem 1.2rem;border-bottom:1px solid #f3f4f6;font-size:13px;font-weight:700;color:#374151">🎯 Objectifs annuels</div>
+          <div style="padding:1rem" id="exec-objectifs"></div>
+        </div>
+        <!-- Calendrier stratégique -->
+        <div style="background:#fff;border-radius:14px;border:1px solid #e5e7eb;overflow:hidden">
+          <div style="padding:.9rem 1.2rem;border-bottom:1px solid #f3f4f6;font-size:13px;font-weight:700;color:#374151">📅 Agenda stratégique</div>
+          <div id="exec-agenda"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Finance exec -->
+  <div id="exec-tab-finance" style="display:none">
+    <div class="exec-grid-3" id="exec-finance-kpis" style="margin-bottom:1rem"></div>
+    <div class="exec-grid-2">
+      <div style="background:#fff;border-radius:14px;border:1px solid #e5e7eb;overflow:hidden">
+        <div style="padding:.9rem 1.2rem;border-bottom:1px solid #f3f4f6;font-size:13px;font-weight:700;color:#374151">📈 Évolution des recettes (12 mois)</div>
+        <div style="padding:1.5rem;position:relative;height:200px"><canvas id="exec-chart-recettes"></canvas></div>
+      </div>
+      <div>
+        <div style="background:#fff;border-radius:14px;border:1px solid #e5e7eb;overflow:hidden;margin-bottom:1rem">
+          <div style="padding:.9rem 1.2rem;border-bottom:1px solid #f3f4f6;font-size:13px;font-weight:700;color:#374151">💰 Budget vs Réalisé</div>
+          <div style="padding:1rem" id="exec-budget-vs-reel"></div>
+        </div>
+        <div style="background:#fff;border-radius:14px;border:1px solid #e5e7eb;overflow:hidden">
+          <div style="padding:.9rem 1.2rem;border-bottom:1px solid #f3f4f6;font-size:13px;font-weight:700;color:#374151">🔴 Créances à recouvrer</div>
+          <div style="padding:1rem" id="exec-creances"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Pédagogie exec -->
+  <div id="exec-tab-pedagogie" style="display:none">
+    <div class="exec-grid-3" id="exec-peda-kpis" style="margin-bottom:1rem"></div>
+    <div class="exec-grid-2">
+      <div style="background:#fff;border-radius:14px;border:1px solid #e5e7eb;overflow:hidden">
+        <div style="padding:.9rem 1.2rem;border-bottom:1px solid #f3f4f6;font-size:13px;font-weight:700;color:#374151">📊 Performance par classe</div>
+        <div style="overflow-x:auto">
+          <table><thead><tr><th>Classe</th><th>Effectif</th><th>Moyenne</th><th>Taux réussite</th><th>Absences</th><th>Tendance</th></tr></thead>
+          <tbody id="exec-perf-classes"></tbody></table>
+        </div>
+      </div>
+      <div>
+        <div style="background:#fff;border-radius:14px;border:1px solid #e5e7eb;overflow:hidden;margin-bottom:1rem">
+          <div style="padding:.9rem 1.2rem;border-bottom:1px solid #f3f4f6;font-size:13px;font-weight:700;color:#374151">📉 Élèves en difficulté</div>
+          <div id="exec-eleves-diff"></div>
+        </div>
+        <div style="background:#fff;border-radius:14px;border:1px solid #e5e7eb;overflow:hidden">
+          <div style="padding:.9rem 1.2rem;border-bottom:1px solid #f3f4f6;font-size:13px;font-weight:700;color:#374151">📈 Progression annuelle</div>
+          <div style="padding:1rem;position:relative;height:160px"><canvas id="exec-chart-prog"></canvas></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RH exec -->
+  <div id="exec-tab-rh-exec" style="display:none">
+    <div class="exec-grid-3" id="exec-rh-kpis" style="margin-bottom:1rem"></div>
+    <div style="background:#fff;border-radius:14px;border:1px solid #e5e7eb;overflow:hidden">
+      <div style="padding:.9rem 1.2rem;border-bottom:1px solid #f3f4f6;font-size:13px;font-weight:700;color:#374151">👥 Répartition du personnel</div>
+      <div style="overflow-x:auto">
+        <table><thead><tr><th>Catégorie</th><th>Effectif</th><th>% du total</th><th>Masse salariale</th><th>Absences mois</th><th>Statut</th></tr></thead>
+        <tbody id="exec-rh-table"></tbody></table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rapports direction -->
+  <div id="exec-tab-rapports-dir" style="display:none">
+    <div style="background:#fff;border-radius:14px;border:1px solid #e5e7eb;overflow:hidden">
+      <div style="padding:.9rem 1.2rem;border-bottom:1px solid #f3f4f6;font-size:13px;font-weight:700;color:#374151">📋 Rapports disponibles</div>
+      <div id="exec-rapports-list"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     PORTAIL WEB PUBLIC  ★ JOUR 39
+═══════════════════════════════════════ -->
+<div class="page" id="page-portail-public">
+  <div class="top">
+    <div><h2>🌎 Portail Web Public</h2><p class="page-subtitle">Site web de l'établissement — Présentation, inscriptions et actualités</p></div>
+    <div class="top-actions">
+      <button onclick="previsualiserSitePublic()">👁️ Prévisualiser</button>
+      <button class="btn-green" onclick="publierSitePublic()">🚀 Publier</button>
+    </div>
+  </div>
+
+  <!-- Hero portail public -->
+  <div class="portail-pub-hero">
+    <div>
+      <h2>🌎 Votre site web scolaire</h2>
+      <p>Gérez la présence en ligne de votre établissement</p>
+    </div>
+    <div class="portail-pub-kpis">
+      <div class="pp-kpi"><div class="ppk-val" id="pp-visiteurs">0</div><div class="ppk-lbl">Visiteurs/mois</div></div>
+      <div class="pp-kpi"><div class="ppk-val" id="pp-inscriptions">0</div><div class="ppk-lbl">Demandes inscription</div></div>
+      <div class="pp-kpi"><div class="ppk-val" id="pp-statut">En ligne</div><div class="ppk-lbl">Statut du site</div></div>
+    </div>
+  </div>
+
+  <!-- Onglets -->
+  <div class="tabs" style="margin-bottom:1.2rem">
+    <button class="tab active" onclick="ppSwitchTab('editeur',this)">✏️ Éditeur de contenu</button>
+    <button class="tab" onclick="ppSwitchTab('inscriptions',this)">📋 Inscriptions reçues</button>
+    <button class="tab" onclick="ppSwitchTab('actualites',this)">📰 Actualités</button>
+    <button class="tab" onclick="ppSwitchTab('galerie',this)">🖼️ Galerie</button>
+    <button class="tab" onclick="ppSwitchTab('stats-site',this)">📊 Statistiques</button>
+  </div>
+
+  <!-- TAB Éditeur -->
+  <div id="pp-tab-editeur">
+    <div style="display:grid;grid-template-columns:1fr 1.2fr;gap:1rem">
+      <div>
+        <!-- Infos principales -->
+        <div class="content-editor-block">
+          <div class="ceb-header"><span>🏫 Informations principales</span><button class="btn-sm btn-green" onclick="showToast('✅ Informations sauvegardées','success')">💾 Sauvegarder</button></div>
+          <div class="ceb-body">
+            <div class="form-group"><label>Nom affiché de l'établissement</label><input id="pp-nom-ecole" placeholder="Lycée EduLink Bénin" /></div>
+            <div class="form-group"><label>Slogan / sous-titre</label><input id="pp-slogan" placeholder="L'excellence au service de l'avenir" /></div>
+            <div class="form-group"><label>Description courte</label><textarea id="pp-description" rows="3" placeholder="Présentation de l'établissement..."></textarea></div>
+            <div class="form-grid">
+              <div class="form-group"><label>Téléphone</label><input id="pp-tel" placeholder="+229 21 XX XX XX" /></div>
+              <div class="form-group"><label>Email</label><input id="pp-email" placeholder="contact@ecole.bj" /></div>
+            </div>
+            <div class="form-group"><label>Adresse</label><input id="pp-adresse" placeholder="Cotonou, Bénin" /></div>
+          </div>
+        </div>
+
+        <!-- Sections du site -->
+        <div class="content-editor-block">
+          <div class="ceb-header"><span>📄 Sections du site</span><button class="btn-sm btn-blue" onclick="showToast('+ Section ajoutée','success')">+ Ajouter</button></div>
+          <div id="pp-sections-list"></div>
+        </div>
+      </div>
+
+      <!-- Preview du site -->
+      <div>
+        <div class="site-preview-wrap">
+          <div class="site-preview-bar">
+            <div class="spb-dots">
+              <div class="spb-dot" style="background:#fc5c65"></div>
+              <div class="spb-dot" style="background:#fed330"></div>
+              <div class="spb-dot" style="background:#26de81"></div>
+            </div>
+            <div class="spb-url" id="pp-url-preview">https://lycee-edulink.afryx.io</div>
+          </div>
+          <div class="site-preview-frame" id="pp-site-frame"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB Inscriptions -->
+  <div id="pp-tab-inscriptions" style="display:none">
+    <div style="display:grid;grid-template-columns:1fr 300px;gap:1rem">
+      <div>
+        <div class="content-editor-block">
+          <div class="ceb-header">
+            <span>📋 Demandes d'inscription reçues</span>
+            <span id="pp-nb-inscr" class="badge green">0 demandes</span>
+          </div>
+          <div id="pp-inscriptions-list"></div>
+        </div>
+      </div>
+      <div>
+        <div class="content-editor-block">
+          <div class="ceb-header"><span>📝 Formulaire d'inscription</span></div>
+          <div id="pp-inscr-steps"></div>
+        </div>
+        <div class="content-editor-block" style="margin-top:1rem">
+          <div class="ceb-header"><span>📊 Stats inscriptions</span></div>
+          <div style="padding:1rem" id="pp-inscr-stats"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB Actualités -->
+  <div id="pp-tab-actualites" style="display:none">
+    <div class="content-editor-block">
+      <div class="ceb-header">
+        <span>📰 Articles publiés</span>
+        <button class="btn-sm btn-blue" onclick="ouvrirModalActualite()">+ Nouvel article</button>
+      </div>
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr><th>Titre</th><th>Catégorie</th><th>Date</th><th>Vues</th><th>Statut</th><th>Actions</th></tr></thead>
+          <tbody id="pp-actu-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB Galerie -->
+  <div id="pp-tab-galerie" style="display:none">
+    <div class="content-editor-block">
+      <div class="ceb-header"><span>🖼️ Galerie photos</span><button class="btn-sm btn-green" onclick="showToast('📸 Ajout de photos — Glissez vos fichiers','info')">+ Ajouter photos</button></div>
+      <div id="pp-galerie-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;padding:1rem"></div>
+    </div>
+  </div>
+
+  <!-- TAB Stats site -->
+  <div id="pp-tab-stats-site" style="display:none">
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1rem" id="pp-stats-grid"></div>
+    <div style="background:#fff;border-radius:14px;border:1px solid #e5e7eb;overflow:hidden">
+      <div style="padding:.9rem 1.2rem;border-bottom:1px solid #f3f4f6;font-size:13px;font-weight:700;color:#374151">📈 Pages les plus visitées</div>
+      <div style="overflow-x:auto">
+        <table><thead><tr><th>Page</th><th>Vues</th><th>Visiteurs uniques</th><th>Taux rebond</th><th>Durée moy.</th></tr></thead>
+        <tbody id="pp-pages-tbody"></tbody></table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Modal article -->
+<div class="modal-overlay" id="modal-actualite">
+  <div class="modal">
+    <h3>📰 Nouvel article</h3>
+    <div class="form-group"><label>Titre *</label><input id="actu-titre" placeholder="Titre de l'article..." /></div>
+    <div class="form-group"><label>Catégorie</label>
+      <select id="actu-cat"><option>Actualités</option><option>Résultats</option><option>Événements</option><option>Annonces</option></select>
+    </div>
+    <div class="form-group"><label>Contenu</label><textarea id="actu-contenu" rows="5" placeholder="Rédigez votre article..."></textarea></div>
+    <div class="modal-footer">
+      <button class="btn-secondary" onclick="fermerModal('modal-actualite')">Annuler</button>
+      <button class="btn-green" onclick="publierActualite()">🚀 Publier</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     CONTRÔLE D'ACCÈS & SÉCURITÉ CAMPUS  ★ JOUR 40
+═══════════════════════════════════════ -->
+<div class="page" id="page-controle-acces">
+  <div class="top">
+    <div><h2>🔒 Contrôle d'accès & Sécurité</h2><p class="page-subtitle">Entrées/sorties, badges, zones sécurisées et incidents</p></div>
+    <div class="top-actions">
+      <button class="btn-red" onclick="declencherAlerteSecurite()">🚨 Alerte urgence</button>
+      <button class="btn-blue" onclick="genererBadge()">🪪 Générer badge</button>
+    </div>
+  </div>
+
+  <!-- Hero sécurité -->
+  <div class="acces-hero">
+    <div>
+      <h2>🔒 Sécurité Campus — Temps réel</h2>
+      <p id="acces-campus-statut">Campus sécurisé · Surveillance active</p>
+    </div>
+    <div class="acces-hero-kpis" id="acces-hero-kpis"></div>
+  </div>
+
+  <!-- KPI bar -->
+  <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:1.5rem" id="acces-kpi-bar"></div>
+
+  <!-- Onglets -->
+  <div class="tabs" style="margin-bottom:1.2rem">
+    <button class="tab active" onclick="accesSwitchTab('journal',this)">📋 Journal temps réel</button>
+    <button class="tab" onclick="accesSwitchTab('zones',this)">🚪 Zones & Portes</button>
+    <button class="tab" onclick="accesSwitchTab('badges',this)">🪪 Badges</button>
+    <button class="tab" onclick="accesSwitchTab('incidents',this)">⚠️ Incidents</button>
+    <button class="tab" onclick="accesSwitchTab('statistiques',this)">📊 Statistiques</button>
+  </div>
+
+  <!-- Layout -->
+  <div class="acces-layout">
+    <div class="acces-main">
+
+      <!-- Journal temps réel -->
+      <div id="acces-tab-journal">
+        <div class="acces-block">
+          <div class="acces-block-header">
+            <span>📋 Journal des entrées/sorties</span>
+            <div style="display:flex;gap:8px;align-items:center">
+              <span class="bus-ping" style="display:inline-block"></span>
+              <span style="font-size:11px;color:#059669;font-weight:600">En direct</span>
+              <button class="btn-sm btn-secondary" onclick="exporterJournal()">📥 Export</button>
+            </div>
+          </div>
+          <div class="filters" style="padding:.75rem 1.2rem 0">
+            <select id="acces-filter-type" onchange="filtrerJournal()" style="padding:6px 10px;border:1px solid #e5e7eb;border-radius:8px;font-size:12px;font-family:'Poppins',sans-serif;outline:none">
+              <option value="">Tous les événements</option>
+              <option value="entree">Entrées</option>
+              <option value="sortie">Sorties</option>
+              <option value="alerte">Alertes</option>
+            </select>
+            <input id="acces-search-journal" placeholder="Rechercher..." oninput="filtrerJournal()" style="padding:6px 10px;border:1px solid #e5e7eb;border-radius:8px;font-size:12px;font-family:'Poppins',sans-serif;outline:none" />
+          </div>
+          <div id="acces-journal-list" style="max-height:400px;overflow-y:auto"></div>
+        </div>
+      </div>
+
+      <!-- Zones & Portes -->
+      <div id="acces-tab-zones" style="display:none">
+        <div class="acces-block">
+          <div class="acces-block-header"><span>🚪 Zones et points d'accès</span><button class="btn-sm btn-blue" onclick="showToast('+ Zone ajoutée','success')">+ Zone</button></div>
+          <div id="acces-zones-list"></div>
+        </div>
+      </div>
+
+      <!-- Badges -->
+      <div id="acces-tab-badges" style="display:none">
+        <div style="display:grid;grid-template-columns:1fr 220px;gap:1rem">
+          <div class="acces-block">
+            <div class="acces-block-header">
+              <span>🪪 Badges enregistrés</span>
+              <button class="btn-sm btn-blue" onclick="genererBadge()">+ Générer</button>
+            </div>
+            <div style="overflow-x:auto">
+              <table>
+                <thead><tr><th>Titulaire</th><th>Rôle</th><th>N° Badge</th><th>Valide jusqu'au</th><th>Zones autorisées</th><th>Statut</th></tr></thead>
+                <tbody id="acces-badges-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+          <div>
+            <div style="font-size:12px;font-weight:600;color:#374151;margin-bottom:.75rem">Aperçu badge</div>
+            <div id="acces-badge-preview"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Incidents -->
+      <div id="acces-tab-incidents" style="display:none">
+        <div class="acces-block">
+          <div class="acces-block-header">
+            <span>⚠️ Incidents de sécurité</span>
+            <button class="btn-sm btn-red" onclick="signalerIncident()">+ Signaler</button>
+          </div>
+          <div id="acces-incidents-list"></div>
+        </div>
+      </div>
+
+      <!-- Statistiques -->
+      <div id="acces-tab-statistiques" style="display:none">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem">
+          <div class="acces-block">
+            <div class="acces-block-header"><span>📈 Fréquentation par heure</span></div>
+            <div style="padding:1.5rem;position:relative;height:180px"><canvas id="acces-chart-heures"></canvas></div>
+          </div>
+          <div class="acces-block">
+            <div class="acces-block-header"><span>🚪 Utilisation des portes</span></div>
+            <div style="padding:1rem" id="acces-stats-portes"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sidebar sécurité -->
+    <div class="acces-side">
+      <!-- Présence live campus -->
+      <div class="acces-block">
+        <div class="acces-block-header"><span>👥 Présence sur le campus</span></div>
+        <div class="presence-live-grid" id="acces-presence-live"></div>
+      </div>
+
+      <!-- Zones actives -->
+      <div class="acces-block">
+        <div class="acces-block-header"><span>🗺️ État des zones</span></div>
+        <div id="acces-zones-status" style="padding:.5rem 0"></div>
+      </div>
+
+      <!-- Alertes récentes -->
+      <div class="acces-block">
+        <div class="acces-block-header" style="background:#fff5f5"><span style="color:#dc2626">🚨 Alertes récentes</span></div>
+        <div id="acces-alertes-recentes" style="padding:.5rem 0"></div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -7031,9 +7516,12 @@ function showPage(p) {
     'portail-etudiant':  () => chargerPortailEtudiant(1),
     'dashboard-reseau':  chargerDashReseau,
     'parametres-avances': chargerParamAvances,
-    'assistant-ia':   chargerAssistantIA,
-    'sms-parents':    chargerSmsParents,
-    'pwa-config':     chargerPWAConfig,
+    'assistant-ia':      chargerAssistantIA,
+    'sms-parents':       chargerSMSParents,
+    'pwa-avancee':       chargerPWAAvancee,
+    'exec-dashboard':    chargerExecDashboard,
+    'portail-public':    chargerPortailPublic,
+    'controle-acces':    chargerControleAcces,
   };
   if (p === 'parametres') { chargerBranding(); }
   if (p === 'certificats') { chargerBranding(); }
@@ -15504,502 +15992,1145 @@ function exporterRapportComplet() { showToast('📥 Rapport réseau complet en c
 
 
 /* ══════════════════════════════════════════════════════════════════
-   SUITE 11 — ASSISTANT IA ★ JOUR 35
+   SUITE 11 — ASSISTANT IA EDULINK ★ JOUR 35
 ══════════════════════════════════════════════════════════════════ */
-let iaConversations = [];
-let iaCurrentMessages = [];
-let iaMiniOpen = false;
-let iaTyping = false;
-
-const IA_SUGGESTIONS_BASE = [
-  'Combien d\'élèves ont une moyenne < 10 ?',
-  'Quels parents n\'ont pas payé ce mois ?',
-  'Analyse les absences de cette semaine',
-  'Génère un résumé du tableau de bord',
-  'Rédige un SMS pour les parents d\'élèves',
-];
-
-const IA_HISTORIQUE_DEMO = [
-  { id:1, question:'Analyse les résultats du 2ème trimestre', resume:'Les résultats montrent une amélioration de 8%...', date:'Aujourd\'hui', nb:12 },
-  { id:2, question:'Quels élèves sont en difficulté ?', resume:'5 élèves avec moyenne < 10 identifiés...', date:'Hier', nb:8 },
-  { id:3, question:'Rédige un SMS pour les parents', resume:'SMS rédigé et envoyé à 142 parents...', date:'29/03', nb:4 },
-  { id:4, question:'Rapport mensuel de paiements', resume:'Taux de recouvrement : 76% ce mois...', date:'27/03', nb:6 },
-];
-
-const IA_REPONSES = {
-  default: [
-    'Bien sûr ! En analysant les données de votre établissement, voici ce que je peux vous dire : {context}',
-    'Excellente question ! Voici mon analyse basée sur vos données scolaires : {context}',
-    'D\'après les informations disponibles dans EduLink : {context}',
-  ],
-  notes: 'Les résultats de votre établissement montrent une **moyenne générale de 13.8/20**. 3 élèves sont en dessous de 10 et nécessitent un suivi particulier. Le module de Mathématiques affiche les meilleurs résultats avec 15.2/20 de moyenne.',
-  absences: 'Cette semaine, **12 absences** ont été enregistrées. Le taux d\'absentéisme est de 8%, légèrement au-dessus du seuil recommandé de 7%. Je vous suggère d\'envoyer un SMS de rappel aux familles concernées.',
-  paiements: '**23 factures** sont en attente de paiement pour un total de **1 725 000 FCFA**. Le taux de recouvrement est de 76% ce mois. Je recommande une relance SMS pour les 8 factures dont l\'échéance est dépassée.',
-  sms: 'Voici un SMS prêt à envoyer aux parents :\n\n*"Cher(e) parent(e), nous vous informons que les résultats du 2ème trimestre sont disponibles sur le portail EduLink. Connectez-vous sur app.afryx.io pour consulter le bulletin de votre enfant. Cordialement, l\'Administration."*\n\nCe message fait 195 caractères (2 SMS).',
-  rapport: 'Voici le résumé de votre tableau de bord :\n\n• **198 élèves** inscrits · **+5 ce mois**\n• Moyenne générale : **13.8/20**\n• Taux de présence : **92%**\n• Paiements reçus : **76%** des frais\n• **3 incidents** ouverts cette semaine\n\nVotre établissement performe bien ! Points à améliorer : taux d\'absentéisme et recouvrement des frais.',
+let iaQuestions = 0;
+const IA_RESPONSES = {
+  'moyenne': (q) => `📊 **Moyennes par classe :**\n\n• **Terminale D** : 13.4/20 (28 élèves)\n• **Terminale C** : 14.1/20 (25 élèves)\n• **1ère A** : 15.2/20 (30 élèves)\n• **2nde B** : 12.8/20 (32 élèves)\n\n💡 La 1ère A est la meilleure classe ce semestre avec une progression de +0.8 points vs semestre dernier.`,
+  'absence': (q) => `🚫 **Absences du jour (${new Date().toLocaleDateString('fr-FR')}) :**\n\n• **Total** : 14 absences enregistrées\n• **Justifiées** : 8 (57%)\n• **Injustifiées** : 6 (43%)\n\n**Élèves les plus absents ce mois :**\n• Kofi Mensah — 3 absences\n• Sonia Ahoton — 2 absences\n\n📧 Les parents des élèves absents non justifiés ont été notifiés.`,
+  'paiement': (q) => `💳 **État des paiements (${new Date().toLocaleDateString('fr-FR', {month:'long', year:'numeric'})}) :**\n\n• **Factures émises** : 115\n• **Payées** : 89 (77%)\n• **En attente** : 26 (23%)\n• **Montant recouvré** : 6 675 000 FCFA\n• **Reste à recouvrer** : 1 950 000 FCFA\n\n⚠️ 3 familles ont plus de 90 jours de retard.`,
+  'meilleur': (q) => `🏆 **Top étudiants de Terminale D :**\n\n1. 🥇 **Afi Dossou** — 17.1/20 (Rang 1)\n2. 🥈 **Marius Sime** — 16.4/20 (Rang 2)\n3. 🥉 **Kofi Mensah** — 14.8/20 (Rang 3)\n\n💡 Afi Dossou maintient le rang 1 depuis 2 semestres consécutifs. Excellente progression en Mathématiques (+2.5 points).`,
+  'examen': (q) => `📅 **Prochains examens planifiés :**\n\n• **08/04** — Mathématiques (Tle D) — Partiel S2\n• **10/04** — Physique-Chimie (Tle C) — Contrôle\n• **12/04** — SVT (1ère A) — Partiel S2\n• **15/04** — Philosophie (toutes Tle) — Devoir\n\n⏰ L'examen de Mathématiques du 08/04 est dans **7 jours**. 47 élèves concernés.`,
+  'taux': (q) => `📈 **Taux de réussite par filière :**\n\n• **Terminale D** (Sciences) : 78% ↑\n• **Terminale C** (Sciences) : 82% ↑\n• **Terminale A** (Lettres) : 71% →\n• **1ère A** : 88% ↑\n\n📊 Moyenne réseau EduLink : **79.8%** — en hausse de +3.2% vs année précédente.`,
+  'default': (q) => `🤖 J'ai bien reçu votre question : **"${q}"**\n\nJe suis connecté aux modules suivants :\n• 📊 Notes & Bulletins\n• 🚫 Présences & Absences\n• 💳 Paiements & Facturation\n• 📅 Examens & Planning\n• 👥 Gestion des étudiants\n• 📈 Analytics & Rapports\n\nPosez-moi une question plus spécifique sur ces données ou utilisez les suggestions rapides ci-dessous.`,
 };
 
 function chargerAssistantIA() {
-  document.getElementById('ia-nb-conversations').textContent = iaConversations.length || 14;
-  document.getElementById('ia-nb-questions').textContent = 87;
-  document.getElementById('ia-stat-jour').textContent = 12;
-  renderIAHistorique();
-  renderIAIdees();
-  if (!iaCurrentMessages.length) {
-    ajouterMessageIA('bot', 'Bonjour ! 👋 Je suis **EduBot**, votre assistant IA EduLink. Je peux analyser vos données scolaires, rédiger des messages, et répondre à toutes vos questions. Comment puis-je vous aider aujourd\'hui ?');
-    renderIASuggestionsFull();
-  }
+  iaQuestions = 0;
+  const container = document.getElementById('ia-messages-list');
+  if (!container || container.children.length > 0) return;
+  ajouterMessageIA('bot', `👋 **Bonjour ! Je suis EduLink AI.**\n\nJe suis votre assistant intelligent connecté à toutes vos données scolaires. Je peux vous aider avec :\n\n• 📊 Les notes et moyennes\n• 🚫 Les absences du jour\n• 💳 L'état des paiements\n• 📅 Le planning des examens\n• 🎓 Le suivi des étudiants\n\nQue souhaitez-vous savoir ?`);
 }
 
-function renderIAHistorique() {
-  const list = document.getElementById('ia-historique-list');
-  if (!list) return;
-  list.innerHTML = IA_HISTORIQUE_DEMO.map(h=>`
-    <div class="ia-hist-item" onclick="chargerConversation(${h.id})">
-      <div class="ia-hist-ico">💬</div>
-      <div class="ia-hist-body">
-        <div class="ia-hist-question">${h.question}</div>
-        <div class="ia-hist-resume">${h.resume}</div>
-      </div>
-      <div>
-        <div class="ia-hist-date">${h.date}</div>
-        <div style="font-size:11px;color:#9ca3af;margin-top:2px">${h.nb} msg.</div>
-      </div>
-    </div>`).join('');
-}
-
-function renderIAIdees() {
-  const list = document.getElementById('ia-idees-list');
-  if (!list) return;
-  const idees = [
-    '💡 Quels élèves risquent de redoubler ?',
-    '💡 Analyse le taux de présence par classe',
-    '💡 Combien coûte un SMS en moyenne ?',
-    '💡 Quelles matières ont les moins bons résultats ?',
-    '💡 Rédige un rapport pour le conseil d\'administration',
-  ];
-  list.innerHTML = idees.map(i=>`
-    <div style="padding:.5rem .75rem;margin-bottom:.4rem;background:#faf5ff;border:1px solid #ede9fe;border-radius:8px;font-size:12.5px;color:#7c3aed;cursor:pointer;transition:all .15s" 
-    onclick="lancerConversationIA('${i.replace('💡 ','')}')" 
-    onmouseenter="this.style.background='#ede9fe'" 
-    onmouseleave="this.style.background='#faf5ff'">${i}</div>`).join('');
-}
-
-function ajouterMessageIA(type, texte, container='ia-full-messages') {
-  const msgs = document.getElementById(container);
-  if (!msgs) return;
-  const now = new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
-  const div = document.createElement('div');
-  div.className = `ia-msg ${type}`;
-  div.innerHTML = `
-    <div class="ia-msg-avatar">${type==='bot'?'🤖':'👤'}</div>
-    <div>
-      <div class="ia-msg-bubble">${texte.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>')}</div>
-      <div class="ia-msg-time">${now}</div>
-    </div>`;
-  msgs.appendChild(div);
-  msgs.scrollTop = msgs.scrollHeight;
-  iaCurrentMessages.push({type, texte, time:now});
-}
-
-function afficherTyping(container='ia-full-messages') {
-  const msgs = document.getElementById(container);
-  if (!msgs) return;
-  const div = document.createElement('div');
-  div.className = 'ia-msg bot'; div.id = 'ia-typing-'+container;
-  div.innerHTML = `<div class="ia-msg-avatar">🤖</div><div class="ia-msg-bubble ia-typing"><span></span><span></span><span></span></div>`;
-  msgs.appendChild(div); msgs.scrollTop = msgs.scrollHeight;
-}
-
-function cacherTyping(container='ia-full-messages') {
-  const el = document.getElementById('ia-typing-'+container);
-  if (el) el.remove();
-}
-
-function getReponseIA(msg) {
-  const m = msg.toLowerCase();
-  if (m.includes('note') || m.includes('résultat') || m.includes('moyenne')) return IA_REPONSES.notes;
-  if (m.includes('absence') || m.includes('absent') || m.includes('présence')) return IA_REPONSES.absences;
-  if (m.includes('paie') || m.includes('frais') || m.includes('facture') || m.includes('paiement')) return IA_REPONSES.paiements;
-  if (m.includes('sms') || m.includes('message') || m.includes('parent') || m.includes('rédige')) return IA_REPONSES.sms;
-  if (m.includes('rapport') || m.includes('résumé') || m.includes('tableau') || m.includes('bord')) return IA_REPONSES.rapport;
-  return `D'après les données de votre établissement EduLink :\n\n**198 élèves** inscrits · Moyenne **13.8/20** · **76%** de paiements reçus · **8%** d'absentéisme.\n\nSouhaitez-vous une analyse plus détaillée sur un aspect particulier ?`;
-}
-
-async function envoyerMessageIA() {
-  const input = document.getElementById('ia-full-input');
-  const msg = input.value.trim();
-  if (!msg || iaTyping) return;
-  input.value = '';
-  ajouterMessageIA('user', msg);
-  iaTyping = true;
-  afficherTyping();
-  await new Promise(r=>setTimeout(r, 800+Math.random()*600));
-  cacherTyping();
-  ajouterMessageIA('bot', getReponseIA(msg));
-  iaTyping = false;
-  renderIASuggestionsFull();
-}
-
-function renderIASuggestionsFull() {
-  const container = document.getElementById('ia-full-suggestions');
+function ajouterMessageIA(role, texte) {
+  const container = document.getElementById('ia-messages-list');
   if (!container) return;
-  const pool = IA_SUGGESTIONS_BASE.sort(()=>Math.random()-.5).slice(0,3);
-  container.innerHTML = pool.map(s=>`<button class="ia-sug-btn" onclick="lancerConversationIASug('${s}')">${s}</button>`).join('');
+  const now = new Date().toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
+  const div = document.createElement('div');
+  div.className = `ia-msg ${role}`;
+  const formatted = texte.replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>');
+  div.innerHTML = `
+    <div class="ia-msg-avatar ${role}">${role==='bot'?'🤖':'👤'}</div>
+    <div>
+      <div class="ia-bubble ${role}">${formatted}</div>
+      <div class="ia-time">${now}</div>
+    </div>`;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
 }
 
-function lancerConversationIA(question) {
-  showPage('assistant-ia');
-  setTimeout(()=>{
-    const input = document.getElementById('ia-full-input');
-    if (input) { input.value = question; envoyerMessageIA(); }
-  }, 300);
+function afficherTyping() {
+  const container = document.getElementById('ia-messages-list');
+  if (!container) return null;
+  const div = document.createElement('div');
+  div.className = 'ia-msg'; div.id = 'ia-typing';
+  div.innerHTML = `<div class="ia-msg-avatar bot">🤖</div><div class="ia-bubble bot ia-typing"><span></span><span></span><span></span></div>`;
+  container.appendChild(div);
+  container.scrollTop = container.scrollHeight;
+  return div;
 }
 
-function lancerConversationIASug(question) {
-  const input = document.getElementById('ia-full-input');
-  if (input) { input.value = question; envoyerMessageIA(); }
-}
-
-function nouvelleConversation() {
-  iaCurrentMessages = [];
-  const msgs = document.getElementById('ia-full-messages');
-  if (msgs) msgs.innerHTML = '';
-  ajouterMessageIA('bot', 'Nouvelle conversation démarrée ! 🚀 Comment puis-je vous aider ?');
-  renderIASuggestionsFull();
-}
-
-function chargerConversation(id) { showToast(`💬 Chargement de la conversation #${id}...`,'info'); }
-function exporterConversations() { showToast('📥 Export des conversations en cours...','info'); }
-
-/* ── Widget chatbot mini (flottant) ── */
-function toggleIAPanel() {
-  const panel = document.getElementById('ia-panel');
-  iaMiniOpen = !iaMiniOpen;
-  panel.classList.toggle('open', iaMiniOpen);
-  if (iaMiniOpen && !document.getElementById('ia-mini-messages').children.length) {
-    initMiniChat();
-  }
-}
-
-function initMiniChat() {
-  ajouterMessageIA('bot','Bonjour ! 👋 Comment puis-je vous aider ?','ia-mini-messages');
-  renderMiniSuggestions();
-}
-
-function renderMiniSuggestions() {
-  const cont = document.getElementById('ia-mini-suggestions');
-  if (!cont) return;
-  cont.innerHTML = ['📊 Résultats du mois','💳 Paiements en retard','📅 Absences aujourd\'hui'].map(s=>`<button class="ia-sug-btn" onclick="envoyerSugMini('${s}')">${s}</button>`).join('');
-}
-
-async function envoyerMiniMessage() {
-  const input = document.getElementById('ia-mini-input');
+async function envoyerMessage() {
+  const input = document.getElementById('ia-input');
+  if (!input) return;
   const msg = input.value.trim();
   if (!msg) return;
   input.value = '';
-  ajouterMessageIA('user', msg, 'ia-mini-messages');
-  afficherTyping('ia-mini-messages');
-  await new Promise(r=>setTimeout(r,700+Math.random()*500));
-  cacherTyping('ia-mini-messages');
-  ajouterMessageIA('bot', getReponseIA(msg), 'ia-mini-messages');
+  ajouterMessageIA('user', msg);
+  iaQuestions++;
+  const statEl = document.getElementById('ia-stat-questions');
+  if (statEl) statEl.textContent = iaQuestions + ' question' + (iaQuestions>1?'s':'');
+  const typing = afficherTyping();
+  await new Promise(r => setTimeout(r, 800 + Math.random()*600));
+  if (typing) typing.remove();
+  const q = msg.toLowerCase();
+  let reponse;
+  if (q.includes('moyenne') || q.includes('note')) reponse = IA_RESPONSES.moyenne(msg);
+  else if (q.includes('absence') || q.includes('présent')) reponse = IA_RESPONSES.absence(msg);
+  else if (q.includes('paiement') || q.includes('facture') || q.includes('impayé')) reponse = IA_RESPONSES.paiement(msg);
+  else if (q.includes('meilleur') || q.includes('premier') || q.includes('rang')) reponse = IA_RESPONSES.meilleur(msg);
+  else if (q.includes('examen') || q.includes('prochain')) reponse = IA_RESPONSES.examen(msg);
+  else if (q.includes('taux') || q.includes('réussite') || q.includes('filière')) reponse = IA_RESPONSES.taux(msg);
+  else reponse = IA_RESPONSES.default(msg);
+  ajouterMessageIA('bot', reponse);
 }
 
-async function envoyerSugMini(question) {
-  const input = document.getElementById('ia-mini-input');
-  input.value = question;
-  await envoyerMiniMessage();
+function envoyerSuggestion(btn) {
+  const input = document.getElementById('ia-input');
+  if (input) { input.value = btn.textContent; envoyerMessage(); }
+}
+
+function effacerConversation() {
+  const container = document.getElementById('ia-messages-list');
+  if (container) container.innerHTML = '';
+  iaQuestions = 0;
+  chargerAssistantIA();
+  showToast('🗑️ Conversation effacée','info');
 }
 
 /* ══════════════════════════════════════════════════════════════════
    SUITE 11 — SMS & COMMUNICATION PARENTS ★ JOUR 36
 ══════════════════════════════════════════════════════════════════ */
-let smsDestinatairesSelectionnes = new Set(['tous']);
-
-const SMS_HISTORIQUE_DEMO = [
-  { titre:'Résultats 2ème trimestre disponibles', dest:'Tous les parents (198)', nb:198, livres:194, date:'29/03/2026 10:00', taux:98 },
-  { titre:'Rappel paiement frais T3', dest:'Parents avec impayés (23)', nb:23, livres:21, date:'25/03/2026 09:30', taux:91 },
-  { titre:'Absence signalée — Kofi Mensah', dest:'Parent de Kofi Mensah', nb:1, livres:1, date:'24/03/2026 08:15', taux:100 },
-  { titre:'Réunion parents d\'élèves', dest:'Tous les parents (198)', nb:198, livres:190, date:'20/03/2026 14:00', taux:96 },
-  { titre:'Bulletin du 1er trimestre', dest:'Tous les parents (198)', nb:198, livres:196, date:'15/02/2026 09:00', taux:99 },
+const SMS_TEMPLATES = [
+  { ico:'🚫', nom:'Alerte absence', preview:'Bonjour {nom_parent}, votre enfant {nom_eleve} était absent(e) ce jour...', msg:'Bonjour {nom_parent}, votre enfant {nom_eleve} de la classe {classe} était absent(e) ce jour. Veuillez contacter l\'établissement. Merci.' },
+  { ico:'💳', nom:'Rappel paiement', preview:'Bonjour {nom_parent}, un paiement de frais scolaires est en attente...', msg:'Bonjour {nom_parent}, un paiement de frais scolaires pour {nom_eleve} est en attente. Veuillez régulariser votre situation avant le 30/04/2026. Merci.' },
+  { ico:'📊', nom:'Résultats disponibles', preview:'Bonjour {nom_parent}, le bulletin de {nom_eleve} est disponible...', msg:'Bonjour {nom_parent}, le bulletin scolaire de {nom_eleve} est disponible sur EduLink. Consultez-le sur app.afryx.io. Cordialement.' },
+  { ico:'📅', nom:'Réunion parents', preview:'Bonjour {nom_parent}, vous êtes invité(e) à la réunion...', msg:'Bonjour {nom_parent}, vous êtes invité(e) à la réunion parents-professeurs du 05/04/2026 à 15h à l\'établissement. Votre présence est souhaitée.' },
+  { ico:'⚠️', nom:'Avertissement discipline', preview:'Bonjour {nom_parent}, un incident disciplinaire a été signalé...', msg:'Bonjour {nom_parent}, un incident disciplinaire concernant {nom_eleve} a été signalé. Merci de contacter le bureau de la direction.' },
+  { ico:'🎉', nom:'Félicitations', preview:'Bonjour {nom_parent}, félicitations pour les résultats de {nom_eleve}...', msg:'Bonjour {nom_parent}, félicitations ! {nom_eleve} a obtenu d\'excellents résultats ce trimestre. Continuez à encourager votre enfant !' },
 ];
 
-const SMS_TEMPLATES_DEMO = [
-  { ico:'📊', titre:'Résultats disponibles', preview:'Les résultats du {trimestre} sont disponibles sur le portail...', dest:'Tous les parents' },
-  { ico:'🚫', titre:'Absence signalée', preview:'Votre enfant {nom} a été absent(e) le {date} au cours de {cours}...', dest:'Parent concerné' },
-  { ico:'💳', titre:'Rappel paiement', preview:'Cher(e) parent, le paiement de {montant} FCFA est dû le {echeance}...', dest:'Parents avec impayés' },
-  { ico:'📅', titre:'Convocation réunion', preview:'Vous êtes convoqué(e) à une réunion le {date} à {heure} à l\'établissement...', dest:'Tous les parents' },
-  { ico:'🏆', titre:'Félicitations', preview:'Félicitations ! Votre enfant {nom} a obtenu la mention {mention}...', dest:'Parent concerné' },
-  { ico:'⚠️', titre:'Incident disciplinaire', preview:'Nous vous informons qu\'un incident a été enregistré concernant {nom}...', dest:'Parent concerné' },
+const SMS_HISTORIQUE = [
+  { ico:'🚫', titre:'Alertes absences', preview:'Bonjour, votre enfant était absent...', date:'01/04/2026', nb:14, taux:92 },
+  { ico:'💳', titre:'Rappel paiements T3', preview:'Un paiement est en attente...', date:'28/03/2026', nb:26, taux:88 },
+  { ico:'📊', titre:'Bulletins S1 disponibles', preview:'Le bulletin est disponible...', date:'25/03/2026', nb:115, taux:96 },
+  { ico:'📅', titre:'Réunion parents du 15/03', preview:'Vous êtes invité à la réunion...', date:'12/03/2026', nb:98, taux:91 },
 ];
 
-const SMS_CONTACTS_DEMO = [
-  { parent:'Marie Mensah', eleve:'Kofi Mensah', tel:'+2299701234', classe:'Tle D', statut:'actif' },
-  { parent:'Jean Dossou', eleve:'Afi Dossou', tel:'+2299712345', classe:'1ère A', statut:'actif' },
-  { parent:'Paul Gbedo', eleve:'Brice Gbedo', tel:'+2299723456', classe:'Tle C', statut:'actif' },
-  { parent:'Cécile Akpo', eleve:'Flore Akpo', tel:'+2299734567', classe:'2nde B', statut:'actif' },
-  { parent:'Victor Sime', eleve:'Marius Sime', tel:'+2299745678', classe:'Tle D', statut:'inactif' },
-  { parent:'Rose Ahoton', eleve:'Sonia Ahoton', tel:'+2299756789', classe:'1ère B', statut:'actif' },
+const SMS_CONTACTS = [
+  {nom:'M. Mensah Koffi', enfant:'Kofi Mensah', classe:'Tle D', tel:'+229 97 12 34 56', color:'#1e3a5f'},
+  {nom:'Mme Dossou Adélaïde', enfant:'Afi Dossou', classe:'1ère A', tel:'+229 96 23 45 67', color:'#059669'},
+  {nom:'M. Gbedo Paul', enfant:'Brice Gbedo', classe:'Tle C', tel:'+229 95 34 56 78', color:'#7c3aed'},
+  {nom:'Mme Akpo Thérèse', enfant:'Flore Akpo', classe:'2nde B', tel:'+229 94 45 67 89', color:'#d97706'},
+  {nom:'M. Sime Martial', enfant:'Marius Sime', classe:'Tle D', tel:'+229 93 56 78 90', color:'#dc2626'},
+  {nom:'Mme Ahoton Rosalie', enfant:'Sonia Ahoton', classe:'1ère B', tel:'+229 92 67 89 01', color:'#1d4ed8'},
 ];
 
-function chargerSmsParents() {
-  document.getElementById('sms-envoyes').textContent = '1 247';
-  document.getElementById('sms-taux-livr').textContent = '97%';
-  document.getElementById('sms-parents-abonnes').textContent = '186';
-  document.getElementById('sms-kpi-envoyes').textContent = '1 247';
-  document.getElementById('sms-kpi-livres').textContent = '1 209';
-  document.getElementById('sms-kpi-attente').textContent = '14';
-  document.getElementById('sms-kpi-echecs').textContent = '24';
-  document.getElementById('sms-stat-jour').textContent = '42 SMS';
-  document.getElementById('sms-stat-livr').textContent = '97.2%';
-  document.getElementById('sms-credit').textContent = '1 250 SMS';
-  document.getElementById('sms-credit-val').textContent = '1 250';
-  document.getElementById('sms-contacts-count').textContent = SMS_CONTACTS_DEMO.length + ' contacts';
-  renderSmsHistorique(SMS_HISTORIQUE_DEMO);
-  renderSmsTemplates(SMS_TEMPLATES_DEMO);
-  renderSmsContacts(SMS_CONTACTS_DEMO);
-  renderSmsDerniers();
-  updateSmsDestCount();
+const SMS_AUTO_CONFIG = [
+  {ico:'🚫', nom:'Alerte absence automatique', desc:'Envoyé chaque matin à 8h30 aux parents des absents', actif:true, freq:'Quotidien'},
+  {ico:'💳', nom:'Rappel paiement J+15', desc:'Rappel automatique 15 jours après l\'échéance', actif:true, freq:'Mensuel'},
+  {ico:'📊', nom:'Notification bulletin', desc:'Envoyé dès qu\'un bulletin est validé', actif:true, freq:'Trimestriel'},
+  {ico:'📅', nom:'Rappel réunion -48h', desc:'Rappel 48h avant chaque réunion programmée', actif:false, freq:'À la demande'},
+];
+
+let smsDestSelectes = [];
+
+function chargerSMSParents() {
+  const totalEnvoyes = SMS_HISTORIQUE.reduce((s,h)=>s+h.nb,0);
+  const tauxMoy = Math.round(SMS_HISTORIQUE.reduce((s,h)=>s+h.taux,0)/SMS_HISTORIQUE.length);
+  document.getElementById('sms-envoyes').textContent = totalEnvoyes;
+  document.getElementById('sms-taux').textContent = tauxMoy+'%';
+  document.getElementById('sms-parents').textContent = SMS_CONTACTS.length;
+
+  // KPI bar
+  const kpiBar = document.getElementById('sms-kpi-bar');
+  if (kpiBar) kpiBar.innerHTML = [
+    {ico:'📤',val:totalEnvoyes,lbl:'SMS ce mois',color:'#dbeafe',textColor:'#1d4ed8'},
+    {ico:'✅',val:tauxMoy+'%',lbl:'Taux réception',color:'#dcfce7',textColor:'#059669'},
+    {ico:'👥',val:SMS_CONTACTS.length,lbl:'Parents inscrits',color:'#ede9fe',textColor:'#7c3aed'},
+    {ico:'💰',val:'13 500 F',lbl:'Coût du mois',color:'#fef9c3',textColor:'#d97706'},
+  ].map(k=>`<div style="background:#fff;border-radius:14px;border:1px solid #e5e7eb;padding:1.1rem 1.2rem;display:flex;align-items:center;gap:.85rem">
+    <div style="width:44px;height:44px;border-radius:12px;background:${k.color};display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">${k.ico}</div>
+    <div><div style="font-size:22px;font-weight:700;color:${k.textColor}">${k.val}</div><div style="font-size:11px;color:#6b7280">${k.lbl}</div></div>
+  </div>`).join('');
+
+  renderSMSTemplates();
+  renderSMSHistorique();
+  renderSMSContacts();
+  renderSMSAuto();
+
+  // Stats sidebar
+  document.getElementById('sms-stat-envoyes').textContent = totalEnvoyes+' SMS';
+  document.getElementById('sms-stat-taux').textContent = tauxMoy+'%';
+  document.getElementById('sms-stat-cout').textContent = '13 500 FCFA';
+  document.getElementById('sms-stat-auto').textContent = '156 SMS';
 }
 
-function renderSmsHistorique(hist) {
+function renderSMSTemplates() {
+  const grid = document.getElementById('sms-templates-grid');
+  if (!grid) return;
+  grid.innerHTML = SMS_TEMPLATES.map(t=>`<div class="sms-template-card" onclick="utiliserTemplate('${t.msg.replace(/'/g,"\\'")}')">
+    <div class="st-ico">${t.ico}</div>
+    <div class="st-nom">${t.nom}</div>
+    <div class="st-preview">${t.preview}</div>
+  </div>`).join('');
+}
+
+function utiliserTemplate(msg) {
+  const ta = document.getElementById('sms-message');
+  if (ta) { ta.value = msg; compterCaracteres(); showToast('✅ Template appliqué','success'); }
+}
+
+function renderSMSHistorique() {
   const list = document.getElementById('sms-historique-list');
   if (!list) return;
-  list.innerHTML = hist.map(h=>`
-    <div class="sms-hist-item">
-      <div class="sms-hist-ico" style="background:#dcfce7">📨</div>
-      <div class="sms-hist-body">
-        <div class="sms-hist-titre">${h.titre}</div>
-        <div class="sms-hist-dest">${h.dest}</div>
-        <div class="sms-taux-bar"><div class="sms-taux-fill" style="width:${h.taux}%"></div></div>
-      </div>
-      <div class="sms-hist-right">
-        <div class="sms-hist-date">${h.date}</div>
-        <div class="sms-hist-nb">${h.livres}/${h.nb} livrés</div>
-        <span class="badge ${h.taux>=95?'green':'amber'}">${h.taux}%</span>
-      </div>
-    </div>`).join('');
+  list.innerHTML = SMS_HISTORIQUE.map(h=>`<div class="sms-envoi-item">
+    <div class="sms-envoi-ico" style="background:#dcfce7">${h.ico}</div>
+    <div class="sms-envoi-body">
+      <div class="sms-envoi-titre">${h.titre}</div>
+      <div class="sms-envoi-preview">${h.preview}</div>
+    </div>
+    <div class="sms-envoi-right">
+      <div class="sms-envoi-date">${h.date}</div>
+      <span class="badge green">${h.nb} envois</span>
+      <div class="sms-taux-bar"><div class="sms-taux-fill" style="width:${h.taux}%"></div></div>
+      <div style="font-size:10px;color:#6b7280;margin-top:2px">${h.taux}% réception</div>
+    </div>
+  </div>`).join('');
 }
 
-function renderSmsTemplates(templates) {
-  const list = document.getElementById('sms-templates-list');
+function renderSMSContacts(filtre='') {
+  const list = document.getElementById('sms-contacts-list');
+  const count = document.getElementById('sms-contacts-count');
   if (!list) return;
-  list.innerHTML = templates.map(t=>`
-    <div class="sms-template-item" onclick="utiliserTemplate('${t.titre}','${t.preview}')">
-      <div class="sms-tpl-ico">${t.ico}</div>
-      <div class="sms-tpl-body">
-        <div class="sms-tpl-titre">${t.titre}</div>
-        <div class="sms-tpl-preview">${t.preview}</div>
-        <div class="sms-tpl-dest">→ ${t.dest}</div>
-      </div>
-      <button class="btn-sm btn-green" onclick="event.stopPropagation();utiliserTemplate('${t.titre}','${t.preview}')">Utiliser</button>
-    </div>`).join('');
+  const contacts = filtre ? SMS_CONTACTS.filter(c=>c.nom.toLowerCase().includes(filtre.toLowerCase())||c.enfant.toLowerCase().includes(filtre.toLowerCase())) : SMS_CONTACTS;
+  if (count) count.textContent = contacts.length+' contacts';
+  list.innerHTML = contacts.map(c=>`<div class="parent-contact-item">
+    <div class="pc-ava2" style="background:${c.color}">${c.nom[0]}</div>
+    <div class="pc-body2">
+      <div class="pc-parent-nom">${c.nom}</div>
+      <div class="pc-enfant-nom">👤 ${c.enfant} · ${c.classe}</div>
+    </div>
+    <div class="pc-tel">${c.tel}</div>
+    <button class="btn-sm btn-green" onclick="showToast('📤 SMS envoyé à ${c.nom}','success')">📤</button>
+  </div>`).join('');
 }
 
-function renderSmsContacts(contacts) {
-  const tbody = document.getElementById('sms-contacts-tbody');
-  if (!tbody) return;
-  tbody.innerHTML = contacts.map(c=>`<tr>
-    <td><strong>${c.parent}</strong></td>
-    <td>${c.eleve}</td>
-    <td style="font-family:monospace;font-size:12px">${c.tel}</td>
-    <td>${c.classe}</td>
-    <td><span class="badge ${c.statut==='actif'?'green':'gray'}">${c.statut}</span></td>
-    <td><button class="btn-sm btn-blue" onclick="envoyerSmsContact('${c.tel}','${c.parent}')">📤 SMS</button></td>
-  </tr>`).join('');
+function filtrerContacts() {
+  renderSMSContacts(document.getElementById('sms-search-parent').value);
 }
 
-function renderSmsDerniers() {
-  const list = document.getElementById('sms-derniers-list');
+function renderSMSAuto() {
+  const list = document.getElementById('sms-auto-list');
   if (!list) return;
-  list.innerHTML = SMS_HISTORIQUE_DEMO.slice(0,3).map(h=>`
-    <div style="display:flex;align-items:center;gap:.75rem;padding:.65rem 1.2rem;border-bottom:1px solid #f3f4f6">
-      <span style="font-size:16px">📨</span>
-      <div style="flex:1;min-width:0">
-        <div style="font-size:12px;font-weight:700;color:#111827;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${h.titre}</div>
-        <div style="font-size:10.5px;color:#9ca3af">${h.date.split(' ')[0]} · ${h.nb} dest.</div>
+  list.innerHTML = SMS_AUTO_CONFIG.map((s,i)=>`<div class="toggle-row">
+    <div style="display:flex;gap:.85rem;align-items:center;flex:1">
+      <div style="width:40px;height:40px;border-radius:10px;background:#f3f4f6;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">${s.ico}</div>
+      <div class="toggle-info">
+        <div class="tl">${s.nom}</div>
+        <div class="ts">${s.desc} · <span class="badge gray" style="font-size:10px">${s.freq}</span></div>
       </div>
-      <span class="badge ${h.taux>=95?'green':'amber'}" style="font-size:10px">${h.taux}%</span>
-    </div>`).join('');
+    </div>
+    <label class="toggle-sw"><input type="checkbox" ${s.actif?'checked':''} onchange="toggleSMSAuto(${i},this)"><span class="toggle-sl"></span></label>
+  </div>`).join('');
 }
 
-function toggleSmsChip(el, val) {
-  el.classList.toggle('selected');
-  if (el.classList.contains('selected')) smsDestinatairesSelectionnes.add(val);
-  else smsDestinatairesSelectionnes.delete(val);
-  updateSmsDestCount();
+function toggleSMSAuto(i, cb) {
+  SMS_AUTO_CONFIG[i].actif = cb.checked;
+  showToast(cb.checked?`✅ SMS automatique activé`:`⏸️ SMS automatique désactivé`,'info');
 }
 
-function updateSmsCounter(el) {
-  const len = el.value.length;
-  document.getElementById('sms-char-count').textContent = len;
-  document.getElementById('sms-nb-sms').textContent = Math.ceil(len/160)||1;
+function ajouterDestinataire() {
+  const sel = document.getElementById('sms-dest-selector');
+  const val = sel.value; const txt = sel.options[sel.selectedIndex].text;
+  if (!val || smsDestSelectes.includes(val)) return;
+  smsDestSelectes.push(val);
+  const tags = document.getElementById('sms-dest-tags');
+  const tag = document.createElement('span');
+  tag.className = 'sms-dest-tag';
+  tag.innerHTML = `${txt} <span class="remove" onclick="supprimerDestinataire('${val}',this)">✕</span>`;
+  tag.dataset.val = val;
+  tags.appendChild(tag);
+  sel.value = '';
 }
 
-function updateSmsDestCount() {
-  const countEl = document.getElementById('sms-dest-count');
-  const map = {tous:198,terminale:62,premiere:58,seconde:78,impayes:23,absents:31};
-  let total = 0;
-  smsDestinatairesSelectionnes.forEach(k=>{ total += map[k]||0; });
-  if (countEl) countEl.innerHTML = `👥 <strong>${Math.min(total,198)}</strong> destinataire(s)`;
+function supprimerDestinataire(val, el) {
+  smsDestSelectes = smsDestSelectes.filter(v=>v!==val);
+  el.parentElement.remove();
 }
 
-function envoyerSmsGroupe() {
-  const msg = document.getElementById('sms-message-text').value.trim();
-  if (!msg) { showToast('Rédigez un message avant d\'envoyer','error'); return; }
-  const nb = smsDestinatairesSelectionnes.has('tous') ? 198 : 45;
-  showToast(`📤 SMS en cours d'envoi à ${nb} parents...`,'info');
-  setTimeout(()=>showToast(`✅ ${nb} SMS envoyés avec succès !`,'success'),1500);
-  document.getElementById('sms-message-text').value = '';
+function compterCaracteres() {
+  const ta = document.getElementById('sms-message');
+  const counter = document.getElementById('sms-chars');
+  if (!ta||!counter) return;
+  const len = ta.value.length;
+  counter.textContent = len+' / 160';
+  counter.className = 'chars' + (len>160?' danger':len>140?' warning':'');
 }
 
-function planifierSms() { showToast('📅 Planification SMS — Définissez date et heure','info'); }
-function utiliserTemplate(titre,preview) {
-  document.getElementById('sms-message-text').value = preview.replace(/\{.*?\}/g,'[À compléter]');
-  showToast(`📝 Template "${titre}" chargé`,'success');
-}
-function envoyerSmsContact(tel,nom) { showToast(`📤 SMS envoyé à ${nom} (${tel})`,'success'); }
-function filtrerContactsSms() {
-  const q=(document.getElementById('sms-search-contact').value||'').toLowerCase();
-  renderSmsContacts(SMS_CONTACTS_DEMO.filter(c=>!q||c.parent.toLowerCase().includes(q)||c.eleve.toLowerCase().includes(q)));
-}
-function exporterHistoriqueSms() { showToast('📥 Export historique SMS en cours...','info'); }
-function creerTemplate() { showToast('✨ Créer un template SMS — Fonctionnalité bientôt disponible','info'); }
-function configurerSmsAuto() { smsSwitchTab('auto',document.querySelectorAll('#page-sms-parents .tab')[2]); }
-function rechargerCredit() { showToast('💳 Rechargement crédit SMS — Contactez votre opérateur','info'); }
-function ouvrirModalSmsCompose() { ouvrirModal('modal-sms-compose'); }
-function confirmerEnvoiSms() {
-  const dest=document.getElementById('modal-sms-dest').value;
-  const msg=document.getElementById('modal-sms-text').value.trim();
-  if(!msg){showToast('Rédigez un message','error');return;}
-  fermerModal('modal-sms-compose');
-  showToast('📤 SMS envoyé avec succès !','success');
-}
-
-function smsSwitchTab(tab,btn) {
-  ['historique','templates','auto','contacts'].forEach(t=>{
+function smsSwitchTab(tab, btn) {
+  ['composer','historique','contacts','automatique'].forEach(t=>{
     const el=document.getElementById('sms-tab-'+t); if(el) el.style.display=t===tab?'block':'none';
   });
   document.querySelectorAll('#page-sms-parents .tab').forEach(b=>b.classList.remove('active'));
   if(btn) btn.classList.add('active');
 }
 
+function envoyerSMS() {
+  if (!smsDestSelectes.length) { showToast('⚠️ Ajoutez au moins un destinataire','error'); return; }
+  const msg = document.getElementById('sms-message').value.trim();
+  if (!msg) { showToast('⚠️ Rédigez un message','error'); return; }
+  const nbDest = smsDestSelectes.includes('tous') ? SMS_CONTACTS.length : smsDestSelectes.length * 8;
+  showToast(`📤 ${nbDest} SMS envoyés avec succès !`,'success');
+  document.getElementById('sms-message').value = '';
+  smsDestSelectes = [];
+  document.getElementById('sms-dest-tags').innerHTML = '';
+  const creditEl = document.getElementById('sms-credit');
+  if (creditEl) creditEl.textContent = Math.max(0, parseInt(creditEl.textContent) - nbDest);
+}
+
+function ouvrirComposerSMS() { smsSwitchTab('composer', document.querySelectorAll('#page-sms-parents .tab')[0]); }
+function previsualiserSMS() { const msg = document.getElementById('sms-message').value.replace(/{nom_parent}/g,'M. Mensah').replace(/{nom_eleve}/g,'Kofi Mensah').replace(/{classe}/g,'Tle D'); showToast('👁️ Aperçu: "'+msg.substring(0,60)+'..."','info'); }
+function programmerSMS() { showToast('⏰ SMS programmé pour demain 08h00','success'); }
+function envoyerAlertesAuto() { showToast('⚡ 14 alertes absences envoyées automatiquement !','success'); }
+function envoyerAlertesAbsences() { showToast('🚫 14 SMS d\'absence envoyés aux parents','success'); }
+function envoyerRappelPaiements() { showToast('💳 26 rappels de paiement envoyés','success'); }
+function envoyerConvocationParents() { showToast('📅 98 convocations envoyées aux parents','success'); }
+function envoyerResultatsBulletins() { showToast('📊 115 notifications bulletins envoyées','success'); }
+
 /* ══════════════════════════════════════════════════════════════════
    SUITE 11 — PWA AVANCÉE ★ JOUR 37
 ══════════════════════════════════════════════════════════════════ */
-const PWA_CHECKLIST = [
-  { ico:'ok', label:'HTTPS activé', detail:'Connexion sécurisée TLS 1.3' },
-  { ico:'ok', label:'Service Worker enregistré', detail:'Cache first · v3.2.1' },
-  { ico:'ok', label:'Manifest.json valide', detail:'Toutes les propriétés requises présentes' },
-  { ico:'ok', label:'Icônes 192px & 512px', detail:'Formats PNG conformes' },
-  { ico:'ok', label:'Mode hors-ligne fonctionnel', detail:'Cache des pages principales actif' },
-  { ico:'ok', label:'Responsive Design', detail:'Adapté mobile, tablette et desktop' },
-  { ico:'ok', label:'Notifications Push', detail:'Firebase FCM configuré' },
-  { ico:'warn', label:'Splash screen iOS', detail:'À optimiser pour Safari' },
-  { ico:'ok', label:'Start URL configurée', detail:'/' },
-  { ico:'ok', label:'Display : standalone', detail:'Lance sans barre de navigation' },
+const PWA_DEVICES_INSTALLED = [
+  {user:'Samou Adambi', role:'Administrateur', device:'Samsung Galaxy A53', os:'Android 13', date:'15/03/2026', synchro:'Il y a 2h'},
+  {user:'Prof. Kpossou', role:'Enseignant', device:'iPhone 14', os:'iOS 17', date:'20/03/2026', synchro:'Il y a 5h'},
+  {user:'Compta. AGB', role:'Comptable', device:'Xiaomi Redmi 10', os:'Android 12', date:'22/03/2026', synchro:'Hier'},
+  {user:'Mme Hounkpè', role:'Secrétaire', device:'Samsung Galaxy A23', os:'Android 11', date:'28/03/2026', synchro:'Il y a 1j'},
+  {user:'M. Sogbo', role:'Enseignant', device:'Tecno Spark 10', os:'Android 13', date:'30/03/2026', synchro:'Il y a 3h'},
 ];
 
-const PWA_DEVICES = [
-  { ico:'📱', nom:'Android — Samsung Galaxy A34', ua:'Chrome 121 · Android 13', last:'Il y a 2 min', statut:'actif', color:'#dcfce7' },
-  { ico:'📱', nom:'Android — Tecno Spark 20', ua:'Chrome 120 · Android 12', last:'Il y a 1h', statut:'actif', color:'#dcfce7' },
-  { ico:'🖥️', nom:'Windows — Chrome 122', ua:'Chrome 122 · Windows 11', last:'Il y a 3h', statut:'actif', color:'#dbeafe' },
-  { ico:'📱', nom:'Android — Itel Vision 3', ua:'Chrome 119 · Android 11', last:'Hier', statut:'inactif', color:'#f3f4f6' },
-  { ico:'🍎', nom:'iPhone 13 — Safari', ua:'Safari 17 · iOS 17', last:'Il y a 2 jours', statut:'inactif', color:'#f3f4f6' },
+const PWA_CACHE_ITEMS = [
+  {ico:'📄',nom:'Pages HTML', size:'2.4 MB', pct:60, color:'#1d4ed8'},
+  {ico:'🖼️',nom:'Images & Icônes', size:'1.1 MB', pct:28, color:'#059669'},
+  {ico:'⚡',nom:'Scripts JS', size:'0.8 MB', pct:20, color:'#7c3aed'},
+  {ico:'🎨',nom:'Styles CSS', size:'0.2 MB', pct:5, color:'#d97706'},
+  {ico:'📊',nom:'Données offline', size:'1.8 MB', pct:45, color:'#dc2626'},
 ];
 
-function chargerPWAConfig() {
-  document.getElementById('pwa-installations').textContent = PWA_DEVICES.length;
-  document.getElementById('pwa-score-hero').textContent = '98';
-  document.getElementById('pwa-cache-size').textContent = '4.2 MB';
-  document.getElementById('pwa-nb-devices').textContent = PWA_DEVICES.length;
+const PWA_SYNC_ITEMS = [
+  {ico:'✅',nom:'Absences en attente de synchro', nb:3, statut:'pending'},
+  {ico:'✅',nom:'Notes saisies hors-ligne', nb:12, statut:'synced'},
+  {ico:'✅',nom:'Paiements enregistrés offline', nb:1, statut:'pending'},
+  {ico:'✅',nom:'Messages non envoyés', nb:0, statut:'synced'},
+];
 
-  renderPWAChecklist();
-  renderPWADevices();
-  renderPWACacheStats();
-  renderPWAPushConfig();
+function chargerPWAAvancee() {
+  // Hero KPIs
+  const heroKpis = document.getElementById('pwa-hero-kpis');
+  if (heroKpis) heroKpis.innerHTML = [
+    {v:PWA_DEVICES_INSTALLED.length, l:'Appareils installés'},
+    {v:'98/100', l:'Score Lighthouse'},
+    {v:'6.4 MB', l:'Cache total'},
+    {v:'99.2%', l:'Disponibilité'},
+  ].map(k=>`<div class="pwa-kpi"><div class="wk-val">${k.v}</div><div class="wk-lbl">${k.l}</div></div>`).join('');
+
+  // Résumé sidebar
+  const resume = document.getElementById('pwa-resume');
+  if (resume) resume.innerHTML = [
+    {l:'Version app', v:'2.10.0 (Suite 11)'},
+    {l:'Service Worker', v:'✅ Actif'},
+    {l:'Manifest', v:'✅ Valide'},
+    {l:'Mode hors-ligne', v:'✅ Activé'},
+    {l:'Notifications push', v:'✅ Configurées'},
+  ].map(k=>`<div class="kpi-row"><span class="kpi-label">${k.l}</span><span class="kpi-value" style="font-size:12px">${k.v}</span></div>`).join('');
+
+  // Sécurité
+  const sec = document.getElementById('pwa-securite');
+  if (sec) sec.innerHTML = [
+    {l:'HTTPS', v:'✅ Activé', c:'#059669'},
+    {l:'Certificat SSL', v:'✅ Valide', c:'#059669'},
+    {l:'Content-Security-Policy', v:'✅ Définie', c:'#059669'},
+    {l:'Expiration SSL', v:'2027-03-15', c:'#1d4ed8'},
+  ].map(k=>`<div class="kpi-row"><span class="kpi-label">${k.l}</span><span style="font-size:12px;font-weight:700;color:${k.c}">${k.v}</span></div>`).join('');
+
+  renderPWAInstallDevices();
+  renderPWADevicesTable();
+  renderPWAPerformance();
+  renderPWACache();
+  renderPWAPush();
 }
 
-function renderPWAChecklist() {
-  const list = document.getElementById('pwa-checklist');
-  if (!list) return;
-  list.innerHTML = PWA_CHECKLIST.map(item=>`
-    <div class="pwa-check-item">
-      <div class="pwa-check-ico ${item.ico}">${item.ico==='ok'?'✅':item.ico==='warn'?'⚠️':'❌'}</div>
-      <div class="pwa-check-body">
-        <div class="pwa-check-label">${item.label}</div>
-        <div class="pwa-check-detail">${item.detail}</div>
-      </div>
-    </div>`).join('');
-}
-
-function renderPWADevices() {
-  const list = document.getElementById('pwa-devices-list');
-  if (!list) return;
-  list.innerHTML = PWA_DEVICES.map(d=>`
-    <div class="pwa-device-item">
-      <div class="pwa-dev-ico">${d.ico}</div>
-      <div class="pwa-dev-body">
-        <div class="pwa-dev-nom">${d.nom}</div>
-        <div class="pwa-dev-ua">${d.ua}</div>
-        <div class="pwa-dev-last">Dernière activité : ${d.last}</div>
-      </div>
-      <div class="pwa-dev-statut" style="color:${d.statut==='actif'?'#059669':'#9ca3af'}">${d.statut==='actif'?'🟢 Actif':'⚫ Inactif'}</div>
-    </div>`).join('');
-}
-
-function renderPWACacheStats() {
-  const cont = document.getElementById('pwa-cache-stats');
+function renderPWAInstallDevices() {
+  const cont = document.getElementById('pwa-install-devices');
   if (!cont) return;
-  const caches = [
-    { label:'Pages HTML', size:'1.2 MB', pct:29, color:'#1e3a5f' },
-    { label:'Scripts JS', size:'2.1 MB', pct:50, color:'#7c3aed' },
-    { label:'Styles CSS', size:'0.4 MB', pct:10, color:'#059669' },
-    { label:'Images & Icônes', size:'0.5 MB', pct:12, color:'#d97706' },
+  const devices = [
+    {ico:'🤖', nom:'Android', desc:'Chrome / Edge', color:'#dcfce7', steps:['Ouvrez app.afryx.io dans Chrome', 'Appuyez sur le menu ⋮ (3 points)', 'Sélectionnez "Ajouter à l\'écran d\'accueil"', 'Confirmez l\'installation']},
+    {ico:'🍎', nom:'iPhone / iPad', desc:'Safari', color:'#dbeafe', steps:['Ouvrez app.afryx.io dans Safari', 'Appuyez sur l\'icône Partager (⬆)', 'Sélectionnez "Sur l\'écran d\'accueil"', 'Appuyez sur "Ajouter"']},
+    {ico:'🖥️', nom:'PC Windows / Mac', desc:'Chrome / Edge', color:'#ede9fe', steps:['Ouvrez app.afryx.io dans Chrome', 'Cliquez sur l\'icône 💻 dans la barre d\'adresse', 'Cliquez "Installer EduLink"', 'Confirmez l\'installation']},
   ];
-  cont.innerHTML = `<div style="font-size:12px;color:#6b7280;margin-bottom:.75rem">Total cache : <strong style="color:#1e3a5f">4.2 MB</strong> / 50 MB disponibles</div>` +
-    caches.map(c=>`<div class="pwa-cache-bar">
-      <div class="pwa-cache-label"><span>${c.label}</span><span>${c.size}</span></div>
-      <div class="pwa-cache-track"><div class="pwa-cache-fill" style="width:${c.pct}%;background:${c.color}"></div></div>
-    </div>`).join('');
+  cont.innerHTML = devices.map(d=>`<div class="install-device-card">
+    <div class="idc-ico" style="background:${d.color}">${d.ico}</div>
+    <div class="idc-body">
+      <div class="idc-nom">${d.nom} <span style="font-size:11px;color:#9ca3af">— ${d.desc}</span></div>
+      <div class="idc-steps">
+        ${d.steps.map((s,i)=>`<div class="idc-step"><span style="width:18px;height:18px;border-radius:50%;background:#dcfce7;border:1.5px solid #bbf7d0;display:inline-flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0">${i+1}</span>${s}</div>`).join('')}
+      </div>
+    </div>
+  </div>`).join('');
 }
 
-function renderPWAPushConfig() {
-  const cont = document.getElementById('pwa-push-config');
-  if (!cont) return;
-  const configs = [
-    { label:'Absences', sub:'Alerte immédiate aux parents', on:true },
-    { label:'Nouvelles notes', sub:'Dès la saisie par l\'enseignant', on:true },
-    { label:'Paiements dus', sub:'3 jours avant l\'échéance', on:true },
-    { label:'Bulletins', sub:'Quand le bulletin est généré', on:false },
-    { label:'Actualités école', sub:'Annonces importantes', on:true },
-  ];
-  cont.innerHTML = configs.map(c=>`
-    <div class="push-config-item">
-      <div class="pci-body"><div class="pci-label">${c.label}</div><div class="pci-sub">${c.sub}</div></div>
-      <label class="toggle-sw"><input type="checkbox" ${c.on?'checked':''}><span class="toggle-sl"></span></label>
-    </div>`).join('');
+function renderPWADevicesTable() {
+  const tbody = document.getElementById('pwa-devices-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = PWA_DEVICES_INSTALLED.map(d=>`<tr>
+    <td><strong>${d.user}</strong></td>
+    <td><span class="badge blue">${d.role}</span></td>
+    <td>${d.device}</td>
+    <td>${d.os}</td>
+    <td>${d.date}</td>
+    <td><span class="badge green">${d.synchro}</span></td>
+  </tr>`).join('');
 }
 
-function testerPWA() { showToast('🔍 Test PWA lancé — Score : 98/100 ✅','success'); }
-function forcerInstallation() { showToast('📲 Bannière d\'installation affichée sur tous les appareils connectés','info'); }
+function renderPWAPerformance() {
+  const scores = document.getElementById('pwa-perf-scores');
+  if (!scores) return;
+  const metrics = [
+    {label:'Performance', score:98, cls:'excellent'},
+    {label:'Accessibilité', score:94, cls:'excellent'},
+    {label:'Bonnes pratiques', score:96, cls:'excellent'},
+    {label:'SEO', score:88, cls:'good'},
+  ];
+  scores.innerHTML = metrics.map(m=>`<div class="perf-item">
+    <div class="perf-ring ${m.cls}" style="--pct:${m.score*3.6}deg">
+      <div class="perf-ring-inner">${m.score}</div>
+    </div>
+    <div class="perf-label">${m.label}</div>
+  </div>`).join('');
+
+  const loadTimes = document.getElementById('pwa-load-times');
+  if (loadTimes) loadTimes.innerHTML = [
+    {label:'Premier rendu (FCP)', val:'0.8s', cls:'green'},
+    {label:'Interactif (TTI)', val:'1.2s', cls:'green'},
+    {label:'Chargement complet', val:'2.1s', cls:'blue'},
+    {label:'Service Worker activé', val:'0.3s', cls:'green'},
+  ].map(l=>`<div class="kpi-row"><span class="kpi-label">${l.label}</span><span class="badge ${l.cls}">${l.val}</span></div>`).join('');
+}
+
+function renderPWACache() {
+  const list = document.getElementById('pwa-cache-list');
+  if (!list) return;
+  const total = PWA_CACHE_ITEMS.reduce((s,c)=>s+parseFloat(c.size),0).toFixed(1);
+  const totalEl = document.getElementById('pwa-cache-total');
+  if (totalEl) totalEl.textContent = total+' MB total';
+  list.innerHTML = PWA_CACHE_ITEMS.map(c=>`<div class="cache-item">
+    <div class="cache-ico" style="background:#f3f4f6">${c.ico}</div>
+    <div class="cache-body">
+      <div class="cache-nom">${c.nom}</div>
+      <div class="cache-size">${c.size}</div>
+      <div class="cache-bar"><div class="cache-fill" style="width:${c.pct}%;background:${c.color}"></div></div>
+    </div>
+    <span style="font-size:12px;font-weight:700;color:${c.color}">${c.pct}%</span>
+  </div>`).join('');
+
+  const syncList = document.getElementById('pwa-sync-list');
+  if (syncList) syncList.innerHTML = PWA_SYNC_ITEMS.map(s=>`<div class="kpi-row">
+    <span class="kpi-label">${s.nom}</span>
+    <span class="badge ${s.statut==='synced'?'green':'amber'}">${s.statut==='synced'?'✅ Synchronisé':'⏳ '+s.nb+' en attente'}</span>
+  </div>`).join('');
+}
+
+function renderPWAPush() {
+  const stats = document.getElementById('pwa-push-stats');
+  if (!stats) return;
+  stats.innerHTML = [
+    {val:'5', lbl:'Appareils abonnés'},
+    {val:'247', lbl:'Notifs envoyées'},
+    {val:'89%', lbl:'Taux d\'ouverture'},
+    {val:'3', lbl:'Notifs aujourd\'hui'},
+  ].map(s=>`<div class="push-stat-card"><div class="psc-val">${s.val}</div><div class="psc-lbl">${s.lbl}</div></div>`).join('');
+}
+
+function pwaSwitchTab(tab, btn) {
+  ['installation','performance','cache','push'].forEach(t=>{
+    const el=document.getElementById('pwa-tab-'+t); if(el) el.style.display=t===tab?'block':'none';
+  });
+  document.querySelectorAll('#page-pwa-avancee .tab').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+}
+
 function viderCache() {
-  showToast('🗑️ Vidage du cache en cours...','info');
-  setTimeout(()=>showToast('✅ Cache vidé — 4.2 MB libérés','success'),1200);
+  if ('caches' in window) { caches.keys().then(keys=>keys.forEach(k=>caches.delete(k))); }
+  showToast('🗑️ Cache vidé — 0 MB','success');
 }
-function voirManifest() { window.open('./manifest.json','_blank'); }
-function envoyerNotifTest() { showToast('🔔 Notification test envoyée à tous les appareils !','success'); }
+
+function actualiserPWA() { chargerPWAAvancee(); showToast('🔄 Données PWA actualisées','success'); }
+
+function envoyerPushTest() {
+  const titre = document.getElementById('push-titre').value;
+  const msg = document.getElementById('push-message').value;
+  if (!titre||!msg) { showToast('Titre et message requis','error'); return; }
+  if ('Notification' in window) {
+    Notification.requestPermission().then(perm=>{
+      if (perm==='granted') {
+        new Notification(titre, {body:msg, icon:'/icons/icon-192.png'});
+        showToast('✅ Notification push envoyée !','success');
+      } else { showToast('✅ Test envoyé (notifications bloquées dans ce navigateur)','info'); }
+    });
+  } else { showToast('✅ Notification push test envoyée aux 5 appareils !','success'); }
+}
 
 /* — Hook showPage Suite 11 — */
 (function() {
   window.addEventListener('load', function() {
     if (typeof window.showPage === 'function') {
-      const _base = window.showPage;
+      const _b = window.showPage;
       window.showPage = function(id) {
-        _base(id);
+        _b(id);
         if (id==='assistant-ia') setTimeout(chargerAssistantIA, 50);
-        if (id==='sms-parents') setTimeout(chargerSmsParents, 50);
-        if (id==='pwa-config') setTimeout(chargerPWAConfig, 50);
+        if (id==='sms-parents')  setTimeout(chargerSMSParents, 50);
+        if (id==='pwa-avancee')  setTimeout(chargerPWAAvancee, 50);
+      };
+    }
+  });
+})();
+
+
+/* ══════════════════════════════════════════════════════════════════
+   SUITE 12 — DASHBOARD DIRECTEUR ★ JOUR 38
+══════════════════════════════════════════════════════════════════ */
+function chargerExecDashboard() {
+  document.getElementById('exec-date-now').textContent =
+    new Date().toLocaleDateString('fr-FR',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+
+  // Hero KPIs
+  const heroKpis = document.getElementById('exec-hero-kpis');
+  if (heroKpis) heroKpis.innerHTML = [
+    {v:'842', l:'Élèves inscrits', t:'+12 ce mois', up:true},
+    {v:'78%', l:'Taux de réussite', t:'+3.2% vs N-1', up:true},
+    {v:'15.4M F', l:'Recette mensuelle', t:'+8.3%', up:true},
+    {v:'3', l:'Alertes actives', t:'dont 1 critique', up:false},
+  ].map(k=>`<div class="exec-kpi">
+    <div class="ek-val">${k.v}</div><div class="ek-lbl">${k.l}</div>
+    <div class="ek-trend ${k.up?'up':'down'}">${k.up?'↑':'↓'} ${k.t}</div>
+  </div>`).join('');
+
+  // Scorecards
+  const sc = document.getElementById('exec-scorecards');
+  if (sc) sc.innerHTML = [
+    {ico:'👥', bg:'#dbeafe', v:'842', l:'Étudiants inscrits', t:'↑ +12 vs mois dernier', cls:'up'},
+    {ico:'👨‍🏫', bg:'#dcfce7', v:'64', l:'Enseignants actifs', t:'→ Stable', cls:'flat'},
+    {ico:'💳', bg:'#fef9c3', v:'77%', l:'Taux de recouvrement', t:'↑ +5% vs trimestre', cls:'up'},
+    {ico:'📊', bg:'#ede9fe', v:'13.4/20', l:'Moyenne générale établ.', t:'↑ +0.4 points', cls:'up'},
+    {ico:'🚫', bg:'#fee2e2', v:'8.2%', l:"Taux d'absentéisme", t:'↓ -1.3% à améliorer', cls:'down'},
+    {ico:'🏆', bg:'#ccfbf1', v:'91%', l:'Satisfaction parents', t:'↑ Excellent', cls:'up'},
+  ].map(k=>`<div class="exec-scorecard">
+    <div class="exec-sc-ico" style="background:${k.bg}">${k.ico}</div>
+    <div><div class="exec-sc-val">${k.v}</div>
+    <div class="exec-sc-lbl">${k.l}</div>
+    <div class="exec-sc-trend ${k.cls}">${k.t}</div></div>
+  </div>`).join('');
+
+  renderExecAlertes();
+  renderExecTopEtudiants();
+  renderExecObjectifs();
+  renderExecAgenda();
+  renderExecFinance();
+  renderExecPedagogie();
+  renderExecRH();
+  renderExecRapports();
+}
+
+function renderExecAlertes() {
+  const list = document.getElementById('exec-alertes-list');
+  const nb = document.getElementById('exec-nb-alertes');
+  const alertes = [
+    {ico:'💸', type:'danger', titre:'Retards de paiement', detail:'23% des frais T3 non réglés — 1 950 000 F à recouvrer'},
+    {ico:'📉', type:'warning', titre:'Absentéisme élevé — Tle C', detail:'14% d\'absences cette semaine — Seuil critique à 10%'},
+    {ico:'📅', type:'info', titre:'Renouvellement contrats enseignants', detail:'3 contrats expirent le 31/05/2026'},
+  ];
+  if (nb) nb.textContent = alertes.length;
+  if (!list) return;
+  list.innerHTML = alertes.map(a=>`<div class="exec-alerte ${a.type==='warning'?'warning':a.type==='info'?'info':''}">
+    <span style="font-size:20px">${a.ico}</span>
+    <div><div style="font-size:13px;font-weight:700;color:${a.type==='danger'?'#dc2626':a.type==='warning'?'#d97706':'#1d4ed8'}">${a.titre}</div>
+    <div style="font-size:12px;color:#6b7280;margin-top:2px">${a.detail}</div></div>
+    <button class="btn-sm btn-secondary" style="margin-left:auto;flex-shrink:0" onclick="showToast('✅ Alerte marquée traitée','success')">Traiter</button>
+  </div>`).join('');
+}
+
+function renderExecTopEtudiants() {
+  const cont = document.getElementById('exec-top-etudiants');
+  if (!cont) return;
+  const top = [
+    {nom:'Afi Dossou', classe:'1ère A', moy:17.1, trend:'↑'},
+    {nom:'Marius Sime', classe:'Tle D', moy:16.4, trend:'↑'},
+    {nom:'Kofi Mensah', classe:'Tle D', moy:14.8, trend:'→'},
+    {nom:'Flore Akpo', classe:'2nde B', moy:14.5, trend:'↑'},
+    {nom:'Brice Gbedo', classe:'Tle C', moy:13.2, trend:'↓'},
+  ];
+  cont.innerHTML = top.map((e,i)=>`<div style="display:flex;align-items:center;gap:.85rem;padding:.75rem 1.2rem;border-bottom:1px solid #f3f4f6">
+    <div class="classement-rang ${i===0?'rang-1':i===1?'rang-2':i===2?'rang-3':'rang-n'}">${i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)}</div>
+    <div style="flex:1"><div style="font-size:13px;font-weight:700;color:#111827">${e.nom}</div>
+    <div style="font-size:11px;color:#9ca3af">${e.classe}</div></div>
+    <span class="badge ${e.moy>=15?'green':'blue'}">${e.moy}/20</span>
+    <span style="font-size:14px">${e.trend==='↑'?'📈':e.trend==='↓'?'📉':'➡️'}</span>
+  </div>`).join('');
+}
+
+function renderExecObjectifs() {
+  const cont = document.getElementById('exec-objectifs');
+  if (!cont) return;
+  const obj = [
+    {label:'Taux réussite annuel', target:80, current:78, unit:'%'},
+    {label:'Recouvrement frais', target:95, current:77, unit:'%'},
+    {label:'Effectif inscriptions', target:900, current:842, unit:' élèves'},
+    {label:'Satisfaction parents', target:95, current:91, unit:'%'},
+  ];
+  cont.innerHTML = obj.map(o=>`<div class="metier-bar">
+    <div class="metier-bar-label"><span>${o.label}</span><span style="font-weight:700;color:${o.current>=o.target?'#059669':'#d97706'}">${o.current}${o.unit} / ${o.target}${o.unit}</span></div>
+    <div class="metier-track"><div class="metier-fill" style="width:${Math.min(100,Math.round(o.current/o.target*100))}%;background:${o.current>=o.target?'#059669':'#d97706'}"></div></div>
+  </div>`).join('');
+}
+
+function renderExecAgenda() {
+  const cont = document.getElementById('exec-agenda');
+  if (!cont) return;
+  const events = [
+    {ico:'📅', titre:'Conseil pédagogique', date:'03/04/2026', desc:'Bilan T2 et préparation T3'},
+    {ico:'👨‍👩‍👧', titre:'Réunion parents', date:'05/04/2026', desc:'Résultats du 2ème semestre'},
+    {ico:'🎓', titre:'Remise des bulletins', date:'08/04/2026', desc:'Distribution aux familles'},
+    {ico:'💼', titre:'Conseil d\'administration', date:'15/04/2026', desc:'Budget et stratégie 2026-2027'},
+  ];
+  cont.innerHTML = events.map(e=>`<div style="display:flex;gap:.75rem;align-items:center;padding:.7rem 1.2rem;border-bottom:1px solid #f3f4f6">
+    <span style="font-size:18px">${e.ico}</span>
+    <div style="flex:1"><div style="font-size:12.5px;font-weight:700;color:#111827">${e.titre}</div>
+    <div style="font-size:11px;color:#6b7280">${e.desc}</div></div>
+    <span class="badge amber" style="font-size:10px">${e.date}</span>
+  </div>`).join('');
+}
+
+function renderExecFinance() {
+  const kpis = document.getElementById('exec-finance-kpis');
+  if (kpis) kpis.innerHTML = [
+    {ico:'💰',bg:'#dcfce7',v:'15.4M F',l:'Recette du mois',t:'↑ +8.3%',c:'#059669'},
+    {ico:'💸',bg:'#fee2e2',v:'8.2M F',l:'Charges du mois',t:'↓ -2.1%',c:'#dc2626'},
+    {ico:'📈',bg:'#dbeafe',v:'7.2M F',l:'Résultat net',t:'↑ Excédent',c:'#1d4ed8'},
+  ].map(k=>`<div class="exec-scorecard"><div class="exec-sc-ico" style="background:${k.bg}">${k.ico}</div>
+    <div><div class="exec-sc-val" style="color:${k.c}">${k.v}</div><div class="exec-sc-lbl">${k.l}</div>
+    <div class="exec-sc-trend up">${k.t}</div></div></div>`).join('');
+
+  const bvr = document.getElementById('exec-budget-vs-reel');
+  if (bvr) {
+    const lignes = [
+      {cat:'Frais de scolarité', budget:45000000, reel:38500000},
+      {cat:'Frais examens', budget:8000000, reel:6200000},
+      {cat:'Subventions', budget:5000000, reel:4800000},
+    ];
+    bvr.innerHTML = lignes.map(l=>{
+      const pct = Math.round(l.reel/l.budget*100);
+      return `<div class="metier-bar"><div class="metier-bar-label">
+        <span>${l.cat}</span>
+        <span style="color:${pct>=80?'#059669':'#d97706'};font-weight:700">${(l.reel/1000000).toFixed(1)}M / ${(l.budget/1000000).toFixed(1)}M F</span>
+      </div><div class="metier-track"><div class="metier-fill" style="width:${pct}%;background:${pct>=80?'#059669':'#d97706'}"></div></div></div>`;
+    }).join('');
+  }
+
+  const creances = document.getElementById('exec-creances');
+  if (creances) creances.innerHTML = [
+    {label:'0–30 jours',v:'850 000 F',cls:'amber'},
+    {label:'31–60 jours',v:'620 000 F',cls:'red'},
+    {label:'61–90 jours',v:'480 000 F',cls:'red'},
+  ].map(l=>`<div class="kpi-row"><span class="kpi-label">${l.label}</span><span class="badge ${l.cls}">${l.v}</span></div>`).join('');
+}
+
+function renderExecPedagogie() {
+  const kpis = document.getElementById('exec-peda-kpis');
+  if (kpis) kpis.innerHTML = [
+    {ico:'📊',bg:'#dbeafe',v:'13.4/20',l:'Moyenne générale',t:'↑ +0.4 pts',c:'#1d4ed8'},
+    {ico:'✅',bg:'#dcfce7',v:'78%',l:'Taux de réussite',t:'↑ +3.2%',c:'#059669'},
+    {ico:'🚫',bg:'#fee2e2',v:'8.2%',l:'Absentéisme',t:'↓ À surveiller',c:'#dc2626'},
+  ].map(k=>`<div class="exec-scorecard"><div class="exec-sc-ico" style="background:${k.bg}">${k.ico}</div>
+    <div><div class="exec-sc-val" style="color:${k.c}">${k.v}</div><div class="exec-sc-lbl">${k.l}</div>
+    <div class="exec-sc-trend up">${k.t}</div></div></div>`).join('');
+
+  const tbody = document.getElementById('exec-perf-classes');
+  if (tbody) tbody.innerHTML = [
+    {classe:'Terminale D', eff:28, moy:13.4, taux:78, abs:8.2, t:'↑'},
+    {classe:'Terminale C', eff:25, moy:14.1, taux:82, abs:6.1, t:'↑'},
+    {classe:'1ère A', eff:30, moy:15.2, taux:88, abs:4.3, t:'↑'},
+    {classe:'2nde B', eff:32, moy:12.8, taux:71, abs:10.5, t:'↓'},
+  ].map(c=>`<tr>
+    <td><strong>${c.classe}</strong></td><td>${c.eff}</td>
+    <td><span class="badge ${c.moy>=14?'green':'amber'}">${c.moy}/20</span></td>
+    <td><span class="badge ${c.taux>=80?'green':'amber'}">${c.taux}%</span></td>
+    <td><span class="badge ${c.abs<=7?'green':'red'}">${c.abs}%</span></td>
+    <td style="font-size:18px">${c.t==='↑'?'📈':'📉'}</td>
+  </tr>`).join('');
+
+  const diff = document.getElementById('exec-eleves-diff');
+  if (diff) diff.innerHTML = [
+    {nom:'Koffi Adjaho', classe:'Tle C', moy:7.2, abs:22},
+    {nom:'Aïcha Sossa', classe:'2nde B', moy:8.1, abs:15},
+    {nom:'René Dakpo', classe:'Tle D', moy:8.9, abs:12},
+  ].map(e=>`<div style="display:flex;align-items:center;gap:.75rem;padding:.75rem 1.2rem;border-bottom:1px solid #f3f4f6">
+    <span style="font-size:20px">⚠️</span>
+    <div style="flex:1"><div style="font-size:13px;font-weight:700;color:#111827">${e.nom}</div>
+    <div style="font-size:11.5px;color:#6b7280">${e.classe} · ${e.abs}% absences</div></div>
+    <span class="badge red">${e.moy}/20</span>
+    <button class="btn-sm btn-blue" onclick="showToast('📋 Fiche de suivi ouverte','info')">Suivre</button>
+  </div>`).join('');
+}
+
+function renderExecRH() {
+  const kpis = document.getElementById('exec-rh-kpis');
+  if (kpis) kpis.innerHTML = [
+    {ico:'👥',bg:'#dbeafe',v:'86',l:'Total personnel',t:'→ Stable',c:'#1d4ed8'},
+    {ico:'💰',bg:'#dcfce7',v:'12.8M F',l:'Masse salariale',t:'↑ +3%',c:'#059669'},
+    {ico:'📋',bg:'#fef9c3',v:'3',l:'Contrats à renouveler',t:'⚠️ Avant le 31/05',c:'#d97706'},
+  ].map(k=>`<div class="exec-scorecard"><div class="exec-sc-ico" style="background:${k.bg}">${k.ico}</div>
+    <div><div class="exec-sc-val" style="color:${k.c}">${k.v}</div><div class="exec-sc-lbl">${k.l}</div>
+    <div class="exec-sc-trend up">${k.t}</div></div></div>`).join('');
+
+  const tbody = document.getElementById('exec-rh-table');
+  if (tbody) tbody.innerHTML = [
+    {cat:'Enseignants', nb:64, pct:74, salaire:'9.4M F', abs:2},
+    {cat:'Administration', nb:12, pct:14, salaire:'1.8M F', abs:1},
+    {cat:'Personnel de service', nb:8, pct:9, salaire:'960K F', abs:0},
+    {cat:'Direction', nb:2, pct:2, salaire:'640K F', abs:0},
+  ].map(r=>`<tr>
+    <td><strong>${r.cat}</strong></td><td>${r.nb}</td>
+    <td><span class="badge blue">${r.pct}%</span></td>
+    <td><strong style="color:#059669">${r.salaire}</strong></td>
+    <td><span class="badge ${r.abs>0?'amber':'green'}">${r.abs}</span></td>
+    <td><span class="badge green">Actif</span></td>
+  </tr>`).join('');
+}
+
+function renderExecRapports() {
+  const list = document.getElementById('exec-rapports-list');
+  if (!list) return;
+  const rapports = [
+    {ico:'📊',bg:'#dbeafe',titre:'Rapport mensuel de direction',desc:'Synthèse KPIs · Mars 2026',date:'01/04/2026'},
+    {ico:'💳',bg:'#dcfce7',titre:'Bilan financier T2',desc:'Recettes, charges, résultat net',date:'28/03/2026'},
+    {ico:'🎓',bg:'#ede9fe',titre:'Rapport pédagogique S1',desc:'Résultats, moyennes, taux de réussite',date:'25/03/2026'},
+    {ico:'👥',bg:'#fef9c3',titre:'Rapport RH annuel',desc:'Effectifs, masse salariale, congés',date:'15/03/2026'},
+  ];
+  list.innerHTML = rapports.map(r=>`<div class="exec-rapport-item">
+    <div class="eri-ico" style="background:${r.bg}">${r.ico}</div>
+    <div class="eri-body"><div class="eri-titre">${r.titre}</div><div class="eri-desc">${r.desc}</div></div>
+    <div class="eri-date">${r.date}</div>
+    <button class="btn-sm btn-secondary" onclick="showToast('📥 Téléchargement du rapport...','info')">📥</button>
+  </div>`).join('');
+}
+
+function execSwitchTab(tab, btn) {
+  ['vue-gen','finance','pedagogie','rh-exec','rapports-dir'].forEach(t=>{
+    const el=document.getElementById('exec-tab-'+t); if(el) el.style.display=t===tab?'block':'none';
+  });
+  document.querySelectorAll('#page-exec-dashboard .tab').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+}
+
+function actualiserExec() { chargerExecDashboard(); showToast('🔄 Dashboard actualisé','success'); }
+function exporterRapportDirecteur() { showToast('📥 Rapport direction en cours de génération PDF...','info'); }
+
+/* ══════════════════════════════════════════════════════════════════
+   SUITE 12 — PORTAIL WEB PUBLIC ★ JOUR 39
+══════════════════════════════════════════════════════════════════ */
+const PP_SECTIONS = [
+  {ico:'🏠', titre:'Page d\'accueil', desc:'Hero, présentation, CTA inscription', visible:true},
+  {ico:'ℹ️', titre:'À propos', desc:'Histoire, mission, valeurs de l\'établissement', visible:true},
+  {ico:'📚', titre:'Formations proposées', desc:'Filières, programmes, débouchés', visible:true},
+  {ico:'📝', titre:'Inscription en ligne', desc:'Formulaire de demande d\'admission', visible:true},
+  {ico:'📰', titre:'Actualités', desc:'Articles, événements, résultats', visible:true},
+  {ico:'🖼️', titre:'Galerie photos', desc:'Photos de l\'établissement et événements', visible:false},
+  {ico:'📞', titre:'Contact & Localisation', desc:'Coordonnées, plan d\'accès, formulaire', visible:true},
+];
+
+const PP_INSCRIPTIONS_RECUES = [
+  {nom:'Adjobi Emmanuel', niveau:'Tle → BTS Info', date:'01/04/2026', statut:'nouveau', color:'#1e3a5f'},
+  {nom:'Sossou Marie-Claire', niveau:'3ème → 2nde', date:'31/03/2026', statut:'en_cours', color:'#059669'},
+  {nom:'Bako Tiémoko', niveau:'2nde → 1ère', date:'30/03/2026', statut:'accepte', color:'#d97706'},
+  {nom:'Degan Rosine', niveau:'CM2 → 6ème', date:'29/03/2026', statut:'nouveau', color:'#7c3aed'},
+  {nom:'Hounsou Pierre', niveau:'Tle → Licence', date:'28/03/2026', statut:'en_cours', color:'#dc2626'},
+];
+
+const PP_ACTUALITES = [
+  {titre:'Résultats du 1er semestre 2025-2026', cat:'Résultats', date:'01/04/2026', vues:342, statut:'publié'},
+  {titre:'Journée portes ouvertes — 15 avril 2026', cat:'Événements', date:'28/03/2026', vues:217, statut:'publié'},
+  {titre:'Félicitations aux lauréats du BAC 2025', cat:'Actualités', date:'25/03/2026', vues:489, statut:'publié'},
+  {titre:'Nouveau laboratoire informatique inauguré', cat:'Annonces', date:'20/03/2026', vues:156, statut:'brouillon'},
+];
+
+const PP_GALERIE = ['🏫','🎓','📚','👨‍🏫','🏆','🎨','⚽','🔬','🎵','📊','🌍','💻'];
+
+function chargerPortailPublic() {
+  document.getElementById('pp-visiteurs').textContent = '1 247';
+  document.getElementById('pp-inscriptions').textContent = PP_INSCRIPTIONS_RECUES.length;
+
+  renderPPSections();
+  renderPPPreview();
+  renderPPInscriptions();
+  renderPPActualites();
+  renderPPGalerie();
+  renderPPStats();
+
+  // Remplir les champs
+  const fields = {
+    'pp-nom-ecole':'Lycée EduLink Bénin',
+    'pp-slogan':'L\'excellence au service de l\'avenir du Bénin',
+    'pp-description':'Établissement d\'enseignement secondaire et supérieur basé à Cotonou. Nous formons les cadres de demain grâce à une pédagogie innovante et des équipements modernes.',
+    'pp-tel':'+229 21 32 45 67',
+    'pp-email':'contact@lycee-edulink.bj',
+    'pp-adresse':'Avenue Jean-Paul II, Cotonou, Bénin',
+  };
+  Object.entries(fields).forEach(([id,v])=>{ const el=document.getElementById(id); if(el&&!el.value) el.value=v; });
+  const urlEl = document.getElementById('pp-url-preview');
+  if (urlEl) urlEl.textContent = 'https://lycee-edulink.afryx.io';
+}
+
+function renderPPSections() {
+  const list = document.getElementById('pp-sections-list');
+  if (!list) return;
+  list.innerHTML = PP_SECTIONS.map((s,i)=>`<div class="page-section-item">
+    <span class="psi-handle">⋮⋮</span>
+    <span class="psi-ico">${s.ico}</span>
+    <div class="psi-body"><div class="psi-titre">${s.titre}</div><div class="psi-desc">${s.desc}</div></div>
+    <label class="toggle-sw"><input type="checkbox" ${s.visible?'checked':''} onchange="PP_SECTIONS[${i}].visible=this.checked;renderPPPreview()"><span class="toggle-sl"></span></label>
+    <button class="btn-sm btn-secondary" onclick="showToast('✏️ Édition de la section ${s.titre}','info')">✏️</button>
+  </div>`).join('');
+}
+
+function renderPPPreview() {
+  const frame = document.getElementById('pp-site-frame');
+  if (!frame) return;
+  frame.innerHTML = `
+    <div style="background:linear-gradient(135deg,#1e3a5f,#059669);padding:1.5rem;text-align:center;color:#fff">
+      <div style="font-size:28px;margin-bottom:.5rem">🏫</div>
+      <div style="font-size:18px;font-weight:800">Lycée EduLink Bénin</div>
+      <div style="font-size:12px;opacity:.7;margin-top:4px">L'excellence au service de l'avenir</div>
+      <div style="display:flex;gap:8px;justify-content:center;margin-top:1rem">
+        <div style="background:rgba(255,255,255,.2);border-radius:20px;padding:5px 14px;font-size:11px">📝 S'inscrire</div>
+        <div style="background:rgba(255,255,255,.1);border-radius:20px;padding:5px 14px;font-size:11px">ℹ️ En savoir plus</div>
+      </div>
+    </div>
+    <div style="padding:1rem">
+      ${PP_SECTIONS.filter(s=>s.visible).map(s=>`<div style="background:#f9fafb;border-radius:8px;padding:.6rem .85rem;margin-bottom:.4rem;font-size:12px;color:#374151;display:flex;align-items:center;gap:6px">${s.ico} ${s.titre}</div>`).join('')}
+    </div>
+    <div style="background:#1e3a5f;padding:.75rem;text-align:center;color:rgba(255,255,255,.6);font-size:11px">© 2026 Lycée EduLink Bénin · contact@lycee-edulink.bj</div>`;
+}
+
+function renderPPInscriptions() {
+  const list = document.getElementById('pp-inscriptions-list');
+  const count = document.getElementById('pp-nb-inscr');
+  if (count) count.textContent = PP_INSCRIPTIONS_RECUES.length+' demandes';
+  if (!list) return;
+  const labels = {nouveau:'🆕 Nouvelle',en_cours:'⏳ En cours',accepte:'✅ Acceptée'};
+  const cls = {nouveau:'amber',en_cours:'blue',accepte:'green'};
+  list.innerHTML = PP_INSCRIPTIONS_RECUES.map(d=>`<div class="inscr-demande-item">
+    <div class="idi-ava" style="background:${d.color}">${d.nom[0]}</div>
+    <div class="idi-body"><div class="idi-nom">${d.nom}</div><div class="idi-meta">${d.niveau}</div></div>
+    <div class="idi-right"><div class="idi-date">${d.date}</div>
+    <span class="badge ${cls[d.statut]}" style="font-size:10px;margin-top:3px;display:block">${labels[d.statut]}</span></div>
+    <button class="btn-sm btn-blue" onclick="showToast('📋 Dossier de ${d.nom} ouvert','info')" style="margin-left:.5rem">Voir</button>
+  </div>`).join('');
+
+  const steps = document.getElementById('pp-inscr-steps');
+  if (steps) steps.innerHTML = ['Informations personnelles','Documents requis','Choix de la filière','Validation et paiement'].map((s,i)=>`<div class="inscr-step">
+    <div class="inscr-num">${i+1}</div>
+    <div class="inscr-body"><div class="inscr-titre">${s}</div></div>
+  </div>`).join('');
+
+  const stats = document.getElementById('pp-inscr-stats');
+  if (stats) stats.innerHTML = [
+    {l:'Nouvelles demandes',v:'2',cls:'amber'},
+    {l:'En cours de traitement',v:'2',cls:'blue'},
+    {l:'Acceptées ce mois',v:'1',cls:'green'},
+  ].map(s=>`<div class="kpi-row"><span class="kpi-label">${s.l}</span><span class="badge ${s.cls}">${s.v}</span></div>`).join('');
+}
+
+function renderPPActualites() {
+  const tbody = document.getElementById('pp-actu-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = PP_ACTUALITES.map(a=>`<tr>
+    <td><strong>${a.titre}</strong></td>
+    <td><span class="badge blue">${a.cat}</span></td>
+    <td>${a.date}</td>
+    <td>${a.vues}</td>
+    <td><span class="badge ${a.statut==='publié'?'green':'gray'}">${a.statut}</span></td>
+    <td><button class="btn-sm btn-secondary" onclick="showToast('✏️ Édition de l\'article','info')">✏️</button></td>
+  </tr>`).join('');
+}
+
+function renderPPGalerie() {
+  const grid = document.getElementById('pp-galerie-grid');
+  if (!grid) return;
+  const colors = ['#dbeafe','#dcfce7','#fef9c3','#ede9fe','#fee2e2','#ccfbf1'];
+  grid.innerHTML = PP_GALERIE.map((ico,i)=>`<div style="aspect-ratio:1;border-radius:10px;background:${colors[i%colors.length]};display:flex;align-items:center;justify-content:center;font-size:32px;cursor:pointer;transition:all .15s;border:1px solid #e5e7eb" onmouseenter="this.style.transform='scale(1.05)'" onmouseleave="this.style.transform=''">${ico}</div>`).join('');
+}
+
+function renderPPStats() {
+  const grid = document.getElementById('pp-stats-grid');
+  if (!grid) return;
+  grid.innerHTML = [
+    {ico:'👁️',bg:'#dbeafe',v:'1 247',l:'Visiteurs ce mois',t:'↑ +18%'},
+    {ico:'📄',bg:'#dcfce7',v:'4 892',l:'Pages vues',t:'↑ +22%'},
+    {ico:'📝',bg:'#fef9c3',v:'5',l:'Inscriptions reçues',t:'↑ +2 vs mois dernier'},
+    {ico:'⏱️',bg:'#ede9fe',v:'2:34',l:'Durée moy. visite',t:'↑ +0:18s'},
+  ].map(k=>`<div style="background:#fff;border-radius:14px;border:1px solid #e5e7eb;padding:1.1rem 1.2rem;display:flex;align-items:center;gap:.85rem">
+    <div style="width:44px;height:44px;border-radius:12px;background:${k.bg};display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">${k.ico}</div>
+    <div><div style="font-size:22px;font-weight:700;color:#111827">${k.v}</div>
+    <div style="font-size:11px;color:#6b7280">${k.l}</div>
+    <div style="font-size:11px;font-weight:600;color:#059669">${k.t}</div></div>
+  </div>`).join('');
+
+  const tbody = document.getElementById('pp-pages-tbody');
+  if (tbody) tbody.innerHTML = [
+    {page:'Accueil',vues:1247,uniques:892,rebond:'42%',duree:'1:52'},
+    {page:'Inscriptions',vues:486,uniques:341,rebond:'28%',duree:'3:21'},
+    {page:'Formations',vues:321,uniques:267,rebond:'35%',duree:'2:45'},
+    {page:'Contact',vues:198,uniques:176,rebond:'55%',duree:'1:12'},
+    {page:'Actualités',vues:640,uniques:489,rebond:'38%',duree:'2:05'},
+  ].map(p=>`<tr><td><strong>${p.page}</strong></td><td>${p.vues}</td><td>${p.uniques}</td><td>${p.rebond}</td><td>${p.duree}</td></tr>`).join('');
+}
+
+function ppSwitchTab(tab,btn) {
+  ['editeur','inscriptions','actualites','galerie','stats-site'].forEach(t=>{
+    const el=document.getElementById('pp-tab-'+t); if(el) el.style.display=t===tab?'block':'none';
+  });
+  document.querySelectorAll('#page-portail-public .tab').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+}
+
+function previsualiserSitePublic() { window.open('https://app.afryx.io','_blank'); }
+function publierSitePublic() { showToast('🚀 Site publié avec succès ! Disponible sur https://lycee-edulink.afryx.io','success'); }
+function ouvrirModalActualite() { ouvrirModal('modal-actualite'); }
+function publierActualite() {
+  const t = document.getElementById('actu-titre').value.trim();
+  if (!t) { showToast('Titre requis','error'); return; }
+  PP_ACTUALITES.unshift({titre:t, cat:document.getElementById('actu-cat').value, date:new Date().toLocaleDateString('fr-FR'), vues:0, statut:'publié'});
+  fermerModal('modal-actualite');
+  renderPPActualites();
+  showToast('📰 Article publié !','success');
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   SUITE 12 — CONTRÔLE D'ACCÈS ★ JOUR 40
+══════════════════════════════════════════════════════════════════ */
+let accesJournalData = [];
+let accesIntervalId = null;
+
+const ACCES_ZONES = [
+  {ico:'🚪',nom:'Entrée principale',code:'ZONE-01',actif:true,nb:245,statut:'ouverte'},
+  {ico:'📚',nom:'Bibliothèque',code:'ZONE-02',actif:true,nb:32,statut:'ouverte'},
+  {ico:'🔬',nom:'Laboratoire Sciences',code:'ZONE-03',actif:true,nb:18,statut:'ouverte'},
+  {ico:'💻',nom:'Salle Informatique',code:'ZONE-04',actif:true,nb:24,statut:'ouverte'},
+  {ico:'🏃',nom:'Gymnase',code:'ZONE-05',actif:false,nb:0,statut:'fermee'},
+  {ico:'🍽️',nom:'Cantine',code:'ZONE-06',actif:true,nb:89,statut:'ouverte'},
+  {ico:'🅿️',nom:'Parking personnel',code:'ZONE-07',actif:true,nb:12,statut:'alerte'},
+  {ico:'🏛️',nom:'Direction',code:'ZONE-08',actif:true,nb:4,statut:'fermee'},
+];
+
+const ACCES_BADGES_DATA = [
+  {nom:'Samou Adambi', role:'Directeur', num:'EDU-DIR-001', expire:'31/12/2026', zones:'Toutes', statut:'actif', color:'#1e3a5f'},
+  {nom:'Prof. Kpossou', role:'Enseignant', num:'EDU-ENS-042', expire:'31/08/2026', zones:'Classes, Salle profs', statut:'actif', color:'#059669'},
+  {nom:'Kofi Mensah', role:'Étudiant', num:'EDU-STD-197', expire:'30/06/2026', zones:'Classes, Bibliothèque', statut:'actif', color:'#7c3aed'},
+  {nom:'Compta. AGB', role:'Comptable', num:'EDU-ADM-015', expire:'31/12/2026', zones:'Admin, Direction', statut:'actif', color:'#d97706'},
+  {nom:'M. Inconnu', role:'Visiteur', num:'EDU-VIS-TMP', expire:'01/04/2026 18:00', zones:'Hall uniquement', statut:'expire', color:'#dc2626'},
+];
+
+const ACCES_INCIDENTS = [
+  {ico:'⚠️', bg:'#fef9c3', titre:'Badge inconnu détecté', desc:'Tentative d\'accès — Zone parking', heure:'10:42', gravite:'moyen'},
+  {ico:'🚨', bg:'#fee2e2', titre:'Alarme incendie déclenchée', desc:'Fausse alarme — Laboratoire chimie', heure:'09:15', gravite:'critique'},
+  {ico:'ℹ️', bg:'#dbeafe', titre:'Porte laissée ouverte', desc:'Salle informatique 204 — 15 min', heure:'08:33', gravite:'faible'},
+];
+
+const NOMS_DEMO = ['Kofi Mensah','Afi Dossou','Prof. Kpossou','Samou Adambi','Brice Gbedo','Flore Akpo','Compta. AGB','Marius Sime','Sonia Ahoton','M. Visiteur'];
+const ZONES_DEMO = ['Entrée principale','Bibliothèque','Laboratoire','Salle Informatique','Cantine','Direction'];
+
+function genererEvenementAleatoire() {
+  const nom = NOMS_DEMO[Math.floor(Math.random()*NOMS_DEMO.length)];
+  const zone = ZONES_DEMO[Math.floor(Math.random()*ZONES_DEMO.length)];
+  const type = Math.random() > 0.3 ? 'entree' : 'sortie';
+  const now = new Date();
+  return { id:Date.now(), nom, zone, type, heure:now.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit',second:'2-digit'}), badge:'EDU-'+Math.floor(1000+Math.random()*9000) };
+}
+
+function chargerControleAcces() {
+  // Initialiser journal
+  accesJournalData = Array.from({length:8},(_,i)=>{
+    const e = genererEvenementAleatoire();
+    const t = new Date(Date.now()-(8-i)*120000);
+    e.heure = t.toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+    return e;
+  });
+
+  // Hero KPIs
+  const heroKpis = document.getElementById('acces-hero-kpis');
+  if (heroKpis) heroKpis.innerHTML = [
+    {v:'284', l:'Personnes sur site'},
+    {v:ACCES_ZONES.filter(z=>z.actif).length, l:'Zones actives'},
+    {v:ACCES_BADGES_DATA.filter(b=>b.statut==='actif').length, l:'Badges actifs'},
+    {v:'3', l:'Alertes sécurité'},
+  ].map(k=>`<div class="acces-kpi"><div class="ak2-val">${k.v}</div><div class="ak2-lbl">${k.l}</div></div>`).join('');
+
+  // KPI bar
+  const kpiBar = document.getElementById('acces-kpi-bar');
+  if (kpiBar) kpiBar.innerHTML = [
+    {ico:'🚪',bg:'#dcfce7',v:'247',l:'Entrées aujourd\'hui',c:'#059669'},
+    {ico:'🚶',bg:'#dbeafe',v:'189',l:'Sorties aujourd\'hui',c:'#1d4ed8'},
+    {ico:'⚠️',bg:'#fef9c3',v:'3',l:'Alertes actives',c:'#d97706'},
+    {ico:'🪪',bg:'#ede9fe',v:ACCES_BADGES_DATA.length,l:'Badges enregistrés',c:'#7c3aed'},
+  ].map(k=>`<div style="background:#fff;border-radius:14px;border:1px solid #e5e7eb;padding:1.1rem 1.2rem;display:flex;align-items:center;gap:.85rem">
+    <div style="width:44px;height:44px;border-radius:12px;background:${k.bg};display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0">${k.ico}</div>
+    <div><div style="font-size:22px;font-weight:700;color:${k.c}">${k.v}</div><div style="font-size:11px;color:#6b7280">${k.l}</div></div>
+  </div>`).join('');
+
+  renderAccesJournal();
+  renderAccesZones();
+  renderAccesBadges();
+  renderAccesIncidents();
+  renderAccesPresenceLive();
+  renderAccesZonesStatus();
+
+  // Simuler flux temps réel
+  if (accesIntervalId) clearInterval(accesIntervalId);
+  accesIntervalId = setInterval(()=>{
+    const page = document.getElementById('page-controle-acces');
+    if (!page || !page.classList.contains('active')) { clearInterval(accesIntervalId); return; }
+    const evt = genererEvenementAleatoire();
+    accesJournalData.unshift(evt);
+    if (accesJournalData.length > 30) accesJournalData.pop();
+    renderAccesJournal();
+  }, 4000);
+}
+
+function renderAccesJournal(filtre='', type='') {
+  const list = document.getElementById('acces-journal-list');
+  if (!list) return;
+  let data = [...accesJournalData];
+  if (type) data = data.filter(e=>e.type===type);
+  if (filtre) data = data.filter(e=>e.nom.toLowerCase().includes(filtre.toLowerCase())||e.zone.toLowerCase().includes(filtre.toLowerCase()));
+  list.innerHTML = data.map(e=>`<div class="acces-log-item">
+    <div class="acces-log-ico ${e.type}">${e.type==='entree'?'✅':e.type==='sortie'?'🚪':'⚠️'}</div>
+    <div class="acces-log-body">
+      <div class="acces-log-nom">${e.nom}</div>
+      <div class="acces-log-meta">Badge: ${e.badge}</div>
+    </div>
+    <div class="acces-log-right">
+      <div class="acces-log-heure">${e.heure}</div>
+      <div class="acces-log-porte">${e.zone}</div>
+    </div>
+    <span class="badge ${e.type==='entree'?'green':'blue'}" style="margin-left:.5rem">${e.type==='entree'?'↵ Entrée':'↳ Sortie'}</span>
+  </div>`).join('');
+}
+
+function filtrerJournal() {
+  const filtre = document.getElementById('acces-search-journal').value;
+  const type = document.getElementById('acces-filter-type').value;
+  renderAccesJournal(filtre, type);
+}
+
+function renderAccesZones() {
+  const list = document.getElementById('acces-zones-list');
+  if (!list) return;
+  list.innerHTML = ACCES_ZONES.map(z=>`<div class="porte-item">
+    <div class="porte-ico" style="background:${z.statut==='ouverte'?'#dcfce7':z.statut==='alerte'?'#fef9c3':'#fee2e2'}">${z.ico}</div>
+    <div class="porte-body">
+      <div class="porte-nom">${z.nom} <span style="font-size:10px;color:#9ca3af">${z.code}</span></div>
+      <div class="porte-meta">${z.actif?z.nb+' personnes présentes':'Zone fermée'}</div>
+    </div>
+    <span class="porte-statut ${z.statut}">${z.statut==='ouverte'?'✅ Ouverte':z.statut==='alerte'?'⚠️ Alerte':'🔒 Fermée'}</span>
+    <button class="btn-sm btn-secondary" onclick="showToast('${z.statut==='ouverte'?'🔒 Zone fermée':'✅ Zone ouverte'}','${z.statut==='ouverte'?'info':'success'}')" style="margin-left:.5rem">${z.statut==='ouverte'?'🔒':'✅'}</button>
+  </div>`).join('');
+}
+
+function renderAccesBadges() {
+  const tbody = document.getElementById('acces-badges-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = ACCES_BADGES_DATA.map(b=>`<tr>
+    <td><strong>${b.nom}</strong></td>
+    <td><span class="badge blue">${b.role}</span></td>
+    <td><code style="font-size:11px">${b.num}</code></td>
+    <td>${b.expire}</td>
+    <td style="font-size:12px;color:#6b7280">${b.zones}</td>
+    <td><span class="badge ${b.statut==='actif'?'green':'red'}">${b.statut}</span></td>
+  </tr>`).join('');
+
+  // Preview badge
+  const preview = document.getElementById('acces-badge-preview');
+  if (!preview) return;
+  const b = ACCES_BADGES_DATA[0];
+  preview.innerHTML = `<div class="badge-card">
+    <div class="bc-logo">🎓</div>
+    <div class="bc-nom">${b.nom}</div>
+    <div class="bc-role">${b.role}</div>
+    <div class="bc-classe">EduLink Bénin</div>
+    <div class="bc-id">${b.num}</div>
+    <div class="bc-qr">📱</div>
+  </div>`;
+}
+
+function renderAccesIncidents() {
+  const list = document.getElementById('acces-incidents-list');
+  if (!list) return;
+  list.innerHTML = ACCES_INCIDENTS.map(i=>`<div class="incident-sec-item">
+    <div class="isi-ico" style="background:${i.bg}">${i.ico}</div>
+    <div class="isi-body">
+      <div class="isi-titre">${i.titre}</div>
+      <div class="isi-desc">${i.desc}</div>
+    </div>
+    <div class="isi-right">
+      <div class="isi-heure">${i.heure}</div>
+      <span class="badge ${i.gravite==='critique'?'red':i.gravite==='moyen'?'amber':'blue'}" style="font-size:10px;margin-top:3px;display:block">${i.gravite}</span>
+    </div>
+    <button class="btn-sm btn-secondary" onclick="showToast('✅ Incident traité','success')" style="margin-left:.5rem">Traiter</button>
+  </div>`).join('');
+
+  // Alertes récentes sidebar
+  const alertes = document.getElementById('acces-alertes-recentes');
+  if (alertes) alertes.innerHTML = ACCES_INCIDENTS.map(i=>`<div style="display:flex;gap:.75rem;padding:.65rem 1.2rem;border-bottom:1px solid #f3f4f6;align-items:flex-start">
+    <span style="font-size:16px">${i.ico}</span>
+    <div><div style="font-size:12px;font-weight:700;color:#111827">${i.titre}</div>
+    <div style="font-size:11px;color:#9ca3af">${i.heure}</div></div>
+  </div>`).join('');
+}
+
+function renderAccesPresenceLive() {
+  const grid = document.getElementById('acces-presence-live');
+  if (!grid) return;
+  grid.innerHTML = [
+    {v:'198', l:'Élèves sur site'},
+    {v:'52', l:'Enseignants'},
+    {v:'34', l:'Personnel admin.'},
+    {v:'0', l:'Visiteurs actifs'},
+  ].map(p=>`<div class="plg-item"><div class="plg-val">${p.v}</div><div class="plg-lbl">${p.l}</div></div>`).join('');
+}
+
+function renderAccesZonesStatus() {
+  const cont = document.getElementById('acces-zones-status');
+  if (!cont) return;
+  cont.innerHTML = ACCES_ZONES.slice(0,5).map(z=>`<div style="display:flex;align-items:center;gap:.75rem;padding:.6rem 1.2rem;border-bottom:1px solid #f3f4f6">
+    <div style="width:8px;height:8px;border-radius:50%;background:${z.statut==='ouverte'?'#059669':z.statut==='alerte'?'#d97706':'#dc2626'};flex-shrink:0"></div>
+    <span style="font-size:12px;flex:1;color:#374151">${z.nom}</span>
+    <span style="font-size:11px;font-weight:600;color:${z.statut==='ouverte'?'#059669':z.statut==='alerte'?'#d97706':'#dc2626'}">${z.nb}</span>
+  </div>`).join('');
+}
+
+function accesSwitchTab(tab, btn) {
+  ['journal','zones','badges','incidents','statistiques'].forEach(t=>{
+    const el=document.getElementById('acces-tab-'+t); if(el) el.style.display=t===tab?'block':'none';
+  });
+  document.querySelectorAll('#page-controle-acces .tab').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+}
+
+function declencherAlerteSecurite() {
+  showToast('🚨 ALERTE URGENCE déclenchée — Administration notifiée !','error');
+  const statut = document.getElementById('acces-campus-statut');
+  if (statut) { statut.textContent = '🚨 ALERTE EN COURS — Personnel notifié'; statut.style.color='#F87171'; }
+  setTimeout(()=>{ if(statut){statut.textContent='Campus sécurisé · Surveillance active'; statut.style.color='';} }, 5000);
+}
+
+function genererBadge() {
+  accesSwitchTab('badges', document.querySelectorAll('#page-controle-acces .tab')[2]);
+  showToast('🪪 Nouveau badge — Sélectionnez un titulaire dans la liste','info');
+}
+
+function signalerIncident() { showToast('⚠️ Incident signalé et enregistré dans le journal','error'); }
+function exporterJournal() { showToast('📥 Export du journal en cours (CSV)...','info'); }
+
+/* — Hook showPage Suite 12 — */
+(function() {
+  window.addEventListener('load', function() {
+    if (typeof window.showPage === 'function') {
+      const _b = window.showPage;
+      window.showPage = function(id) {
+        _b(id);
+        if (id==='exec-dashboard') setTimeout(chargerExecDashboard, 50);
+        if (id==='portail-public')  setTimeout(chargerPortailPublic, 50);
+        if (id==='controle-acces')  setTimeout(chargerControleAcces, 50);
       };
     }
   });
