@@ -7676,18 +7676,6 @@ async function seConnecter() {
     btn.textContent = 'Se connecter →'; btn.disabled = false;
   }
 }
-    // Afficher l'app
-    document.getElementById('login-screen').style.display = 'none';
-    document.getElementById('app-main').style.display = 'flex';
-    await chargerEcoles();
-    initOfflineMode();
-    initSuite8?.();
-  } catch(e) {
-    err.textContent = e.message || 'Identifiants incorrects.';
-    err.style.display = 'block';
-    btn.textContent = 'Se connecter →'; btn.disabled = false;
-  }
-}
 
 async function seDeconnecter() {
   await db.auth.signOut();
