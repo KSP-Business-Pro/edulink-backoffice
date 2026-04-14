@@ -18095,6 +18095,464 @@ function ouvrirConfigNotif() {
   showToast('💡 Configurez les emails dans Paramètres Avancés → Notifications', 'info');
 }
 
+
+/* ══════════════════════════════════════════════════════════════════
+   MODULE SÉCURITÉ EDULINK — v2.0
+   1. Anti-XSS  2. Anti-brute force  3. Session expiry
+   4. Validation formulaires  5. Masquage données  6. Audit  7. MDP
+══════════════════════════════════════════════════════════════════ */
+
+// ── 1. PROTECTION XSS ────────────────────────────────────────────
+const Security = {
+  // Échapper tout HTML avant insertion dans le DOM
+  escape(str) {
+    if (!str && str !== 0) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#x27;')
+      .replace(/\//g, '&#x2F;');
+  },
+
+  // Nettoyer une entrée texte (supprimer les balises HTML)
+  sanitize(str) {
+    if (!str) return '';
+    return String(str)
+      .replace(/<[^>]*>/g, '')           // Supprimer balises HTML
+      .replace(/javascript:/gi, '')       // Supprimer javascript:
+      .replace(/on\w+\s*=/gi, '')        // Supprimer event handlers
+      .replace(/data:/gi, '')            // Supprimer data: URLs
+      .trim()
+      .substring(0, 5000);               // Limiter la taille
+  },
+
+  // Valider email
+  isEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(email));
+  },
+
+  // Valider téléphone béninois
+  isPhone(phone) {
+    const cleaned = String(phone).replace(/\s/g,'');
+    return /^(\+229|00229)?[0-9]{8,10}$/.test(cleaned);
+  },
+
+  // Valider note sur 20
+  isNote(val) {
+    const n = parseFloat(val);
+    return !isNaN(n) && n >= 0 && n <= 20;
+  },
+
+  // Masquer données sensibles
+  maskPhone(phone) {
+    if (!phone) return '—';
+    const s = String(phone).replace(/\s/g,'');
+    if (s.length < 4) return '****';
+    return s.substring(0, s.length-4).replace(/./g,'*') + s.slice(-4);
+  },
+
+  maskEmail(email) {
+    if (!email) return '—';
+    const [local, domain] = email.split('@');
+    if (!domain) return '****';
+    const visible = local.length > 2 ? local[0] + '***' + local.slice(-1) : '****';
+    return visible + '@' + domain;
+  },
+
+  // Valider force du mot de passe
+  checkPassword(pwd) {
+    const errors = [];
+    if (pwd.length < 8)          errors.push('Au moins 8 caractères');
+    if (!/[A-Z]/.test(pwd))      errors.push('Au moins une majuscule');
+    if (!/[a-z]/.test(pwd))      errors.push('Au moins une minuscule');
+    if (!/[0-9]/.test(pwd))      errors.push('Au moins un chiffre');
+    if (!/[^A-Za-z0-9]/.test(pwd)) errors.push('Au moins un caractère spécial (!@#$...)');
+    return { valid: errors.length === 0, errors };
+  },
+
+  // Token CSRF simple
+  generateToken() {
+    return Array.from(crypto.getRandomValues(new Uint8Array(16)))
+      .map(b => b.toString(16).padStart(2,'0')).join('');
+  }
+};
+
+// ── 2. PROTECTION BRUTE FORCE ─────────────────────────────────────
+const BruteForce = {
+  KEY: 'edulink_login_attempts',
+  MAX_ATTEMPTS: 5,
+  LOCKOUT_MS: 15 * 60 * 1000, // 15 minutes
+
+  getAttempts(email) {
+    try {
+      const data = JSON.parse(sessionStorage.getItem(this.KEY) || '{}');
+      return data[email] || { count: 0, firstAttempt: null, lockedUntil: null };
+    } catch { return { count: 0, firstAttempt: null, lockedUntil: null }; }
+  },
+
+  isLocked(email) {
+    const a = this.getAttempts(email);
+    if (a.lockedUntil && Date.now() < a.lockedUntil) {
+      const remaining = Math.ceil((a.lockedUntil - Date.now()) / 60000);
+      return `Compte temporairement bloqué. Réessayez dans ${remaining} minute(s).`;
+    }
+    return false;
+  },
+
+  recordFailure(email) {
+    try {
+      const data = JSON.parse(sessionStorage.getItem(this.KEY) || '{}');
+      const a = data[email] || { count: 0, firstAttempt: Date.now(), lockedUntil: null };
+      a.count++;
+      if (a.count >= this.MAX_ATTEMPTS) {
+        a.lockedUntil = Date.now() + this.LOCKOUT_MS;
+        a.count = 0;
+      }
+      data[email] = a;
+      sessionStorage.setItem(this.KEY, JSON.stringify(data));
+      // Enregistrer dans Supabase aussi
+      if (typeof db !== 'undefined' && typeof currentEcoleId !== 'undefined') {
+        db.from('login_attempts').insert({ email, success: false }).catch(()=>{});
+      }
+      return a.count;
+    } catch { return 1; }
+  },
+
+  recordSuccess(email) {
+    try {
+      const data = JSON.parse(sessionStorage.getItem(this.KEY) || '{}');
+      delete data[email];
+      sessionStorage.setItem(this.KEY, JSON.stringify(data));
+    } catch {}
+  }
+};
+
+// ── 3. EXPIRATION AUTOMATIQUE DE SESSION ─────────────────────────
+const SessionManager = {
+  TIMEOUT_MS: 30 * 60 * 1000, // 30 minutes d'inactivité
+  WARNING_MS: 25 * 60 * 1000, // Avertissement à 25 min
+  timer: null,
+  warningTimer: null,
+  warningShown: false,
+
+  start() {
+    this.reset();
+    // Réinitialiser sur toute activité
+    ['mousemove','keydown','click','scroll','touchstart'].forEach(evt => {
+      document.addEventListener(evt, () => this.reset(), { passive: true });
+    });
+  },
+
+  reset() {
+    clearTimeout(this.timer);
+    clearTimeout(this.warningTimer);
+    this.warningShown = false;
+    const warning = document.getElementById('session-warning-banner');
+    if (warning) warning.style.display = 'none';
+
+    this.warningTimer = setTimeout(() => {
+      if (!this.warningShown) {
+        this.warningShown = true;
+        this.showWarning();
+      }
+    }, this.WARNING_MS);
+
+    this.timer = setTimeout(() => {
+      this.expire();
+    }, this.TIMEOUT_MS);
+  },
+
+  showWarning() {
+    let banner = document.getElementById('session-warning-banner');
+    if (!banner) {
+      banner = document.createElement('div');
+      banner.id = 'session-warning-banner';
+      banner.style.cssText = `position:fixed;top:0;left:0;right:0;z-index:99999;
+        background:#d97706;color:#fff;padding:.75rem 1.5rem;
+        display:flex;align-items:center;justify-content:center;gap:1rem;
+        font-size:13px;font-weight:600;font-family:'Poppins',sans-serif;`;
+      banner.innerHTML = `⏰ Votre session expire dans 5 minutes pour inactivité.
+        <button onclick="SessionManager.reset()"
+          style="background:rgba(255,255,255,.2);border:none;color:#fff;
+          padding:5px 14px;border-radius:20px;cursor:pointer;font-weight:700;">
+          Rester connecté
+        </button>`;
+      document.body.appendChild(banner);
+    }
+    banner.style.display = 'flex';
+  },
+
+  expire() {
+    if (typeof seDeconnecter === 'function') {
+      showToast('⏰ Session expirée pour inactivité. Reconnectez-vous.', 'info');
+      setTimeout(() => seDeconnecter(), 2000);
+    }
+  },
+
+  stop() {
+    clearTimeout(this.timer);
+    clearTimeout(this.warningTimer);
+    ['mousemove','keydown','click','scroll','touchstart'].forEach(evt => {
+      document.removeEventListener(evt, () => this.reset());
+    });
+  }
+};
+
+// ── 4. VALIDATION STRICTE DES FORMULAIRES ────────────────────────
+const FormValidator = {
+  rules: {
+    nom:        { required: true, minLen: 2, maxLen: 100, pattern: /^[a-zA-ZÀ-ÿ\s\-']+$/, msg: 'Lettres et tirets uniquement' },
+    prenom:     { required: true, minLen: 2, maxLen: 100, pattern: /^[a-zA-ZÀ-ÿ\s\-']+$/, msg: 'Lettres et tirets uniquement' },
+    email:      { required: true, isEmail: true, msg: 'Email invalide' },
+    telephone:  { required: false, isPhone: true, msg: 'Téléphone invalide (format béninois)' },
+    note:       { required: true, isNote: true, msg: 'Note entre 0 et 20' },
+    montant:    { required: true, isPositive: true, msg: 'Montant positif requis' },
+    matricule:  { required: false, minLen: 3, maxLen: 20, pattern: /^[A-Z0-9\-\/]+$/, msg: 'Majuscules et chiffres uniquement' },
+  },
+
+  validate(fieldId, ruleKey) {
+    const el = document.getElementById(fieldId);
+    if (!el) return true;
+    const val = el.value.trim();
+    const rule = this.rules[ruleKey];
+    if (!rule) return true;
+
+    let error = null;
+    if (rule.required && !val)           error = 'Ce champ est obligatoire';
+    else if (val) {
+      if (rule.minLen && val.length < rule.minLen) error = `Minimum ${rule.minLen} caractères`;
+      else if (rule.maxLen && val.length > rule.maxLen) error = `Maximum ${rule.maxLen} caractères`;
+      else if (rule.pattern && !rule.pattern.test(val)) error = rule.msg;
+      else if (rule.isEmail && !Security.isEmail(val)) error = rule.msg;
+      else if (rule.isPhone && val && !Security.isPhone(val)) error = rule.msg;
+      else if (rule.isNote && !Security.isNote(val)) error = rule.msg;
+      else if (rule.isPositive && parseFloat(val) <= 0) error = rule.msg;
+    }
+
+    // Afficher/masquer l'erreur
+    let errEl = document.getElementById(fieldId + '-error');
+    if (!errEl) {
+      errEl = document.createElement('div');
+      errEl.id = fieldId + '-error';
+      errEl.style.cssText = 'font-size:11px;color:#dc2626;margin-top:3px;';
+      el.parentNode.appendChild(errEl);
+    }
+    if (error) {
+      errEl.textContent = '⚠️ ' + error;
+      el.style.borderColor = '#dc2626';
+      return false;
+    } else {
+      errEl.textContent = '';
+      el.style.borderColor = '';
+      return true;
+    }
+  },
+
+  // Sanitiser toutes les valeurs d'un formulaire avant envoi
+  sanitizeForm(formData) {
+    const clean = {};
+    for (const [key, val] of Object.entries(formData)) {
+      clean[key] = typeof val === 'string' ? Security.sanitize(val) : val;
+    }
+    return clean;
+  }
+};
+
+// ── 5. MASQUAGE DONNÉES SENSIBLES ─────────────────────────────────
+const DataMask = {
+  // Appliquer le masquage dans les tableaux après chargement
+  applyToTable(tableId) {
+    const table = document.getElementById(tableId);
+    if (!table) return;
+    // Masquer colonnes téléphone parents
+    table.querySelectorAll('[data-sensitive="phone"]').forEach(cell => {
+      const original = cell.textContent;
+      if (original && original.length > 4) {
+        cell.textContent = Security.maskPhone(original);
+        cell.title = 'Cliquez pour révéler (admin)';
+        cell.style.cursor = 'pointer';
+        cell.onclick = () => {
+          if (cell.textContent === original) cell.textContent = Security.maskPhone(original);
+          else cell.textContent = original;
+        };
+      }
+    });
+    // Masquer emails
+    table.querySelectorAll('[data-sensitive="email"]').forEach(cell => {
+      const original = cell.textContent;
+      if (original && original.includes('@')) {
+        cell.textContent = Security.maskEmail(original);
+        cell.title = original;
+      }
+    });
+  }
+};
+
+// ── 6. JOURNAL D'AUDIT CLIENT ─────────────────────────────────────
+const AuditLog = {
+  async record(action, tableName, recordId, details, statut = 'success') {
+    if (!db || !currentEcoleId) return;
+    try {
+      const { data: { user } } = await db.auth.getUser();
+      await db.from('audit_log').insert({
+        ecole_id:   currentEcoleId,
+        user_id:    user?.id,
+        user_email: user?.email,
+        user_role:  currentRole || 'admin',
+        action,
+        table_name: tableName,
+        record_id:  recordId || null,
+        details,
+        statut,
+        user_agent: navigator.userAgent.substring(0, 200),
+      });
+    } catch(e) {
+      // Silencieux — l'audit ne doit pas bloquer l'app
+    }
+  }
+};
+
+// ── 7. CHANGEMENT MOT DE PASSE OBLIGATOIRE ────────────────────────
+async function verifierPremiereMdp() {
+  if (!db) return;
+  try {
+    const { data: { user } } = await db.auth.getUser();
+    if (!user) return;
+    const { data: policy } = await db.from('password_policy')
+      .select('force_reset, first_login_done')
+      .eq('user_id', user.id)
+      .single();
+    if (policy?.force_reset && !policy?.first_login_done) {
+      afficherModalChangementMdp();
+    }
+  } catch(e) {}
+}
+
+function afficherModalChangementMdp() {
+  let modal = document.getElementById('modal-force-mdp');
+  if (!modal) {
+    modal = document.createElement('div');
+    modal.id = 'modal-force-mdp';
+    modal.style.cssText = `position:fixed;inset:0;z-index:99998;
+      background:rgba(0,0,0,.7);display:flex;align-items:center;justify-content:center;`;
+    modal.innerHTML = `
+      <div style="background:#fff;border-radius:16px;padding:2rem;width:100%;max-width:420px;box-shadow:0 24px 64px rgba(0,0,0,.3)">
+        <div style="text-align:center;margin-bottom:1.5rem">
+          <div style="font-size:40px;margin-bottom:.5rem">🔑</div>
+          <h2 style="font-size:18px;font-weight:700;color:#111827">Changement de mot de passe requis</h2>
+          <p style="font-size:13px;color:#9ca3af;margin-top:.5rem">Pour sécuriser votre compte, veuillez définir un nouveau mot de passe.</p>
+        </div>
+        <div style="margin-bottom:1rem">
+          <label style="font-size:12px;font-weight:700;color:#374151;display:block;margin-bottom:.35rem">Nouveau mot de passe *</label>
+          <input id="new-pwd-1" type="password" placeholder="Minimum 8 caractères"
+            style="width:100%;padding:10px 14px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:14px;outline:none;box-sizing:border-box"
+            oninput="verifierForceMdp(this.value)" />
+          <div id="pwd-strength" style="margin-top:4px;font-size:11px;color:#9ca3af"></div>
+        </div>
+        <div style="margin-bottom:1.5rem">
+          <label style="font-size:12px;font-weight:700;color:#374151;display:block;margin-bottom:.35rem">Confirmer le mot de passe *</label>
+          <input id="new-pwd-2" type="password" placeholder="Répétez le mot de passe"
+            style="width:100%;padding:10px 14px;border:1.5px solid #e5e7eb;border-radius:8px;font-size:14px;outline:none;box-sizing:border-box" />
+        </div>
+        <button onclick="enregistrerNouveauMdp()"
+          style="width:100%;padding:12px;background:#1e3a5f;color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Poppins',sans-serif">
+          🔒 Enregistrer le nouveau mot de passe
+        </button>
+      </div>`;
+    document.body.appendChild(modal);
+  }
+  modal.style.display = 'flex';
+}
+
+function verifierForceMdp(pwd) {
+  const { valid, errors } = Security.checkPassword(pwd);
+  const el = document.getElementById('pwd-strength');
+  if (!el) return;
+  if (pwd.length === 0) { el.textContent = ''; return; }
+  if (valid) {
+    el.innerHTML = '<span style="color:#059669">✅ Mot de passe fort</span>';
+  } else {
+    el.innerHTML = '<span style="color:#dc2626">⚠️ ' + errors.join(' · ') + '</span>';
+  }
+}
+
+async function enregistrerNouveauMdp() {
+  const pwd1 = document.getElementById('new-pwd-1')?.value || '';
+  const pwd2 = document.getElementById('new-pwd-2')?.value || '';
+  if (pwd1 !== pwd2) { showToast('Les mots de passe ne correspondent pas', 'error'); return; }
+  const { valid, errors } = Security.checkPassword(pwd1);
+  if (!valid) { showToast('⚠️ ' + errors[0], 'error'); return; }
+  try {
+    const { error } = await db.auth.updateUser({ password: pwd1 });
+    if (error) throw error;
+    // Marquer comme fait
+    const { data: { user } } = await db.auth.getUser();
+    await db.from('password_policy').upsert({
+      user_id: user.id, force_reset: false,
+      first_login_done: true,
+      password_changed_at: new Date().toISOString()
+    });
+    await AuditLog.record('PASSWORD_CHANGE', 'password_policy', null, 'Mot de passe changé à la première connexion');
+    document.getElementById('modal-force-mdp').style.display = 'none';
+    showToast('✅ Mot de passe mis à jour avec succès !', 'success');
+  } catch(e) {
+    showToast('Erreur : ' + e.message, 'error');
+  }
+}
+
+// ── 8. INTÉGRATION DANS seConnecter ───────────────────────────────
+// Patch de seConnecter pour ajouter brute force + audit + session
+const _seConnecterOriginal = window.seConnecter;
+window.seConnecter = async function() {
+  const email = document.getElementById('login-email')?.value.trim() || '';
+
+  // Vérifier brute force AVANT la tentative
+  const locked = BruteForce.isLocked(email);
+  if (locked) {
+    const err = document.getElementById('login-error');
+    if (err) { err.textContent = '🔒 ' + locked; err.style.display = 'block'; }
+    return;
+  }
+
+  // Valider l'email
+  if (email && !Security.isEmail(email)) {
+    const err = document.getElementById('login-error');
+    if (err) { err.textContent = 'Format email invalide'; err.style.display = 'block'; }
+    return;
+  }
+
+  try {
+    // Appeler la fonction originale
+    if (typeof _seConnecterOriginal === 'function') {
+      await _seConnecterOriginal();
+    }
+    // Si on est connecté
+    const { data: { user } } = await db.auth.getUser();
+    if (user) {
+      BruteForce.recordSuccess(email);
+      SessionManager.start();
+      await AuditLog.record('LOGIN', 'auth', user.id, `Connexion réussie depuis ${navigator.platform}`);
+      // Vérifier si premier login
+      setTimeout(verifierPremiereMdp, 1500);
+    }
+  } catch(e) {
+    BruteForce.recordFailure(email);
+    await db.from('login_attempts').insert({ email, success: false }).catch(()=>{});
+  }
+};
+
+// Audit à la déconnexion
+const _seDeconnecterOrig = window.seDeconnecter;
+window.seDeconnecter = async function() {
+  try {
+    await AuditLog.record('LOGOUT', 'auth', null, 'Déconnexion manuelle');
+    SessionManager.stop();
+  } catch(e) {}
+  if (typeof _seDeconnecterOrig === 'function') await _seDeconnecterOrig();
+};
+
 function initOfflineMode() {
   const bar = document.getElementById('offline-bar');
   function updateStatus() {
