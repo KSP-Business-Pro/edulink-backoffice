@@ -7660,6 +7660,22 @@ async function seConnecter() {
     document.getElementById('nav-user-name').textContent = nom;
     document.getElementById('nav-user-role').textContent = role;
     document.getElementById('nav-avatar').textContent = nom[0]?.toUpperCase() || 'U';
+    // ★ Suite 13 — Appliquer permissions immédiatement
+    if (typeof appliquerPermissions === 'function') appliquerPermissions(role);
+    // Afficher l'app
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app-main').style.display = 'flex';
+    await chargerEcoles();
+    // ★ Suite 13 — Initialiser realtime après écoles chargées
+    if (typeof initialiserRealtime === 'function') setTimeout(initialiserRealtime, 1000);
+    initOfflineMode();
+    initSuite8?.();
+  } catch(e) {
+    err.textContent = e.message || 'Identifiants incorrects.';
+    err.style.display = 'block';
+    btn.textContent = 'Se connecter →'; btn.disabled = false;
+  }
+}
     // Afficher l'app
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('app-main').style.display = 'flex';
@@ -7691,9 +7707,13 @@ window.addEventListener('load', async () => {
     document.getElementById('nav-user-name').textContent = nom;
     document.getElementById('nav-user-role').textContent = role;
     document.getElementById('nav-avatar').textContent = nom[0]?.toUpperCase() || 'U';
+    // ★ Suite 13 — Appliquer permissions dès la restauration de session
+    if (typeof appliquerPermissions === 'function') appliquerPermissions(role);
     document.getElementById('login-screen').style.display = 'none';
     document.getElementById('app-main').style.display = 'flex';
     await chargerEcoles();
+    // ★ Suite 13 — Realtime après chargement
+    if (typeof initialiserRealtime === 'function') setTimeout(initialiserRealtime, 1000);
     initOfflineMode();
   }
 });
@@ -8322,12 +8342,45 @@ async function lireMessage(id) {
   else document.getElementById('msg-detail-content').appendChild(receipt);
 }
 async function envoyerMessage() {
-  const destinataire=document.getElementById('input-msg-destinataire').value.trim(), objet=document.getElementById('input-msg-objet').value.trim(), contenu=document.getElementById('input-msg-contenu').value.trim();
-  if (!destinataire||!objet||!contenu) { showToast('Remplissez tous les champs.','error'); return; }
-  const { error } = await db.from('messages').insert([{ ecole_id:currentEcoleId, expediteur_nom:'Administration', expediteur_role:'admin', destinataire_nom:destinataire, destinataire_role:document.getElementById('input-msg-role').value, objet, contenu, lu:false, lu_at:null }]);
-  if (error) { showToast('Erreur : '+error.message,'error'); return; }
-  fermerModal('modal-message'); ['input-msg-destinataire','input-msg-objet','input-msg-contenu'].forEach(id=>document.getElementById(id).value='');
-  showToast('Message envoyé !','success'); chargerMessages();
+  const destinataire = document.getElementById('input-msg-destinataire')?.value.trim();
+  const objet        = document.getElementById('input-msg-objet')?.value.trim();
+  const contenu      = document.getElementById('input-msg-contenu')?.value.trim();
+  const role         = document.getElementById('input-msg-role')?.value || 'autre';
+  if (!destinataire || !objet || !contenu) { showToast('Remplissez tous les champs obligatoires.','error'); return; }
+  const btn = document.querySelector('#modal-message .btn-primary, #modal-message button:last-child');
+  if (btn) { btn.textContent = 'Envoi...'; btn.disabled = true; }
+  try {
+    const { data:{ user } } = await db.auth.getUser();
+    // Insérer avec les deux structures possibles
+    const payload = {
+      ecole_id: currentEcoleId,
+      objet,
+      contenu,
+      lu: false,
+    };
+    // Essayer avec expediteur_nom (ancienne structure)
+    const { error } = await db.from('messages').insert([{
+      ...payload,
+      expediteur_nom: document.getElementById('nav-user-name')?.textContent || 'Administration',
+      expediteur_role: currentRole || 'admin',
+      destinataire_nom: destinataire,
+      destinataire_role: role,
+      // Aussi avec IDs si disponibles
+      ...(user?.id ? { expediteur_id: user.id } : {}),
+    }]);
+    if (error) throw error;
+    fermerModal('modal-message');
+    ['input-msg-destinataire','input-msg-objet','input-msg-contenu'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) el.value = '';
+    });
+    showToast('✅ Message envoyé avec succès !', 'success');
+    chargerMessages();
+  } catch(e) {
+    showToast('Erreur : ' + (e.message || 'Vérifiez la connexion'), 'error');
+  } finally {
+    if (btn) { btn.textContent = 'Envoyer'; btn.disabled = false; }
+  }
 }
 async function envoyerReponse() {
   const input=document.getElementById('msg-reply-input'), contenu=input.value.trim();
@@ -18006,34 +18059,52 @@ function forcerSync() {
   else showToast('📡 Pas de connexion internet','error');
 }
 
-/* ══ Hook dans window.load pour initialiser Suite 13 ══ */
+/* ══ Initialisation Suite 13 au chargement ══ */
 window.addEventListener('load', function() {
   initialiserSync();
-  // Demander permission notifications au chargement (avec délai)
   setTimeout(() => {
     if (Notification.permission === 'default') demanderPermissionPush();
   }, 5000);
 });
 
-/* ══ Réinitialiser permissions après connexion ══ */
-const _origChargerEcoles = window.chargerEcoles;
-if (typeof chargerEcoles === 'function') {
-  const _origFn = chargerEcoles;
-  window.chargerEcoles = async function() {
-    await _origFn();
-    // Récupérer le rôle de l'utilisateur connecté
-    try {
-      const { data: { user } } = await db.auth.getUser();
-      if (user) {
-        const { data: profil } = await db.from('utilisateurs')
-          .select('role').eq('auth_id', user.id).single();
-        if (profil?.role) {
-          appliquerPermissions(profil.role);
-          initialiserRealtime();
-        }
-      }
-    } catch(e) {}
-  };
+// ★ Suite 13 — Fonctions boutons dashboard
+async function envoyerNotifAbsencesJour() {
+  const btn = document.querySelector('[onclick="envoyerNotifAbsencesJour()"]');
+  if (btn) { btn.textContent = '⏳ Envoi...'; btn.disabled = true; }
+  try {
+    // Récupérer absences du jour
+    const today = new Date().toISOString().split('T')[0];
+    let q = db.from('absences').select('*, etudiants(nom,prenom,telephone_parent,nom_parent)').eq('date_absence', today).eq('justifiee', false);
+    if (currentEcoleId) q = q.eq('ecole_id', currentEcoleId);
+    const { data: absences } = await q;
+    const nb = absences?.length || 0;
+    if (nb === 0) {
+      showToast('✅ Aucune absence non justifiée aujourd\'hui', 'success');
+      return;
+    }
+    // Enregistrer dans notifications
+    if (currentEcoleId) {
+      await db.from('notifications').insert(absences.slice(0,20).map(a => ({
+        ecole_id: currentEcoleId,
+        titre: 'Absence signalée',
+        message: `${a.etudiants?.prenom||''} ${a.etudiants?.nom||''} — absent(e) ce ${today}`,
+        type: 'warning',
+        lu: false,
+      })));
+    }
+    showToast(`📧 ${nb} parent(s) notifié(s) des absences du jour`, 'success');
+    envoyerNotifLocale('Absences notifiées', `${nb} parents contactés`, '📧');
+  } catch(e) {
+    showToast('Erreur notification : ' + e.message, 'error');
+  } finally {
+    if (btn) { btn.textContent = '📧 Notifier absences'; btn.disabled = false; }
+  }
+}
+
+function ouvrirConfigNotif() {
+  // Ouvrir les paramètres de notifications
+  showPage('parametres-avances');
+  showToast('💡 Configurez les emails dans Paramètres Avancés → Notifications', 'info');
 }
 
 function initOfflineMode() {
