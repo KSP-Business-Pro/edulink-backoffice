@@ -1994,6 +1994,270 @@ button:hover { background:#a86615; transform:translateY(-1px); }
 .isi-heure{ font-size:11px; color:#9ca3af; }
 
 @media(max-width:900px){ .acces-layout{grid-template-columns:1fr} .presence-live-grid{grid-template-columns:1fr} }
+/* ══════════════════════════════════════════════
+   SUITE 13 — RECHERCHE GLOBALE ★ J41
+══════════════════════════════════════════════ */
+.search-global-wrap {
+  position:fixed; top:0; left:0; right:0; bottom:0;
+  background:rgba(0,0,0,.7); z-index:9999;
+  display:none; align-items:flex-start; justify-content:center;
+  padding-top:80px; backdrop-filter:blur(4px);
+}
+.search-global-wrap.open { display:flex; }
+.search-global-box {
+  background:#fff; border-radius:16px; width:100%; max-width:680px;
+  box-shadow:0 24px 64px rgba(0,0,0,.3); overflow:hidden;
+  animation:sg-in .15s ease;
+}
+@keyframes sg-in { from{transform:translateY(-20px);opacity:0} to{transform:translateY(0);opacity:1} }
+.search-global-input-wrap {
+  display:flex; align-items:center; gap:.85rem; padding:1rem 1.2rem;
+  border-bottom:1px solid #f3f4f6;
+}
+.search-global-icon { font-size:20px; color:#9ca3af; flex-shrink:0; }
+.search-global-input {
+  flex:1; border:none; outline:none; font-size:16px;
+  font-family:'Poppins',sans-serif; color:#111827;
+}
+.search-global-input::placeholder { color:#9ca3af; }
+.search-global-kbd {
+  font-size:11px; background:#f3f4f6; border-radius:5px;
+  padding:2px 8px; color:#9ca3af; font-family:monospace;
+}
+.search-results { max-height:400px; overflow-y:auto; }
+.search-result-section { padding:.5rem 1.2rem .25rem; font-size:11px; font-weight:700; color:#9ca3af; text-transform:uppercase; letter-spacing:.08em; }
+.search-result-item {
+  display:flex; align-items:center; gap:.85rem;
+  padding:.75rem 1.2rem; cursor:pointer; transition:background .1s;
+}
+.search-result-item:hover, .search-result-item.active { background:#eff6ff; }
+.sri-ico { width:36px; height:36px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
+.sri-body { flex:1; min-width:0; }
+.sri-title { font-size:13px; font-weight:600; color:#111827; }
+.sri-meta  { font-size:11.5px; color:#9ca3af; }
+.sri-badge { font-size:10px; font-weight:700; padding:2px 8px; border-radius:10px; flex-shrink:0; }
+.search-empty { padding:2rem; text-align:center; color:#9ca3af; font-size:14px; }
+.search-shortcuts { display:flex; gap:1.5rem; padding:.75rem 1.2rem; border-top:1px solid #f3f4f6; font-size:11.5px; color:#9ca3af; }
+.search-shortcut { display:flex; align-items:center; gap:4px; }
+.search-shortcut kbd { background:#f3f4f6; border-radius:4px; padding:1px 6px; font-family:monospace; font-size:11px; }
+
+/* Bouton recherche dans la nav */
+.nav-search-btn {
+  display:flex; align-items:center; gap:6px;
+  background:rgba(255,255,255,.06); border:1px solid rgba(255,255,255,.1);
+  border-radius:8px; padding:6px 12px; cursor:pointer; color:rgba(255,255,255,.5);
+  font-size:13px; font-family:'Poppins',sans-serif; transition:all .15s;
+}
+.nav-search-btn:hover { background:rgba(255,255,255,.1); color:rgba(255,255,255,.8); }
+.nav-search-shortcut { font-size:10px; background:rgba(255,255,255,.08); border-radius:4px; padding:1px 5px; font-family:monospace; }
+
+/* ══════════════════════════════════════════════
+   SUITE 13 — PERMISSIONS PAR RÔLE ★ J41
+══════════════════════════════════════════════ */
+.role-guard { display:none !important; }
+.role-visible { display:flex !important; }
+/* Indicateur de rôle dans nav */
+.role-badge-nav {
+  font-size:9px; font-weight:800; letter-spacing:.08em;
+  text-transform:uppercase; padding:2px 8px; border-radius:10px;
+  margin-left:4px;
+}
+.role-badge-nav.admin      { background:#fee2e2; color:#dc2626; }
+.role-badge-nav.enseignant { background:#dbeafe; color:#1d4ed8; }
+.role-badge-nav.comptable  { background:#dcfce7; color:#059669; }
+.role-badge-nav.secretaire { background:#ede9fe; color:#7c3aed; }
+.role-badge-nav.directeur  { background:#fef9c3; color:#d97706; }
+
+/* Accès restreint overlay */
+.access-denied {
+  display:none; flex-direction:column; align-items:center;
+  justify-content:center; min-height:300px; gap:1rem;
+  text-align:center; padding:2rem;
+}
+.access-denied.show { display:flex; }
+.ad-icon { font-size:56px; }
+.ad-title { font-size:18px; font-weight:700; color:#374151; }
+.ad-msg   { font-size:14px; color:#9ca3af; max-width:380px; }
+
+/* ══════════════════════════════════════════════
+   SUITE 13 — DASHBOARD TEMPS RÉEL ★ J42
+══════════════════════════════════════════════ */
+.realtime-indicator {
+  display:inline-flex; align-items:center; gap:5px;
+  font-size:11px; font-weight:700; color:#059669;
+}
+.realtime-dot {
+  width:7px; height:7px; border-radius:50%;
+  background:#059669; animation:rt-pulse 2s ease infinite;
+}
+@keyframes rt-pulse {
+  0%,100%{opacity:1;transform:scale(1)}
+  50%{opacity:.4;transform:scale(1.4)}
+}
+.stat-card-animated {
+  transition:all .4s ease;
+}
+.stat-card-animated.updating {
+  background:rgba(5,150,105,.08) !important;
+  transform:scale(1.02);
+}
+/* Feed activité temps réel */
+.realtime-feed {
+  max-height:300px; overflow-y:auto;
+  border:1px solid #f3f4f6; border-radius:12px;
+}
+.rf-item {
+  display:flex; gap:.75rem; padding:.65rem 1rem;
+  border-bottom:1px solid #f9fafb; animation:rf-slide .3s ease;
+}
+@keyframes rf-slide {
+  from{opacity:0;transform:translateX(-10px)}
+  to{opacity:1;transform:translateX(0)}
+}
+.rf-item:last-child { border-bottom:none; }
+.rf-ico { width:30px; height:30px; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:13px; flex-shrink:0; }
+.rf-body { flex:1; min-width:0; }
+.rf-text { font-size:12px; font-weight:500; color:#374151; }
+.rf-time { font-size:10.5px; color:#9ca3af; margin-top:1px; }
+
+/* ══════════════════════════════════════════════
+   SUITE 13 — MESSAGERIE TEMPS RÉEL ★ J42
+══════════════════════════════════════════════ */
+.chat-fab {
+  position:fixed; bottom:1.5rem; right:1.5rem; z-index:800;
+  width:56px; height:56px; border-radius:50%;
+  background:linear-gradient(135deg,#1e3a5f,#059669);
+  display:flex; align-items:center; justify-content:center;
+  font-size:22px; cursor:pointer; box-shadow:0 8px 24px rgba(30,58,95,.4);
+  transition:all .25s; border:none;
+}
+.chat-fab:hover { transform:scale(1.1); }
+.chat-fab-badge {
+  position:absolute; top:-4px; right:-4px;
+  min-width:18px; height:18px; border-radius:9px;
+  background:#dc2626; color:#fff; font-size:10px; font-weight:800;
+  display:flex; align-items:center; justify-content:center;
+  padding:0 4px; display:none;
+}
+.chat-fab-badge.show { display:flex; }
+
+.chat-popup {
+  position:fixed; bottom:5rem; right:1.5rem; z-index:799;
+  width:340px; background:#fff; border-radius:16px;
+  box-shadow:0 20px 60px rgba(0,0,0,.2); overflow:hidden;
+  display:none; flex-direction:column;
+  animation:chat-in .2s ease;
+  max-height:500px;
+}
+.chat-popup.open { display:flex; }
+@keyframes chat-in {
+  from{transform:translateY(20px) scale(.95);opacity:0}
+  to{transform:translateY(0) scale(1);opacity:1}
+}
+.chat-popup-header {
+  background:linear-gradient(135deg,#1e3a5f,#2d5a8e);
+  padding:.85rem 1rem; display:flex; align-items:center; gap:.75rem;
+}
+.chat-popup-header .ch-title { font-size:14px; font-weight:700; color:#fff; flex:1; }
+.chat-popup-header .ch-sub   { font-size:11px; color:rgba(255,255,255,.6); }
+.chat-close-btn { background:none; border:none; color:rgba(255,255,255,.7); font-size:18px; cursor:pointer; padding:0 4px; }
+
+.chat-conversations { overflow-y:auto; flex:1; }
+.chat-conv-item {
+  display:flex; gap:.75rem; padding:.75rem 1rem;
+  border-bottom:1px solid #f3f4f6; cursor:pointer; transition:background .1s;
+}
+.chat-conv-item:hover { background:#f9fafb; }
+.chat-conv-item.unread { background:#eff6ff; }
+.cci-ava { width:38px; height:38px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:700; color:#fff; flex-shrink:0; }
+.cci-body { flex:1; min-width:0; }
+.cci-name    { font-size:13px; font-weight:700; color:#111827; display:flex; align-items:center; justify-content:space-between; }
+.cci-preview { font-size:11.5px; color:#9ca3af; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; margin-top:1px; }
+.cci-time    { font-size:10.5px; color:#9ca3af; }
+.cci-unread-dot { width:8px; height:8px; border-radius:50%; background:#dc2626; flex-shrink:0; }
+
+.chat-messages-view { display:none; flex-direction:column; flex:1; height:100%; }
+.chat-messages-view.open { display:flex; }
+.chat-back-btn { background:none; border:none; font-size:18px; cursor:pointer; color:rgba(255,255,255,.8); padding:0; }
+.chat-msgs { flex:1; overflow-y:auto; padding:.75rem; display:flex; flex-direction:column; gap:.5rem; min-height:200px; max-height:280px; }
+.chat-msg { display:flex; gap:.5rem; align-items:flex-end; }
+.chat-msg.mine { flex-direction:row-reverse; }
+.chat-bubble { max-width:75%; padding:.55rem .85rem; border-radius:14px; font-size:13px; line-height:1.5; }
+.chat-bubble.other { background:#f3f4f6; color:#111827; border-bottom-left-radius:4px; }
+.chat-bubble.mine  { background:#1e3a5f; color:#fff; border-bottom-right-radius:4px; }
+.chat-time { font-size:9.5px; color:#9ca3af; flex-shrink:0; margin-bottom:4px; }
+.chat-input-wrap {
+  display:flex; gap:.5rem; padding:.65rem .85rem;
+  border-top:1px solid #f3f4f6; background:#fff;
+}
+.chat-input-field {
+  flex:1; border:1.5px solid #e5e7eb; border-radius:20px;
+  padding:7px 14px; font-size:13px; font-family:'Poppins',sans-serif;
+  outline:none; transition:border-color .15s;
+}
+.chat-input-field:focus { border-color:#1e3a5f; }
+.chat-send-btn {
+  width:36px; height:36px; border-radius:50%;
+  background:#1e3a5f; border:none; color:#fff; font-size:15px;
+  cursor:pointer; display:flex; align-items:center; justify-content:center;
+  transition:all .2s; flex-shrink:0;
+}
+.chat-send-btn:hover { background:#059669; }
+
+/* ══════════════════════════════════════════════
+   SUITE 13 — EXPORT PDF AMÉLIORÉ ★ J43
+══════════════════════════════════════════════ */
+.pdf-preview-modal {
+  position:fixed; inset:0; z-index:9998;
+  background:rgba(0,0,0,.8); display:none;
+  align-items:center; justify-content:center;
+  padding:1.5rem;
+}
+.pdf-preview-modal.open { display:flex; }
+.pdf-preview-box {
+  background:#fff; border-radius:16px; width:100%; max-width:800px;
+  max-height:90vh; overflow:hidden; display:flex; flex-direction:column;
+  box-shadow:0 24px 64px rgba(0,0,0,.4);
+}
+.pdf-preview-header {
+  padding:1rem 1.5rem; border-bottom:1px solid #f3f4f6;
+  display:flex; align-items:center; justify-content:space-between;
+}
+.pdf-preview-title { font-size:15px; font-weight:700; color:#111827; }
+.pdf-preview-actions { display:flex; gap:.75rem; }
+.pdf-preview-body { flex:1; overflow-y:auto; padding:2rem; background:#f3f4f6; }
+.pdf-page {
+  background:#fff; margin:0 auto 1rem;
+  width:210mm; max-width:100%; min-height:297mm;
+  padding:2cm; box-shadow:0 4px 16px rgba(0,0,0,.1);
+  border-radius:4px; font-size:12px; line-height:1.6;
+}
+
+/* ══════════════════════════════════════════════
+   SUITE 13 — SYNC OFFLINE ★ J43
+══════════════════════════════════════════════ */
+.offline-banner {
+  position:fixed; top:0; left:0; right:0; z-index:9997;
+  background:#d97706; color:#fff; padding:.6rem 1rem;
+  display:none; align-items:center; justify-content:center; gap:.75rem;
+  font-size:13px; font-weight:600;
+}
+.offline-banner.show { display:flex; }
+.sync-badge {
+  background:rgba(255,255,255,.2); border-radius:20px;
+  padding:2px 10px; font-size:11px; font-weight:700; cursor:pointer;
+}
+.sync-badge:hover { background:rgba(255,255,255,.3); }
+
+/* Indicateur sync dans footer nav */
+.sync-status-indicator {
+  display:flex; align-items:center; gap:5px;
+  font-size:11px; font-weight:600; padding:4px 10px;
+  border-radius:20px; cursor:pointer;
+}
+.sync-status-indicator.online  { color:#059669; background:rgba(5,150,105,.1); }
+.sync-status-indicator.offline { color:#d97706; background:rgba(217,119,6,.1); }
+.sync-status-indicator.syncing { color:#1d4ed8; background:rgba(29,78,216,.1); }
 </style>
 </head>
 <body>
@@ -2120,8 +2384,17 @@ button:hover { background:#a86615; transform:translateY(-1px); }
 
   <div class="nav-bottom">
     <div class="nav-actions">
+      <button class="nav-search-btn" onclick="ouvrirRecherche()" title="Recherche globale (Ctrl+K)">
+        🔍 <span style="font-size:11px">Rechercher</span>
+        <span class="nav-search-shortcut">⌘K</span>
+      </button>
+    </div>
+    <div class="nav-actions" style="margin-top:.5rem">
       <div class="nav-bell-wrap" onclick="ouvrirNotifPanel()" title="Notifications">
         🔔<span class="nav-bell-badge" id="notif-badge"></span>
+      </div>
+      <div class="sync-status-indicator online" id="sync-indicator" onclick="forcerSync()" title="Statut synchronisation">
+        <span id="sync-dot">●</span> <span id="sync-label">En ligne</span>
       </div>
       <a href="edulink-portail.html" target="_blank" style="font-size:11px;color:rgba(255,255,255,.55);padding:5px 8px;border-radius:6px;background:rgba(255,255,255,.06);text-decoration:none">🌐 Portail</a>
     </div>
@@ -17136,6 +17409,633 @@ function exporterJournal() { showToast('📥 Export du journal en cours (CSV)...
   });
 })();
 
+
+/* ══════════════════════════════════════════════════════════════════
+   SUITE 13 — RECHERCHE GLOBALE ★ J41
+══════════════════════════════════════════════════════════════════ */
+let currentRole = 'admin';
+let searchIndex = -1;
+
+// Modules navigables
+const SEARCH_MODULES = [
+  {ico:'⊞',bg:'#dbeafe',titre:'Tableau de bord',module:'dashboard',cat:'Navigation'},
+  {ico:'👥',bg:'#dcfce7',titre:'Étudiants',module:'etudiants',cat:'Navigation'},
+  {ico:'📊',bg:'#ede9fe',titre:'Notes & Bulletins',module:'notes',cat:'Navigation'},
+  {ico:'✅',bg:'#dcfce7',titre:'Présences',module:'presences',cat:'Navigation'},
+  {ico:'💳',bg:'#fef9c3',titre:'Paiements',module:'paiements',cat:'Navigation'},
+  {ico:'📅',bg:'#dbeafe',titre:'Emploi du temps',module:'emploi',cat:'Navigation'},
+  {ico:'📝',bg:'#ede9fe',titre:'Examens',module:'examens',cat:'Navigation'},
+  {ico:'👨‍🏫',bg:'#dcfce7',titre:'Enseignants',module:'enseignants',cat:'Navigation'},
+  {ico:'🎓',bg:'#dbeafe',titre:'Classes',module:'classes',cat:'Navigation'},
+  {ico:'💰',bg:'#fef9c3',titre:'Comptabilité',module:'comptabilite',cat:'Navigation'},
+  {ico:'📋',bg:'#fee2e2',titre:'Discipline',module:'discipline',cat:'Navigation'},
+  {ico:'📄',bg:'#dbeafe',titre:'Documents',module:'documents',cat:'Navigation'},
+  {ico:'🏆',bg:'#fef9c3',titre:'Certificats',module:'certificats',cat:'Navigation'},
+  {ico:'📈',bg:'#ede9fe',titre:'Rapports',module:'rapports',cat:'Navigation'},
+  {ico:'🧠',bg:'#ede9fe',titre:'Analytics IA',module:'analytics',cat:'Navigation'},
+  {ico:'✉️',bg:'#dbeafe',titre:'Messagerie',module:'messages',cat:'Navigation'},
+  {ico:'🤖',bg:'#ede9fe',titre:'Assistant IA',module:'assistant-ia',cat:'Navigation'},
+  {ico:'📞',bg:'#dcfce7',titre:'SMS Parents',module:'sms-parents',cat:'Navigation'},
+  {ico:'📱',bg:'#dbeafe',titre:'PWA Avancée',module:'pwa-avancee',cat:'Navigation'},
+  {ico:'🔒',bg:'#fee2e2',titre:'Contrôle Accès',module:'controle-acces',cat:'Navigation'},
+  {ico:'🌎',bg:'#dcfce7',titre:'Portail Public',module:'portail-public',cat:'Navigation'},
+  {ico:'📊',bg:'#dbeafe',titre:'Dashboard Directeur',module:'exec-dashboard',cat:'Navigation'},
+  {ico:'🔧',bg:'#fef9c3',titre:'Paramètres Avancés',module:'parametres-avances',cat:'Navigation'},
+  {ico:'⚙️',bg:'#f3f4f6',titre:'Paramètres',module:'parametres',cat:'Navigation'},
+];
+
+function ouvrirRecherche() {
+  document.getElementById('search-global-wrap').classList.add('open');
+  setTimeout(()=>document.getElementById('search-global-input').focus(),100);
+  searchIndex = -1;
+}
+function fermerRecherche() {
+  document.getElementById('search-global-wrap').classList.remove('open');
+  document.getElementById('search-global-input').value = '';
+  document.getElementById('search-results').innerHTML = '<div class="search-empty">Commencez à taper pour rechercher...</div>';
+}
+
+async function rechercherGlobal(query) {
+  const container = document.getElementById('search-results');
+  searchIndex = -1;
+  if (!query.trim()) {
+    container.innerHTML = '<div class="search-empty">Commencez à taper pour rechercher...</div>';
+    return;
+  }
+  const q = query.toLowerCase();
+  let html = '';
+  // Modules
+  const modules = SEARCH_MODULES.filter(m => m.titre.toLowerCase().includes(q));
+  if (modules.length > 0) {
+    html += `<div class="search-result-section">Modules</div>`;
+    modules.slice(0,5).forEach(m => {
+      html += `<div class="search-result-item" onclick="showPage('${m.module}');fermerRecherche()">
+        <div class="sri-ico" style="background:${m.bg}">${m.ico}</div>
+        <div class="sri-body"><div class="sri-title">${m.titre}</div><div class="sri-meta">Module EduLink</div></div>
+        <span class="sri-badge" style="background:#f3f4f6;color:#6b7280">→</span>
+      </div>`;
+    });
+  }
+  // Étudiants depuis Supabase
+  if (q.length >= 2) {
+    try {
+      let query_q = db.from('etudiants').select('id,nom,prenom,classe,matricule').ilike('nom', `%${q}%`).limit(5);
+      if (currentEcoleId) query_q = query_q.eq('ecole_id', currentEcoleId);
+      const { data } = await query_q;
+      if (data && data.length > 0) {
+        html += `<div class="search-result-section">Étudiants</div>`;
+        data.forEach(e => {
+          html += `<div class="search-result-item" onclick="showPage('etudiants');fermerRecherche()">
+            <div class="sri-ico" style="background:#dcfce7">🎓</div>
+            <div class="sri-body">
+              <div class="sri-title">${e.prenom || ''} ${e.nom}</div>
+              <div class="sri-meta">${e.classe || '—'} · ${e.matricule || ''}</div>
+            </div>
+            <span class="sri-badge" style="background:#dcfce7;color:#059669">Étudiant</span>
+          </div>`;
+        });
+      }
+    } catch(e) {}
+  }
+  if (!html) html = '<div class="search-empty">Aucun résultat pour "' + query + '"</div>';
+  container.innerHTML = html;
+}
+
+function naviguerRecherche(e) {
+  const items = document.querySelectorAll('.search-result-item');
+  if (e.key === 'Escape') { fermerRecherche(); return; }
+  if (e.key === 'ArrowDown') { searchIndex = Math.min(searchIndex+1, items.length-1); }
+  if (e.key === 'ArrowUp')   { searchIndex = Math.max(searchIndex-1, 0); }
+  if (e.key === 'Enter' && searchIndex >= 0) { items[searchIndex]?.click(); return; }
+  items.forEach((item,i) => item.classList.toggle('active', i===searchIndex));
+  if (items[searchIndex]) items[searchIndex].scrollIntoView({block:'nearest'});
+}
+
+// Raccourci clavier Ctrl+K
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+    e.preventDefault();
+    const wrap = document.getElementById('search-global-wrap');
+    wrap.classList.contains('open') ? fermerRecherche() : ouvrirRecherche();
+  }
+  if (e.key === 'Escape') fermerRecherche();
+});
+
+/* ══════════════════════════════════════════════════════════════════
+   SUITE 13 — PERMISSIONS PAR RÔLE ★ J41
+══════════════════════════════════════════════════════════════════ */
+const ROLE_PERMISSIONS = {
+  admin:      ['dashboard','etudiants','notes','presences','paiements','emploi','examens','enseignants','classes','comptabilite','discipline','documents','certificats','rapports','analytics','messages','rh','admissions','bibliotheque','bibliotheque-num','cantine','transport','infirmerie','orientation','reseau','portail-etudiant','dashboard-reseau','parametres-avances','assistant-ia','sms-parents','pwa-avancee','exec-dashboard','portail-public','controle-acces','parametres','utilisateurs','calendrier'],
+  directeur:  ['dashboard','etudiants','notes','presences','paiements','emploi','examens','enseignants','classes','comptabilite','discipline','rapports','analytics','messages','exec-dashboard','dashboard-reseau','portail-public','parametres'],
+  enseignant: ['dashboard','etudiants','notes','presences','emploi','examens','messages','assistant-ia','portail-etudiant'],
+  comptable:  ['dashboard','paiements','comptabilite','rapports','messages','etudiants'],
+  secretaire: ['dashboard','etudiants','admissions','documents','certificats','messages','classes'],
+  surveillance:['dashboard','presences','discipline','messages','controle-acces'],
+};
+
+function appliquerPermissions(role) {
+  currentRole = role;
+  const perms = ROLE_PERMISSIONS[role] || ROLE_PERMISSIONS.admin;
+
+  // Cacher les modules non autorisés dans la nav
+  document.querySelectorAll('nav a[id^="nav-"]').forEach(link => {
+    const moduleId = link.id.replace('nav-','');
+    const allowed = perms.includes(moduleId) || role === 'admin';
+    link.style.display = allowed ? '' : 'none';
+  });
+
+  // Afficher badge rôle
+  const userRoleEl = document.getElementById('nav-user-role');
+  if (userRoleEl) {
+    userRoleEl.innerHTML = `${role} <span class="role-badge-nav ${role}">${role.toUpperCase()}</span>`;
+  }
+}
+
+function verifierAcces(moduleId) {
+  if (currentRole === 'admin') return true;
+  const perms = ROLE_PERMISSIONS[currentRole] || [];
+  return perms.includes(moduleId);
+}
+
+// Override showPage pour vérifier les permissions
+const _showPageOrig = window.showPage;
+if (typeof _showPageOrig === 'function') {
+  window.showPage = function(id) {
+    if (!verifierAcces(id) && currentRole !== 'admin') {
+      // Afficher page d'accès refusé
+      document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
+      const msg = document.getElementById('access-denied-page') || (() => {
+        const div = document.createElement('div');
+        div.id = 'access-denied-page';
+        div.className = 'page active';
+        div.innerHTML = `<div class="access-denied show">
+          <div class="ad-icon">🔒</div>
+          <div class="ad-title">Accès restreint</div>
+          <div class="ad-msg">Vous n'avez pas les permissions nécessaires pour accéder à ce module.<br>Contactez votre administrateur.</div>
+          <button onclick="showPage('dashboard')" style="margin-top:1rem">← Retour au tableau de bord</button>
+        </div>`;
+        document.getElementById('app-main').appendChild(div);
+        return div;
+      })();
+      msg.classList.add('active');
+      return;
+    }
+    _showPageOrig(id);
+  };
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   SUITE 13 — DASHBOARD TEMPS RÉEL ★ J42
+══════════════════════════════════════════════════════════════════ */
+let realtimeChannels = [];
+let realtimeFeedData = [];
+
+function initialiserRealtime() {
+  if (!db || !currentEcoleId) return;
+
+  // Canal étudiants
+  const chanEtudiants = db.channel('etudiants-realtime')
+    .on('postgres_changes', {
+      event: '*', schema: 'public', table: 'etudiants',
+      filter: `ecole_id=eq.${currentEcoleId}`
+    }, payload => {
+      ajouterFeedRealtime('👥', '#dcfce7', `Étudiant ${payload.eventType === 'INSERT' ? 'ajouté' : 'modifié'}`, payload.new?.nom || '');
+      if (document.getElementById('page-dashboard')?.classList.contains('active')) {
+        chargerDashboard();
+      }
+    }).subscribe();
+
+  // Canal absences
+  const chanAbsences = db.channel('absences-realtime')
+    .on('postgres_changes', {
+      event: 'INSERT', schema: 'public', table: 'absences',
+      filter: `ecole_id=eq.${currentEcoleId}`
+    }, payload => {
+      ajouterFeedRealtime('🚫', '#fee2e2', 'Nouvelle absence enregistrée', '');
+      animerStatCard('stat-absences');
+    }).subscribe();
+
+  // Canal paiements
+  const chanPaiements = db.channel('paiements-realtime')
+    .on('postgres_changes', {
+      event: 'INSERT', schema: 'public', table: 'factures',
+      filter: `ecole_id=eq.${currentEcoleId}`
+    }, payload => {
+      ajouterFeedRealtime('💳', '#fef9c3', 'Nouveau paiement reçu', '');
+      animerStatCard('stat-recette');
+    }).subscribe();
+
+  // Canal messages
+  const chanMessages = db.channel('messages-realtime')
+    .on('postgres_changes', {
+      event: 'INSERT', schema: 'public', table: 'messages'
+    }, payload => {
+      const badge = document.getElementById('chat-fab-badge');
+      if (badge) {
+        const current = parseInt(badge.textContent) || 0;
+        badge.textContent = current + 1;
+        badge.classList.add('show');
+      }
+      ajouterFeedRealtime('✉️', '#dbeafe', 'Nouveau message reçu', '');
+      // Refresh chat si ouvert
+      if (document.getElementById('chat-popup')?.classList.contains('open')) {
+        chargerConversations();
+      }
+    }).subscribe();
+
+  realtimeChannels = [chanEtudiants, chanAbsences, chanPaiements, chanMessages];
+}
+
+function ajouterFeedRealtime(ico, bg, text, detail) {
+  const now = new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+  realtimeFeedData.unshift({ico, bg, text, detail, time: now});
+  if (realtimeFeedData.length > 20) realtimeFeedData.pop();
+
+  // Mettre à jour le feed si visible
+  const feed = document.getElementById('realtime-feed');
+  if (feed) {
+    const item = document.createElement('div');
+    item.className = 'rf-item';
+    item.innerHTML = `<div class="rf-ico" style="background:${bg}">${ico}</div>
+      <div class="rf-body"><div class="rf-text">${text}${detail?' · '+detail:''}</div>
+      <div class="rf-time">${now}</div></div>`;
+    feed.insertBefore(item, feed.firstChild);
+    if (feed.children.length > 10) feed.removeChild(feed.lastChild);
+  }
+}
+
+function animerStatCard(id) {
+  const card = document.getElementById(id)?.closest('.stat-card-animated');
+  if (card) {
+    card.classList.add('updating');
+    setTimeout(()=>card.classList.remove('updating'), 600);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   SUITE 13 — MESSAGERIE TEMPS RÉEL (CHAT) ★ J42
+══════════════════════════════════════════════════════════════════ */
+let currentChatUserId = null;
+let currentChatUserName = '';
+
+function toggleChat() {
+  const popup = document.getElementById('chat-popup');
+  const isOpen = popup.classList.contains('open');
+  if (!isOpen) {
+    popup.classList.add('open');
+    chargerConversations();
+    // Reset badge
+    const badge = document.getElementById('chat-fab-badge');
+    if (badge) badge.classList.remove('show');
+  } else {
+    popup.classList.remove('open');
+  }
+}
+
+async function chargerConversations() {
+  const list = document.getElementById('chat-conversations-list');
+  if (!list) return;
+
+  try {
+    const { data: utilisateurs } = await db.from('utilisateurs')
+      .select('id,nom,prenom,role,email')
+      .eq('ecole_id', currentEcoleId)
+      .limit(15);
+
+    if (!utilisateurs || utilisateurs.length === 0) {
+      list.innerHTML = '<div style="padding:1.5rem;text-align:center;color:#9ca3af;font-size:13px">Aucun utilisateur disponible</div>';
+      document.getElementById('chat-online-count').textContent = '0 utilisateurs';
+      return;
+    }
+
+    document.getElementById('chat-online-count').textContent = `${utilisateurs.length} utilisateurs`;
+    const colors = ['#1e3a5f','#059669','#d97706','#7c3aed','#dc2626','#1d4ed8'];
+
+    list.innerHTML = utilisateurs.map((u,i) => `
+      <div class="chat-conv-item" onclick="ouvrirChat('${u.id}','${(u.prenom||'')+' '+(u.nom||'')}'.trim()','${colors[i%colors.length]}')">
+        <div class="cci-ava" style="background:${colors[i%colors.length]}">${(u.nom||'?')[0].toUpperCase()}</div>
+        <div class="cci-body">
+          <div class="cci-name">${u.prenom||''} ${u.nom||''}</div>
+          <div class="cci-preview">${u.role || ''}</div>
+        </div>
+      </div>`).join('');
+  } catch(e) {
+    list.innerHTML = '<div style="padding:1.5rem;text-align:center;color:#9ca3af;font-size:13px">Connexion requise</div>';
+  }
+}
+
+async function ouvrirChat(userId, userName, color) {
+  currentChatUserId = userId;
+  currentChatUserName = userName;
+
+  document.getElementById('chat-conv-view').style.display = 'none';
+  const msgView = document.getElementById('chat-messages-view');
+  msgView.classList.add('open');
+  document.getElementById('chat-contact-name').textContent = userName;
+  document.getElementById('chat-contact-status').textContent = 'Utilisateur EduLink';
+
+  await chargerMessages_chat(userId);
+  document.getElementById('chat-input-field')?.focus();
+}
+
+async function chargerMessages_chat(userId) {
+  const list = document.getElementById('chat-msgs-list');
+  if (!list) return;
+
+  try {
+    const { data: { user } } = await db.auth.getUser();
+    if (!user) return;
+
+    const { data: msgs } = await db.from('messages')
+      .select('*')
+      .or(`and(expediteur_id.eq.${user.id},destinataire_id.eq.${userId}),and(expediteur_id.eq.${userId},destinataire_id.eq.${user.id})`)
+      .order('created_at', { ascending: true })
+      .limit(30);
+
+    if (!msgs || msgs.length === 0) {
+      list.innerHTML = '<div style="padding:1rem;text-align:center;color:#9ca3af;font-size:12px">Démarrez la conversation</div>';
+      return;
+    }
+
+    list.innerHTML = msgs.map(m => {
+      const isMine = m.expediteur_id === user.id;
+      const time = new Date(m.created_at).toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+      return `<div class="chat-msg ${isMine?'mine':''}">
+        <div class="chat-bubble ${isMine?'mine':'other'}">${m.contenu}</div>
+        <div class="chat-time">${time}</div>
+      </div>`;
+    }).join('');
+
+    list.scrollTop = list.scrollHeight;
+  } catch(e) {}
+}
+
+async function envoyerChatMessage() {
+  const input = document.getElementById('chat-input-field');
+  if (!input || !input.value.trim() || !currentChatUserId) return;
+  const contenu = input.value.trim();
+  input.value = '';
+
+  try {
+    const { data: { user } } = await db.auth.getUser();
+    if (!user) return;
+
+    await db.from('messages').insert({
+      ecole_id: currentEcoleId,
+      expediteur_id: user.id,
+      destinataire_id: currentChatUserId,
+      contenu,
+      lu: false,
+    });
+
+    // Ajouter le message localement
+    const list = document.getElementById('chat-msgs-list');
+    const time = new Date().toLocaleTimeString('fr-FR',{hour:'2-digit',minute:'2-digit'});
+    const div = document.createElement('div');
+    div.className = 'chat-msg mine';
+    div.innerHTML = `<div class="chat-bubble mine">${contenu}</div><div class="chat-time">${time}</div>`;
+    list.appendChild(div);
+    list.scrollTop = list.scrollHeight;
+  } catch(e) {
+    showToast('Erreur envoi message','error');
+  }
+}
+
+function retourConversations() {
+  document.getElementById('chat-messages-view').classList.remove('open');
+  document.getElementById('chat-conv-view').style.display = 'flex';
+  currentChatUserId = null;
+}
+
+function ouvrirNouveauChat() {
+  showToast('💬 Sélectionnez un utilisateur dans la liste','info');
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   SUITE 13 — EXPORT PDF AMÉLIORÉ ★ J43
+══════════════════════════════════════════════════════════════════ */
+function ouvrirPDFModal(titre, contenuHTML) {
+  document.getElementById('pdf-preview-title').textContent = titre;
+  document.getElementById('pdf-preview-body').innerHTML =
+    `<div class="pdf-page">${contenuHTML}</div>`;
+  document.getElementById('pdf-preview-modal').classList.add('open');
+}
+function fermerPDFModal() {
+  document.getElementById('pdf-preview-modal').classList.remove('open');
+}
+function imprimerPDF() {
+  const body = document.getElementById('pdf-preview-body').innerHTML;
+  const w = window.open('','_blank','width=900,height=700');
+  w.document.write(`<!DOCTYPE html><html><head>
+    <title>${document.getElementById('pdf-preview-title').textContent}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+      *{font-family:'Poppins',sans-serif;margin:0;box-sizing:border-box}
+      body{background:#f3f4f6;padding:1rem}
+      .pdf-page{background:#fff;margin:0 auto;width:210mm;min-height:297mm;padding:2cm;box-shadow:0 4px 16px rgba(0,0,0,.1);font-size:12px;line-height:1.6}
+      table{width:100%;border-collapse:collapse;margin:.5rem 0}
+      th,td{border:1px solid #e5e7eb;padding:6px 10px;font-size:11px}
+      th{background:#f3f4f6;font-weight:700}
+      .badge{padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700}
+      @media print{body{background:#fff;padding:0}.pdf-page{box-shadow:none;padding:1.5cm}}
+    </style>
+  </head><body>${body}</body></html>`);
+  w.document.close();
+  setTimeout(()=>w.print(), 500);
+}
+function telechargerPDF() { imprimerPDF(); showToast('📥 PDF en cours de génération','info'); }
+
+// Améliorer le générateur de bulletins existant
+function genererBulletinAmélioré(etudiant, notes, trimestre) {
+  if (!etudiant) { showToast('Sélectionnez un étudiant','error'); return; }
+  const moy = notes.length > 0
+    ? (notes.reduce((s,n)=>s+n.note*n.coef,0)/notes.reduce((s,n)=>s+n.coef,0)).toFixed(2)
+    : '—';
+
+  const html = `
+    <div style="text-align:center;background:#1e3a5f;color:#fff;padding:1.5rem;border-radius:8px;margin-bottom:1.5rem">
+      <h1 style="font-size:20px;margin-bottom:.25rem">📊 Bulletin Scolaire</h1>
+      <p style="opacity:.7;font-size:12px">${trimestre} — Année scolaire 2025-2026</p>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem">
+      <div style="background:#f9fafb;padding:1rem;border-radius:8px">
+        <div style="font-size:11px;color:#9ca3af;text-transform:uppercase;font-weight:700">Étudiant</div>
+        <div style="font-size:15px;font-weight:700;color:#111827;margin-top:.25rem">${etudiant.prenom||''} ${etudiant.nom}</div>
+        <div style="font-size:12px;color:#6b7280">${etudiant.classe||'—'} · ${etudiant.matricule||''}</div>
+      </div>
+      <div style="background:#1e3a5f;padding:1rem;border-radius:8px;text-align:center">
+        <div style="font-size:11px;color:rgba(255,255,255,.6);text-transform:uppercase;font-weight:700">Moyenne générale</div>
+        <div style="font-size:32px;font-weight:900;color:#fff">${moy}<span style="font-size:14px;opacity:.6">/20</span></div>
+      </div>
+    </div>
+    <table>
+      <thead><tr style="background:#1e3a5f;color:#fff">
+        <th style="text-align:left">Matière</th><th>Coef.</th><th>Note</th><th>Mention</th>
+      </tr></thead>
+      <tbody>
+        ${notes.map(n=>{
+          const mention = n.note>=16?'Très Bien':n.note>=14?'Bien':n.note>=12?'Assez Bien':n.note>=10?'Passable':'Insuffisant';
+          const color = n.note>=12?'#059669':'#dc2626';
+          return `<tr><td>${n.matiere||n.matiere_nom||'—'}</td><td style="text-align:center">${n.coefficient||n.coef||1}</td><td style="text-align:center;font-weight:700;color:${color}">${n.note}/20</td><td style="text-align:center">${mention}</td></tr>`;
+        }).join('')}
+      </tbody>
+    </table>
+    <div style="margin-top:1.5rem;display:flex;justify-content:space-between;font-size:11px;color:#9ca3af">
+      <span>Généré le ${new Date().toLocaleDateString('fr-FR')}</span>
+      <span>EduLink — app.afryx.io</span>
+    </div>`;
+
+  ouvrirPDFModal(`Bulletin — ${etudiant.prenom||''} ${etudiant.nom}`, html);
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   SUITE 13 — NOTIFICATIONS PUSH FIREBASE ★ J43
+══════════════════════════════════════════════════════════════════ */
+async function demanderPermissionPush() {
+  if (!('Notification' in window)) return;
+  try {
+    const perm = await Notification.requestPermission();
+    if (perm === 'granted') {
+      showToast('🔔 Notifications push activées !','success');
+      // Enregistrer dans push_tokens si Firebase disponible
+      if (typeof firebase !== 'undefined' && firebase.messaging) {
+        try {
+          const token = await firebase.messaging().getToken();
+          if (token && currentEcoleId) {
+            await db.from('push_tokens').upsert({
+              utilisateur_id: (await db.auth.getUser()).data.user?.id,
+              token, plateforme:'web', actif:true
+            });
+          }
+        } catch(e) {}
+      }
+    } else {
+      showToast('Notifications refusées par le navigateur','info');
+    }
+  } catch(e) {}
+}
+
+function envoyerNotifLocale(titre, message, ico='🔔') {
+  if (Notification.permission === 'granted') {
+    new Notification(`${ico} ${titre}`, {
+      body: message,
+      icon: '/icons/icon-192.png',
+      badge: '/icons/icon-192.png',
+      vibrate: [200, 100, 200],
+    });
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════
+   SUITE 13 — SYNCHRONISATION HORS-LIGNE ★ J43
+══════════════════════════════════════════════════════════════════ */
+let syncQueue = JSON.parse(localStorage.getItem('edulink_sync_queue') || '[]');
+let isOnline = navigator.onLine;
+
+function initialiserSync() {
+  updateSyncIndicator();
+
+  window.addEventListener('online', () => {
+    isOnline = true;
+    updateSyncIndicator();
+    document.getElementById('offline-banner')?.classList.remove('show');
+    showToast('✅ Connexion rétablie — Synchronisation en cours','success');
+    viderSyncQueue();
+  });
+
+  window.addEventListener('offline', () => {
+    isOnline = false;
+    updateSyncIndicator();
+    document.getElementById('offline-banner')?.classList.add('show');
+    showToast('📡 Mode hors-ligne activé','info');
+  });
+}
+
+function updateSyncIndicator() {
+  const indicator = document.getElementById('sync-indicator');
+  const dot = document.getElementById('sync-dot');
+  const label = document.getElementById('sync-label');
+  if (!indicator) return;
+  indicator.className = `sync-status-indicator ${isOnline?'online':'offline'}`;
+  if (dot) dot.textContent = '●';
+  if (label) label.textContent = isOnline ? 'En ligne' : `Hors-ligne (${syncQueue.length})`;
+}
+
+function ajouterSyncQueue(action, data) {
+  syncQueue.push({ action, data, timestamp: Date.now() });
+  localStorage.setItem('edulink_sync_queue', JSON.stringify(syncQueue));
+  updateSyncIndicator();
+}
+
+async function viderSyncQueue() {
+  if (syncQueue.length === 0 || !isOnline) return;
+  const indicator = document.getElementById('sync-indicator');
+  if (indicator) indicator.className = 'sync-status-indicator syncing';
+  const label = document.getElementById('sync-label');
+  if (label) label.textContent = `Synchro (${syncQueue.length})...`;
+
+  let synced = 0;
+  const remaining = [];
+  for (const item of syncQueue) {
+    try {
+      if (item.action === 'insert_absence') {
+        await db.from('absences').insert(item.data);
+        synced++;
+      } else if (item.action === 'insert_note') {
+        await db.from('notes').insert(item.data);
+        synced++;
+      } else if (item.action === 'insert_paiement') {
+        await db.from('paiements').insert(item.data);
+        synced++;
+      } else {
+        remaining.push(item);
+      }
+    } catch(e) {
+      remaining.push(item);
+    }
+  }
+  syncQueue = remaining;
+  localStorage.setItem('edulink_sync_queue', JSON.stringify(syncQueue));
+
+  if (synced > 0) showToast(`✅ ${synced} modification(s) synchronisée(s)`, 'success');
+  updateSyncIndicator();
+}
+
+function forcerSync() {
+  if (isOnline) viderSyncQueue();
+  else showToast('📡 Pas de connexion internet','error');
+}
+
+/* ══ Hook dans window.load pour initialiser Suite 13 ══ */
+window.addEventListener('load', function() {
+  initialiserSync();
+  // Demander permission notifications au chargement (avec délai)
+  setTimeout(() => {
+    if (Notification.permission === 'default') demanderPermissionPush();
+  }, 5000);
+});
+
+/* ══ Réinitialiser permissions après connexion ══ */
+const _origChargerEcoles = window.chargerEcoles;
+if (typeof chargerEcoles === 'function') {
+  const _origFn = chargerEcoles;
+  window.chargerEcoles = async function() {
+    await _origFn();
+    // Récupérer le rôle de l'utilisateur connecté
+    try {
+      const { data: { user } } = await db.auth.getUser();
+      if (user) {
+        const { data: profil } = await db.from('utilisateurs')
+          .select('role').eq('auth_id', user.id).single();
+        if (profil?.role) {
+          appliquerPermissions(profil.role);
+          initialiserRealtime();
+        }
+      }
+    } catch(e) {}
+  };
+}
+
 function initOfflineMode() {
   const bar = document.getElementById('offline-bar');
   function updateStatus() {
@@ -17200,5 +18100,91 @@ window.addEventListener('appinstalled', function() {
 });
 
 </script>
+<!-- ══ OFFLINE BANNER ══ -->
+<div class="offline-banner" id="offline-banner">
+  📡 Mode hors-ligne — Les modifications seront synchronisées dès la reconnexion
+  <span class="sync-badge" onclick="forcerSync()">🔄 Synchroniser</span>
+  <span style="cursor:pointer;opacity:.7" onclick="document.getElementById('offline-banner').classList.remove('show')">✕</span>
+</div>
+
+<!-- ══ RECHERCHE GLOBALE ══ -->
+<div class="search-global-wrap" id="search-global-wrap" onclick="if(event.target===this)fermerRecherche()">
+  <div class="search-global-box">
+    <div class="search-global-input-wrap">
+      <span class="search-global-icon">🔍</span>
+      <input class="search-global-input" id="search-global-input"
+        placeholder="Rechercher un étudiant, module, action..."
+        oninput="rechercherGlobal(this.value)"
+        onkeydown="naviguerRecherche(event)" />
+      <span class="search-global-kbd">ESC</span>
+    </div>
+    <div class="search-results" id="search-results">
+      <div class="search-empty">Commencez à taper pour rechercher...</div>
+    </div>
+    <div class="search-shortcuts">
+      <div class="search-shortcut"><kbd>↑↓</kbd> Naviguer</div>
+      <div class="search-shortcut"><kbd>↵</kbd> Ouvrir</div>
+      <div class="search-shortcut"><kbd>ESC</kbd> Fermer</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ CHAT FAB + POPUP ══ -->
+<button class="chat-fab" id="chat-fab" onclick="toggleChat()" title="Messagerie">
+  💬
+  <span class="chat-fab-badge" id="chat-fab-badge">0</span>
+</button>
+
+<div class="chat-popup" id="chat-popup">
+  <!-- Liste conversations -->
+  <div id="chat-conv-view" style="display:flex;flex-direction:column;flex:1">
+    <div class="chat-popup-header">
+      <div>
+        <div class="ch-title">💬 Messagerie</div>
+        <div class="ch-sub" id="chat-online-count">Chargement...</div>
+      </div>
+      <button class="chat-close-btn" onclick="toggleChat()">✕</button>
+    </div>
+    <div class="chat-conversations" id="chat-conversations-list"></div>
+    <div style="padding:.5rem .85rem;border-top:1px solid #f3f4f6">
+      <button class="btn-sm btn-blue" style="width:100%;font-size:12px" onclick="ouvrirNouveauChat()">+ Nouveau message</button>
+    </div>
+  </div>
+
+  <!-- Vue messages -->
+  <div class="chat-messages-view" id="chat-messages-view">
+    <div class="chat-popup-header">
+      <button class="chat-back-btn" onclick="retourConversations()">←</button>
+      <div style="flex:1;margin-left:.75rem">
+        <div class="ch-title" id="chat-contact-name">—</div>
+        <div class="ch-sub" id="chat-contact-status">—</div>
+      </div>
+      <button class="chat-close-btn" onclick="toggleChat()">✕</button>
+    </div>
+    <div class="chat-msgs" id="chat-msgs-list"></div>
+    <div class="chat-input-wrap">
+      <input class="chat-input-field" id="chat-input-field"
+        placeholder="Votre message..."
+        onkeypress="if(event.key==='Enter')envoyerChatMessage()" />
+      <button class="chat-send-btn" onclick="envoyerChatMessage()">➤</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PDF PREVIEW MODAL ══ -->
+<div class="pdf-preview-modal" id="pdf-preview-modal">
+  <div class="pdf-preview-box">
+    <div class="pdf-preview-header">
+      <div class="pdf-preview-title" id="pdf-preview-title">Aperçu du document</div>
+      <div class="pdf-preview-actions">
+        <button class="btn-sm btn-blue" onclick="imprimerPDF()">🖨️ Imprimer</button>
+        <button class="btn-sm btn-green" onclick="telechargerPDF()">📥 Télécharger PDF</button>
+        <button class="btn-sm btn-secondary" onclick="fermerPDFModal()">✕ Fermer</button>
+      </div>
+    </div>
+    <div class="pdf-preview-body" id="pdf-preview-body"></div>
+  </div>
+</div>
+
 </body>
 </html>
